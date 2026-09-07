@@ -396,7 +396,7 @@ describe('Tabs', () => {
             expect(tooltip.container.style.display).toBe('inline-block');
         });
 
-        it('should prevent disabled tabs from receiving mouse focus', async () => {
+        it('should cancel mousedown on disabled tabs', async () => {
             component.tab3Disabled = true;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
