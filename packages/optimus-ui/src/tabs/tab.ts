@@ -93,6 +93,12 @@ export class Tab extends BaseComponent<TabPassThrough> {
         }
     }
 
+    @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+        if (this.disabled()) {
+            event.preventDefault();
+        }
+    }
+
     @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
         switch (event.code) {
             case 'ArrowRight':

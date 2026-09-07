@@ -378,7 +378,7 @@ describe('Tabs', () => {
     });
 
     describe('Disabled Tabs', () => {
-        it('should allow pointer events for tooltips on disabled tabs', async () => {
+        it('should show tooltips on mouse enter for disabled tabs', async () => {
             component.tab3Disabled = true;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
@@ -386,6 +386,27 @@ describe('Tabs', () => {
 
             const tab3 = fixture.debugElement.queryAll(By.css('p-tab'))[2];
             expect(getComputedStyle(tab3.nativeElement).pointerEvents).toBe('auto');
+
+            tab3.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
+            await fixture.whenStable();
+
+            const tooltip = tab3.injector.get(Tooltip);
+            expect(tooltip.container).toBeTruthy();
+            expect(tooltip.container.textContent).toContain('Unavailable tab');
+            expect(tooltip.container.style.display).toBe('inline-block');
+        });
+
+        it('should prevent disabled tabs from receiving mouse focus', async () => {
+            component.tab3Disabled = true;
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            const tab3 = fixture.debugElement.queryAll(By.css('p-tab'))[2];
+            const mouseDownEvent = new MouseEvent('mousedown', { cancelable: true });
+            tab3.nativeElement.dispatchEvent(mouseDownEvent);
+
+            expect(mouseDownEvent.defaultPrevented).toBe(true);
         });
 
         it('should disable specific tabs', async () => {

@@ -108,7 +108,12 @@ export const style = /*css*/ `
     }
 
     .p-tab.p-disabled {
+        cursor: default;
         pointer-events: auto;
+    }
+
+    .p-tab.p-disabled .p-ink {
+        display: none;
     }
 
     .p-tab:not(.p-disabled):focus-visible {

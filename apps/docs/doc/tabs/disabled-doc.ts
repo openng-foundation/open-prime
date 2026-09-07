@@ -2,15 +2,14 @@ import { Component } from '@angular/core';
 import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
 import { AppCode } from '@/components/doc/app.code';
 import { TabsModule } from '@openng/optimus-ui/tabs';
-import { TooltipModule } from '@openng/optimus-ui/tooltip';
 
 @Component({
     selector: 'disabled-doc',
     standalone: true,
-    imports: [AppDocSectionText, AppCode, TabsModule, TooltipModule],
+    imports: [AppDocSectionText, AppCode, TabsModule],
     template: `
         <app-docsectiontext>
-            <p>Enabling the <i>disabled</i> property of a Tab prevents activation. A tooltip can be used to explain why the tab is unavailable.</p>
+            <p>Enabling the <i>disabled</i> property of a Tab prevents user interaction.</p>
         </app-docsectiontext>
         <div class="card">
             <p-tabs value="0">
@@ -18,7 +17,7 @@ import { TooltipModule } from '@openng/optimus-ui/tooltip';
                     <p-tab value="0">Header I</p-tab>
                     <p-tab value="1">Header II</p-tab>
                     <p-tab value="2">Header III</p-tab>
-                    <p-tab disabled pTooltip="This tab is unavailable">Header IV</p-tab>
+                    <p-tab disabled>Header IV</p-tab>
                 </p-tablist>
                 <p-tabpanels>
                     <p-tabpanel value="0">
