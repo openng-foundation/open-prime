@@ -1,5 +1,5 @@
 import type { Mock } from 'vitest';
-import { ChangeDetectionStrategy, Component, provideZonelessChangeDetection } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -1371,6 +1371,37 @@ describe('PassThrough (PT) Tests', () => {
             await fixture.whenStable();
 
             expect(hookCalls).toContain('onDestroy');
+        });
+    });
+
+    describe('Server Platform PassThrough', () => {
+        it('should apply host and root passthrough attributes during change detection', async () => {
+            @Component({
+                changeDetection: ChangeDetectionStrategy.Eager,
+                standalone: true,
+                imports: [ToggleSwitch],
+                template: `<p-toggleswitch [pt]="pt"></p-toggleswitch>`
+            })
+            class TestServerPTComponent {
+                pt = {
+                    host: { 'data-ssr-host': 'true' },
+                    root: { 'data-ssr-root': 'true' }
+                };
+            }
+
+            TestBed.configureTestingModule({
+                imports: [TestServerPTComponent],
+                providers: [provideZonelessChangeDetection(), { provide: PLATFORM_ID, useValue: 'server' }]
+            });
+
+            const fixture = TestBed.createComponent(TestServerPTComponent);
+            fixture.detectChanges();
+            await fixture.whenStable();
+
+            const toggleSwitchRoot = fixture.debugElement.query(By.css('p-toggleswitch')).nativeElement;
+
+            expect(toggleSwitchRoot.getAttribute('data-ssr-host')).toBe('true');
+            expect(toggleSwitchRoot.getAttribute('data-ssr-root')).toBe('true');
         });
     });
 });

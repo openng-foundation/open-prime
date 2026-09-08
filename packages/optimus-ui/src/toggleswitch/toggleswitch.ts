@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import {
-    afterEveryRender,
     booleanAttribute,
     ChangeDetectionStrategy,
     Component,
@@ -86,12 +85,8 @@ export class ToggleSwitch extends BaseEditableHolder<ToggleSwitchPassThrough> {
 
     bindDirectiveInstance = inject(Bind, { self: true });
 
-    constructor() {
-        super();
-
-        afterEveryRender(() => {
-            this.bindDirectiveInstance.setAttrs(this.ptms(['host', 'root']));
-        });
+    onAfterViewChecked(): void {
+        this.bindDirectiveInstance.setAttrs(this.ptms(['host', 'root']));
     }
 
     /**
