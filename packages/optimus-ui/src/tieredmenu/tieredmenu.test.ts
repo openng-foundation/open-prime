@@ -78,7 +78,9 @@ class TestPopupTieredMenuComponent {
             <ng-template pTemplate="item" let-item let-hasSubmenu="hasSubmenu">
                 <div class="custom-item">
                     <span class="custom-label">{{ item.label }}</span>
-                    <span *ngIf="hasSubmenu" class="custom-arrow">→</span>
+                    @if (hasSubmenu) {
+                        <span class="custom-arrow">→</span>
+                    }
                 </div>
             </ng-template>
             <ng-template pTemplate="submenuicon">
@@ -105,8 +107,12 @@ class TestTemplateTieredMenuComponent {
             <ng-template #item let-item let-hasSubmenu="hasSubmenu">
                 <div class="content-template-item">
                     <span class="item-label">{{ item.label }}</span>
-                    <span class="custom-badge" *ngIf="item.badge">{{ item.badge }}</span>
-                    <span *ngIf="hasSubmenu" class="submenu-indicator">▶</span>
+                    @if (item.badge) {
+                        <span class="custom-badge">{{ item.badge }}</span>
+                    }
+                    @if (hasSubmenu) {
+                        <span class="submenu-indicator">▶</span>
+                    }
                 </div>
             </ng-template>
             <ng-template #submenuicon>

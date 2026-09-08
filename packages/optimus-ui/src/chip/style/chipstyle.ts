@@ -4,7 +4,7 @@ import { BaseStyle } from '@openng/optimus-ui/base';
 
 const inlineStyles = {
     root: ({ instance }) => ({
-        display: !instance.visible && 'none'
+        display: !instance.visible ? 'none' : null
     })
 };
 

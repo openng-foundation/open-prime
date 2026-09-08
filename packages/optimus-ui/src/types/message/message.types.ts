@@ -86,3 +86,9 @@ export interface MessageTemplates {
      */
     closeicon(): TemplateRef<void>;
 }
+
+/**
+ * Severity levels of the message, using 'error' instead of 'danger'.
+ * @group Types
+ */
+export type MessageSeverity = 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';

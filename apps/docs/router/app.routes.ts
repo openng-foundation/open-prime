@@ -23,6 +23,7 @@ export const routes: Routes = [
             { path: 'faq', loadChildren: () => import('@/pages/faq/routes') },
             { path: 'playground', loadChildren: () => import('@/pages/playground/routes') },
             { path: 'roadmap', loadChildren: () => import('@/pages/roadmap/routes') },
+            { path: 'templates', loadChildren: () => import('@/pages/templates/routes') },
             {
                 path: 'theming',
                 loadChildren: () => import('@/pages/theming/routes')

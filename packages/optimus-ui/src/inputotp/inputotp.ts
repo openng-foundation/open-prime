@@ -51,8 +51,8 @@ export { InputOtpChangeEvent, InputOtpInputTemplateContext, InputOtpTemplateEven
     standalone: true,
     imports: [InputText, AutoFocus, SharedModule, BindModule, NgFor, NgIf, NgTemplateOutlet],
     template: `
-        <ng-container *ngFor="let i of getRange(length); trackBy: trackByFn">
-            <ng-container *ngIf="!inputTemplate && !_inputTemplate">
+        @for (i of getRange(length); track trackByFn($index)) {
+            @if (!inputTemplate && !_inputTemplate) {
                 <input
                     type="text"
                     pInputText
@@ -78,11 +78,11 @@ export { InputOtpChangeEvent, InputOtpInputTemplateContext, InputOtpTemplateEven
                     [pt]="ptm('pcInputText')"
                     [unstyled]="unstyled()"
                 />
-            </ng-container>
-            <ng-container *ngIf="inputTemplate || _inputTemplate">
+            }
+            @if (inputTemplate || _inputTemplate) {
                 <ng-container *ngTemplateOutlet="inputTemplate || _inputTemplate; context: { $implicit: getToken(i - 1), events: getTemplateEvents(i - 1), index: i }"> </ng-container>
-            </ng-container>
-        </ng-container>
+            }
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,

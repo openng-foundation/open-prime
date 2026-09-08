@@ -9,12 +9,16 @@ import { RouterModule } from '@angular/router';
     template: `
         <app-docsectiontext>
             <h3>Which Angular versions are supported?</h3>
-            <p>Angular v21 and newer. Our majors follow Angular's — when a new Angular major ships, a compatible Optimus UI major is the first thing we work on.</p>
+            <p>
+                Angular v21 and newer. Our majors follow Angular's — when a new Angular major ships, a compatible Optimus UI major is the first thing we work on. See the
+                <a [routerLink]="'/migration/update'" fragment="angular-compatibility" class="doc-link">version compatibility table</a> in the update guide.
+            </p>
 
             <h3>How do I migrate from PrimeNG? Is it automatic?</h3>
             <p>
-                Mostly. Run <i>ng add &#64;openng/optimus-ui</i> in a PrimeNG v21 workspace and it detects the existing dependency and runs the full migration: packages swapped, imports rewritten, dependencies installed. It then prints a report of
-                anything it could not rewrite, with file and line numbers. The <a [routerLink]="'/migration/primeng'" class="doc-link">migration guide</a> covers the details and the manual cases.
+                Mostly, but not through <i>ng add</i>, which only sets up new projects and fails without changing anything when it finds an existing <i>primeng</i> dependency. Install <i>&#64;openng/optimus-ui</i>, then run
+                <i>ng generate &#64;openng/optimus-ui:migrate-from-primeng</i> in a PrimeNG v21 workspace: packages swapped, imports rewritten, dependencies installed. It then prints a report of anything it could not rewrite, with file and line
+                numbers. The <a href="https://v1.optimus.openng.org/migration/primeng" target="_blank" rel="noopener noreferrer" class="doc-link">migration guide</a> covers the details and the manual cases.
             </p>
 
             <h3>I am on PrimeNG v20 or older. Can I migrate directly?</h3>

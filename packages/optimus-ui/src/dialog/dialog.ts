@@ -85,7 +85,7 @@ const DIALOG_INSTANCE = new InjectionToken<Dialog>('DIALOG_INSTANCE');
                         (pMotionOnBeforeLeave)="onBeforeLeave($event)"
                         (pMotionOnAfterLeave)="onAfterLeave($event)"
                         [attr.role]="role"
-                        [attr.aria-labelledby]="ariaLabelledBy"
+                        [attr.aria-labelledby]="computedAriaLabelledBy()"
                         [attr.aria-modal]="true"
                         [attr.data-p]="dataP"
                     >
@@ -96,8 +96,8 @@ const DIALOG_INSTANCE = new InjectionToken<Dialog>('DIALOG_INSTANCE');
                         <ng-template #notHeadless>
                             <div *ngIf="resizable" [class]="cx('resizeHandle')" [pBind]="ptm('resizeHandle')" [style.z-index]="90" (mousedown)="initResize($event)"></div>
                             <div #titlebar [class]="cx('header')" [pBind]="ptm('header')" (mousedown)="initDrag($event)" *ngIf="showHeader">
-                                <span [id]="ariaLabelledBy" [class]="cx('title')" [pBind]="ptm('title')" *ngIf="!_headerTemplate && !headerTemplate && !headerT">{{ header }}</span>
-                                <ng-container *ngTemplateOutlet="_headerTemplate || headerTemplate || headerT; context: { ariaLabelledBy: ariaLabelledBy }"></ng-container>
+                                <span [id]="headerId()" [class]="cx('title')" [pBind]="ptm('title')" *ngIf="!_headerTemplate && !headerTemplate && !headerT">{{ header() }}</span>
+                                <ng-container *ngTemplateOutlet="_headerTemplate || headerTemplate || headerT; context: { ariaLabelledBy: computedAriaLabelledBy() }"></ng-container>
                                 <div [class]="cx('headerActions')" [pBind]="ptm('headerActions')">
                                     <p-button
                                         [pt]="ptm('pcMaximizeButton')"
@@ -185,7 +185,7 @@ export class Dialog extends BaseComponent<DialogPassThrough> implements OnInit, 
      * Title text of the dialog.
      * @group Props
      */
-    @Input() header: string | undefined;
+    header = input<string | undefined>(undefined);
     /**
      * Enables dragging to change the position using header.
      * @group Props
@@ -414,6 +414,11 @@ export class Dialog extends BaseComponent<DialogPassThrough> implements OnInit, 
      */
     @Input() role: string = 'dialog';
     /**
+     * Identifier of the element that labels the dialog. Defaults to the id of the generated header title.
+     * @group Props
+     */
+    ariaLabelledBy = input<string | undefined>(undefined);
+    /**
      * Target element to attach the overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name).
      * @defaultValue 'self'
      * @group Props
@@ -558,7 +563,9 @@ export class Dialog extends BaseComponent<DialogPassThrough> implements OnInit, 
 
     dragging: boolean | undefined;
 
-    ariaLabelledBy: string | null = this.getAriaLabelledBy();
+    headerId = computed<string | null>(() => (this.header() !== null ? this.id + '_header' : null));
+
+    computedAriaLabelledBy = computed<string | null>(() => this.ariaLabelledBy() ?? this.headerId());
 
     documentDragListener: VoidListener;
 
@@ -688,10 +695,6 @@ export class Dialog extends BaseComponent<DialogPassThrough> implements OnInit, 
                     break;
             }
         });
-    }
-
-    getAriaLabelledBy() {
-        return this.header !== null ? uuid('pn_id_') + '_header' : null;
     }
 
     parseDurationToMilliseconds(durationString: string): number | undefined {

@@ -2,12 +2,11 @@ import { AppCode } from '@/components/doc/app.code';
 import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
 import { Code } from '@/domain/code';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'ngadd-doc',
     standalone: true,
-    imports: [AppDocSectionText, AppCode, RouterModule],
+    imports: [AppDocSectionText, AppCode],
     template: `
         <app-docsectiontext>
             <p>The recommended way to add Optimus UI to an Angular CLI workspace is a single command.</p>
@@ -21,8 +20,10 @@ import { RouterModule } from '@angular/router';
             <p>Pass the preset up front to skip the prompt, or skip the install step if you want to run it yourself:</p>
             <app-code [code]="flagsCode" [hideToggleCode]="true"></app-code>
             <p>
-                If the schematic cannot find a providers array to update it prints the three manual steps instead of guessing, so nothing in your workspace is rewritten unexpectedly. If it detects an existing <i>primeng</i> dependency it makes no
-                changes at all and points you at the <a [routerLink]="'/migration/primeng'" class="doc-link">migration guide</a>, which covers the <i>migrate-from-primeng</i> schematic.
+                If the schematic cannot find a providers array to update it prints the three manual steps instead of guessing, so nothing in your workspace is rewritten unexpectedly. If it detects an existing <i>primeng</i> dependency it changes
+                nothing and fails with an error rather than reporting success, and points you at the <a href="https://v1.optimus.openng.org/migration/primeng" target="_blank" rel="noopener noreferrer" class="doc-link">migration guide</a>, which
+                covers the <i>migrate-from-primeng</i> schematic. It does not run that schematic for you. The Angular CLI installs <i>&#64;openng/optimus-ui</i> before the schematic runs, so the dependency stays in your <i>package.json</i> — the
+                migration schematic needs it there.
             </p>
         </app-docsectiontext>
     `

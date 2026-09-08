@@ -90,17 +90,27 @@ const mockCountries = [
             <!-- Value template -->
             <ng-template #value let-value let-placeholder="placeholder">
                 <div class="custom-value" data-testid="template-value">
-                    <span *ngIf="value">{{ value.cname || value.name }} - Custom</span>
-                    <span *ngIf="!value">{{ placeholder }}</span>
+                    @if (value) {
+                        <span>{{ value.cname || value.name }} - Custom</span>
+                    }
+                    @if (!value) {
+                        <span>{{ placeholder }}</span>
+                    }
                 </div>
             </ng-template>
 
             <!-- Option template -->
             <ng-template #option let-option let-level="level">
                 <div class="custom-option" data-testid="template-option">
-                    <i class="pi pi-map-marker" *ngIf="level === 0"></i>
-                    <i class="pi pi-building" *ngIf="level === 1"></i>
-                    <i class="pi pi-home" *ngIf="level === 2"></i>
+                    @if (level === 0) {
+                        <i class="pi pi-map-marker"></i>
+                    }
+                    @if (level === 1) {
+                        <i class="pi pi-building"></i>
+                    }
+                    @if (level === 2) {
+                        <i class="pi pi-home"></i>
+                    }
                     <span>{{ option.name || option.cname }}</span>
                 </div>
             </ng-template>
@@ -142,9 +152,11 @@ const mockCountries = [
         </p-cascadeselect>
 
         <!-- Reactive Forms test -->
-        <form [formGroup]="reactiveForm" *ngIf="showReactiveForm">
-            <p-cascadeselect formControlName="selectedItems" [options]="formOptions" [optionLabel]="'cname'" [optionGroupLabel]="'name'" [optionGroupChildren]="['states', 'cities']" (onChange)="onFormChange($event)"> </p-cascadeselect>
-        </form>
+        @if (showReactiveForm) {
+            <form [formGroup]="reactiveForm">
+                <p-cascadeselect formControlName="selectedItems" [options]="formOptions" [optionLabel]="'cname'" [optionGroupLabel]="'name'" [optionGroupChildren]="['states', 'cities']" (onChange)="onFormChange($event)"> </p-cascadeselect>
+            </form>
+        }
     `
 })
 class TestCascadeSelectComponent {
@@ -292,17 +304,27 @@ class TestCascadeSelectComponent {
             <!-- Value template with pTemplate -->
             <ng-template pTemplate="value" let-value let-placeholder="placeholder">
                 <div class="ptemplate-value" [attr.data-testid]="'ptemplate-value'">
-                    <span class="value-text" *ngIf="value">{{ value.cname || value.name }} - pTemplate</span>
-                    <span class="placeholder-text" *ngIf="!value">{{ placeholder }} (pTemplate)</span>
+                    @if (value) {
+                        <span class="value-text">{{ value.cname || value.name }} - pTemplate</span>
+                    }
+                    @if (!value) {
+                        <span class="placeholder-text">{{ placeholder }} (pTemplate)</span>
+                    }
                 </div>
             </ng-template>
 
             <!-- Option template with pTemplate -->
             <ng-template pTemplate="option" let-option let-level="level">
                 <div class="ptemplate-option" [attr.data-testid]="'ptemplate-option'" [attr.data-level]="level">
-                    <i class="pi pi-flag" *ngIf="level === 0"></i>
-                    <i class="pi pi-map" *ngIf="level === 1"></i>
-                    <i class="pi pi-building" *ngIf="level === 2"></i>
+                    @if (level === 0) {
+                        <i class="pi pi-flag"></i>
+                    }
+                    @if (level === 1) {
+                        <i class="pi pi-map"></i>
+                    }
+                    @if (level === 2) {
+                        <i class="pi pi-building"></i>
+                    }
                     <span class="option-text">{{ option.name || option.cname }} (Level {{ level }})</span>
                 </div>
             </ng-template>
@@ -829,6 +851,26 @@ describe('CascadeSelect', () => {
             expect(hiddenInput.nativeElement.getAttribute('aria-expanded')).toBe('true');
         });
 
+        it('should label the option list with the listLabel ARIA translation', async () => {
+            testComponent.options = mockCountries;
+            testFixture.changeDetectorRef.markForCheck();
+            await testFixture.whenStable();
+            testFixture.detectChanges();
+
+            const trigger = testFixture.debugElement.query(By.css('.p-cascadeselect-dropdown'));
+            trigger.nativeElement.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            testFixture.changeDetectorRef.markForCheck();
+            testFixture.detectChanges();
+            await testFixture.whenStable();
+
+            const cascadeSelectInstance = testFixture.debugElement.query(By.directive(CascadeSelect)).componentInstance;
+            const list = testFixture.debugElement.query(By.css('ul[role="tree"]'));
+
+            expect(list).toBeTruthy();
+            expect(list.nativeElement.getAttribute('aria-label')).toBe(cascadeSelectInstance.listLabel);
+            expect(list.nativeElement.getAttribute('aria-label')).toBe('Option List');
+        });
+
         it('should support keyboard navigation', async () => {
             const hiddenInput = testFixture.debugElement.query(By.css('.p-hidden-accessible input'));
 
@@ -853,6 +895,32 @@ describe('CascadeSelect', () => {
             const ariaRequired = hiddenInput.nativeElement.getAttribute('aria-required');
             expect(ariaRequired === null || ariaRequired === 'false').toBe(true);
             expect(hiddenInput.nativeElement.getAttribute('aria-label')).toBeTruthy();
+        });
+
+        it('should render nested option lists with role="group"', async () => {
+            testComponent.options = mockCountries;
+            testFixture.changeDetectorRef.markForCheck();
+            await testFixture.whenStable();
+            testFixture.detectChanges();
+
+            const trigger = testFixture.debugElement.query(By.css('.p-cascadeselect-dropdown'));
+            trigger.nativeElement.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            testFixture.changeDetectorRef.markForCheck();
+            testFixture.detectChanges();
+            await testFixture.whenStable();
+
+            const rootList = testFixture.debugElement.query(By.css('ul[role="tree"]'));
+            expect(rootList).toBeTruthy();
+
+            const groupOption = testFixture.debugElement.query(By.css('li[role="treeitem"]'));
+            groupOption.nativeElement.querySelector('.p-cascadeselect-option-content').click();
+            testFixture.changeDetectorRef.markForCheck();
+            testFixture.detectChanges();
+            await testFixture.whenStable();
+
+            const nestedList = rootList.nativeElement.querySelector('ul');
+            expect(nestedList).toBeTruthy();
+            expect(nestedList.getAttribute('role')).toBe('group');
         });
     });
 

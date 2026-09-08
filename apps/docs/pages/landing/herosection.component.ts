@@ -1,5 +1,4 @@
 import { AppConfigService } from '@/service/appconfigservice';
-import { GITHUB_REPO_URL } from '@/utils/constants';
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -64,10 +63,24 @@ import { OverviewApp } from './samples/overviewapp.component';
                         <span>Get Started</span>
                         <i class="pi pi-arrow-right ms-4"></i>
                     </a>
-                    <a [href]="githubRepoUrl" target="_blank" rel="noopener noreferrer" class="linkbox">
-                        <span>Give a Star</span>
-                        <i class="pi pi-star-fill ms-4 text-yellow-500"></i>
+                    <a href="https://v1.optimus.openng.org/migration/primeng" target="_blank" rel="noopener noreferrer" class="linkbox">
+                        <span>Migrate from PrimeNG</span>
+                        <i class="pi pi-arrow-right-arrow-left ms-4"></i>
                     </a>
+                </div>
+                <div class="flex items-center gap-3 mt-6 bg-surface-100 dark:bg-surface-800 border border-black/10 dark:border-white/10 rounded-full py-2 pl-5 pr-2">
+                    <code class="font-mono text-sm text-surface-700 dark:text-surface-300">{{ installCommand }}</code>
+                    <p-button
+                        [icon]="commandCopied ? 'pi pi-check' : 'pi pi-copy'"
+                        (onClick)="copyInstallCommand()"
+                        [pTooltip]="commandCopied ? 'Copied!' : 'Copy to Clipboard'"
+                        tooltipPosition="bottom"
+                        aria-label="Copy install command"
+                        text
+                        rounded
+                        severity="secondary"
+                        styleClass="w-8 h-8"
+                    />
                 </div>
                 <div class="w-full flex lg:hidden items-center justify-center mt-16 mb-4">
                     <p-selectbutton [(ngModel)]="selectedSampleOption" [options]="sampleOptions" optionLabel="title" styleClass="dark:border dark:border-white/20">
@@ -370,7 +383,9 @@ import { OverviewApp } from './samples/overviewapp.component';
     `
 })
 export class HeroSectionComponent implements OnInit, OnDestroy {
-    readonly githubRepoUrl = GITHUB_REPO_URL;
+    readonly installCommand = 'ng add @openng/optimus-ui';
+
+    commandCopied: boolean = false;
 
     selectedSampleOption;
 
@@ -1017,6 +1032,22 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
 
     setSelectedSampleAppsSidebarNav(title) {
         this.selectedSampleAppsSidebarNav = title;
+    }
+
+    copyInstallCommand(): void {
+        if (!isPlatformBrowser(this.platformId) || !navigator?.clipboard?.writeText) {
+            return;
+        }
+
+        navigator.clipboard
+            .writeText(this.installCommand)
+            .then(() => {
+                this.commandCopied = true;
+                setTimeout(() => (this.commandCopied = false), 2000);
+            })
+            .catch(() => {
+                // Clipboard may be blocked (permissions/insecure context). Ignore to avoid unhandled rejections.
+            });
     }
 
     ngOnDestroy(): void {

@@ -72,23 +72,28 @@ const DRAWER_INSTANCE = new InjectionToken<Drawer>('DRAWER_INSTANCE');
                 } @else {
                     <div [pBind]="ptm('header')" [ngClass]="cx('header')" [attr.data-pc-section]="'header'">
                         <ng-container *ngTemplateOutlet="headerTemplate || _headerTemplate"></ng-container>
-                        <div *ngIf="header" [pBind]="ptm('title')" [class]="cx('title')">{{ header }}</div>
-                        <p-button
-                            *ngIf="showCloseIcon && closable"
-                            [pt]="ptm('pcCloseButton')"
-                            [ngClass]="cx('pcCloseButton')"
-                            (onClick)="close($event)"
-                            (keydown.enter)="close($event)"
-                            [buttonProps]="closeButtonProps"
-                            [ariaLabel]="ariaCloseLabel"
-                            [attr.data-pc-group-section]="'iconcontainer'"
-                            [unstyled]="unstyled()"
-                        >
-                            <ng-template #icon>
-                                <svg data-p-icon="times" *ngIf="!closeIconTemplate && !_closeIconTemplate" [attr.data-pc-section]="'closeicon'" />
-                                <ng-template *ngTemplateOutlet="closeIconTemplate || _closeIconTemplate"></ng-template>
-                            </ng-template>
-                        </p-button>
+                        @if (header) {
+                            <div [pBind]="ptm('title')" [class]="cx('title')">{{ header }}</div>
+                        }
+                        @if (showCloseIcon && closable) {
+                            <p-button
+                                [pt]="ptm('pcCloseButton')"
+                                [ngClass]="cx('pcCloseButton')"
+                                (onClick)="close($event)"
+                                (keydown.enter)="close($event)"
+                                [buttonProps]="closeButtonProps"
+                                [ariaLabel]="ariaCloseLabel"
+                                [attr.data-pc-group-section]="'iconcontainer'"
+                                [unstyled]="unstyled()"
+                            >
+                                <ng-template #icon>
+                                    @if (!closeIconTemplate && !_closeIconTemplate) {
+                                        <svg data-p-icon="times" [attr.data-pc-section]="'closeicon'" />
+                                    }
+                                    <ng-template *ngTemplateOutlet="closeIconTemplate || _closeIconTemplate"></ng-template>
+                                </ng-template>
+                            </p-button>
+                        }
                     </div>
 
                     <div [pBind]="ptm('content')" [ngClass]="cx('content')" [attr.data-pc-section]="'content'">
@@ -96,11 +101,11 @@ const DRAWER_INSTANCE = new InjectionToken<Drawer>('DRAWER_INSTANCE');
                         <ng-container *ngTemplateOutlet="contentTemplate || _contentTemplate"></ng-container>
                     </div>
 
-                    <ng-container *ngIf="footerTemplate || _footerTemplate">
+                    @if (footerTemplate || _footerTemplate) {
                         <div [pBind]="ptm('footer')" [ngClass]="cx('footer')" [attr.data-pc-section]="'footer'">
                             <ng-container *ngTemplateOutlet="footerTemplate || _footerTemplate"></ng-container>
                         </div>
-                    </ng-container>
+                    }
                 }
             </div>
         }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideOptimus } from '@openng/optimus-ui/config';
@@ -39,9 +39,11 @@ import { Listbox } from './listbox';
         ></p-listbox>
 
         <!-- Reactive Forms test -->
-        <form [formGroup]="reactiveForm" *ngIf="showReactiveForm">
-            <p-listbox formControlName="selectedItems" [options]="formOptions" [multiple]="true"> </p-listbox>
-        </form>
+        @if (showReactiveForm) {
+            <form [formGroup]="reactiveForm">
+                <p-listbox formControlName="selectedItems" [options]="formOptions" [multiple]="true"> </p-listbox>
+            </form>
+        }
     `
 })
 class TestListboxComponent {
@@ -1133,8 +1135,12 @@ describe('Listbox', () => {
             <!-- Checkmark template -->
             <ng-template pTemplate="checkmark" let-selected="selected">
                 <span class="custom-checkmark" data-testid="ptemplate-checkmark" [attr.data-selected]="selected">
-                    <i class="pi pi-check-circle" *ngIf="selected"></i>
-                    <i class="pi pi-circle" *ngIf="!selected"></i>
+                    @if (selected) {
+                        <i class="pi pi-check-circle"></i>
+                    }
+                    @if (!selected) {
+                        <i class="pi pi-circle"></i>
+                    }
                 </span>
             </ng-template>
 
@@ -1248,8 +1254,12 @@ class TestListboxPTemplateComponent {
             <!-- Checkmark template -->
             <ng-template #checkmark let-selected="selected">
                 <span class="custom-checkmark" data-testid="ref-checkmark" [attr.data-selected]="selected">
-                    <i class="pi pi-check-circle" *ngIf="selected"></i>
-                    <i class="pi pi-circle" *ngIf="!selected"></i>
+                    @if (selected) {
+                        <i class="pi pi-check-circle"></i>
+                    }
+                    @if (!selected) {
+                        <i class="pi pi-circle"></i>
+                    }
                 </span>
             </ng-template>
 
@@ -2813,3 +2823,41 @@ describe('Listbox ViewChild and Advanced Scenarios', () => {
         });
     });
 });
+
+describe('Listbox inside a parent form', () => {
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+    });
+
+    it('should not register its internal ngModels with the parent form', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const isolationFixture = TestBed.createComponent(TestFormIsolationListboxComponent);
+        isolationFixture.detectChanges();
+        await isolationFixture.whenStable();
+
+        const internalNgModels = isolationFixture.debugElement.queryAll(By.directive(NgModel)).map((debugElement) => debugElement.injector.get(NgModel));
+        expect(internalNgModels.length).toBeGreaterThan(0);
+        expect(internalNgModels.every((ngModel) => ngModel.options?.standalone === true)).toBe(true);
+
+        // NG01354 is only reported by Angular 22.1.3 and up
+        expect(warnSpy.mock.calls.flat().join('\n')).not.toContain('NG01354');
+        expect(Object.keys(isolationFixture.componentInstance.form.controls)).toEqual(['value']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: true,
+    imports: [Listbox, ReactiveFormsModule],
+    template: `
+        <form [formGroup]="form">
+            <p-listbox [options]="options" [multiple]="true" [checkbox]="true" [showToggleAll]="true" formControlName="value" />
+        </form>
+    `
+})
+class TestFormIsolationListboxComponent {
+    form = new FormGroup({ value: new FormControl<string[]>([]) });
+    options = ['A', 'B'];
+}

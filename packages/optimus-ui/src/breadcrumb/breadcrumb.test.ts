@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MenuItem } from '@openng/optimus-ui/api';
+import { Optimus } from '@openng/optimus-ui/config';
 import { BreadcrumbItemClickEvent } from '@openng/optimus-ui/types/breadcrumb';
 import { Breadcrumb } from './breadcrumb';
 
@@ -51,7 +52,9 @@ class TestStaticBreadcrumbComponent {
         <p-breadcrumb [model]="model" [home]="home">
             <ng-template #item let-item>
                 <div class="custom-item">
-                    <i [class]="item.icon" *ngIf="item.icon"></i>
+                    @if (item.icon) {
+                        <i [class]="item.icon"></i>
+                    }
                     <span class="custom-label">{{ item.label }}</span>
                 </div>
             </ng-template>
@@ -839,6 +842,59 @@ describe('Breadcrumb', () => {
             }
         });
 
+        it('should label the icon only home link with the default aria.home translation', async () => {
+            component.home = { icon: 'pi pi-home' };
+            component.homeAriaLabel = undefined;
+            fixture.changeDetectorRef.markForCheck();
+
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            const homeLink = fixture.debugElement.query(By.css('[data-pc-section="homeitem"] a'));
+            expect(homeLink.nativeElement.getAttribute('aria-label')).toBe('Home');
+        });
+
+        it('should label the icon only home link with the configured aria.home translation', async () => {
+            TestBed.inject(Optimus).setTranslation({ aria: { home: 'Startseite' } });
+            component.home = { icon: 'pi pi-home' };
+            component.homeAriaLabel = undefined;
+            fixture.changeDetectorRef.markForCheck();
+
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            const homeLink = fixture.debugElement.query(By.css('[data-pc-section="homeitem"] a'));
+            expect(homeLink.nativeElement.getAttribute('aria-label')).toBe('Startseite');
+        });
+
+        it('should prefer homeAriaLabel over the aria.home translation', async () => {
+            component.home = { icon: 'pi pi-home' };
+            component.homeAriaLabel = 'Go to homepage';
+            fixture.changeDetectorRef.markForCheck();
+
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            const homeLink = fixture.debugElement.query(By.css('[data-pc-section="homeitem"] a'));
+            expect(homeLink.nativeElement.getAttribute('aria-label')).toBe('Go to homepage');
+        });
+
+        it('should not override a visible home label with the aria.home translation', async () => {
+            component.home = { icon: 'pi pi-home', label: 'Dashboard' };
+            component.homeAriaLabel = undefined;
+            fixture.changeDetectorRef.markForCheck();
+
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            const homeLink = fixture.debugElement.query(By.css('[data-pc-section="homeitem"] a'));
+            expect(homeLink.nativeElement.hasAttribute('aria-label')).toBe(false);
+        });
+
         it('should handle tabindex for disabled items', async () => {
             component.model = [{ label: 'Disabled Item', disabled: true }];
             fixture.changeDetectorRef.markForCheck();
@@ -885,6 +941,79 @@ describe('Breadcrumb', () => {
 
             expect(breadcrumbInstance.home?.tooltipOptions?.tooltipLabel).toBe('Home tooltip');
             expect(breadcrumbInstance.model?.[0]?.tooltipOptions?.tooltipLabel).toBe('Item tooltip');
+        });
+
+        it('should mark the last item link with aria-current="page"', async () => {
+            component.home = undefined;
+            component.model = [
+                { label: 'Electronics', url: '/electronics' },
+                { label: 'Laptops', url: '/laptops' }
+            ];
+            fixture.changeDetectorRef.markForCheck();
+
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            const itemLinks = fixture.debugElement.queryAll(By.css('.p-breadcrumb-item-link'));
+
+            expect(itemLinks.length).toBe(2);
+            expect(itemLinks[0].nativeElement.hasAttribute('aria-current')).toBe(false);
+            expect(itemLinks[1].nativeElement.getAttribute('aria-current')).toBe('page');
+        });
+
+        it('should mark the last visible item link with aria-current="page" when trailing items are hidden', async () => {
+            component.home = undefined;
+            component.model = [
+                { label: 'Electronics', url: '/electronics' },
+                { label: 'Laptops', url: '/laptops' },
+                { label: 'Hidden', url: '/hidden', visible: false }
+            ];
+            fixture.changeDetectorRef.markForCheck();
+
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            const itemLinks = fixture.debugElement.queryAll(By.css('.p-breadcrumb-item-link'));
+
+            expect(itemLinks.length).toBe(2);
+            expect(itemLinks[0].nativeElement.hasAttribute('aria-current')).toBe(false);
+            expect(itemLinks[1].nativeElement.getAttribute('aria-current')).toBe('page');
+        });
+
+        it('should mark the last item link with aria-current="page" when items use routerLink', async () => {
+            const routerFixture = TestBed.createComponent(TestRouterBreadcrumbComponent);
+            routerFixture.detectChanges();
+
+            await router.navigate(['/products', 'category']);
+
+            await routerFixture.whenStable();
+
+            routerFixture.detectChanges();
+
+            const itemLinks = routerFixture.debugElement.queryAll(By.css('.p-breadcrumb-item-link'));
+            const lastLink = itemLinks[itemLinks.length - 1];
+
+            expect(lastLink.nativeElement.textContent.trim()).toBe('Category');
+            expect(lastLink.nativeElement.getAttribute('aria-current')).toBe('page');
+        });
+
+        it('should not mark a routerLink item as current while it is not the active route', async () => {
+            const routerFixture = TestBed.createComponent(TestRouterBreadcrumbComponent);
+            routerFixture.detectChanges();
+
+            await router.navigate(['/products']);
+
+            await routerFixture.whenStable();
+
+            routerFixture.detectChanges();
+
+            const itemLinks = routerFixture.debugElement.queryAll(By.css('.p-breadcrumb-item-link'));
+            const lastLink = itemLinks[itemLinks.length - 1];
+
+            expect(lastLink.nativeElement.textContent.trim()).toBe('Category');
+            expect(lastLink.nativeElement.hasAttribute('aria-current')).toBe(false);
         });
     });
 

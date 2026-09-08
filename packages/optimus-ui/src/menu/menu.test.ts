@@ -160,7 +160,9 @@ class TestSubmenuMenuComponent {
         <p-menu [model]="model">
             <ng-template #item let-item>
                 <div class="custom-menu-item">
-                    <i [class]="item.icon" *ngIf="item.icon"></i>
+                    @if (item.icon) {
+                        <i [class]="item.icon"></i>
+                    }
                     <span class="custom-label">{{ item.label }}</span>
                 </div>
             </ng-template>
@@ -558,6 +560,33 @@ describe('Menu', () => {
             expect(submenuInstance.model.length).toBe(2); // File and Edit groups
             expect(submenuInstance.model[0].items.length).toBe(2); // File has 2 items
             expect(submenuInstance.model[1].items.length).toBe(2); // Edit has 2 items
+        });
+
+        it('should not render submenu header when visible is false', async () => {
+            const submenuFixture = TestBed.createComponent(TestSubmenuMenuComponent);
+            submenuFixture.componentInstance.submenuModel = [
+                { label: 'Should be invisible', visible: false, items: [] },
+                { label: 'Visible', items: [] }
+            ];
+            submenuFixture.detectChanges();
+            await submenuFixture.whenStable();
+
+            const submenuHeaders = submenuFixture.debugElement.queryAll(By.css('li[data-pc-section="submenulabel"]'));
+            expect(submenuHeaders.length).toBe(1);
+            expect(submenuHeaders[0].nativeElement.textContent.trim()).toBe('Visible');
+        });
+
+        it('should not render submenu separator when visible is false', async () => {
+            const submenuFixture = TestBed.createComponent(TestSubmenuMenuComponent);
+            submenuFixture.componentInstance.submenuModel = [
+                { separator: true, visible: false },
+                { label: 'Visible', items: [] }
+            ];
+            submenuFixture.detectChanges();
+            await submenuFixture.whenStable();
+
+            const separators = submenuFixture.debugElement.queryAll(By.css('li[data-pc-section="separator"]'));
+            expect(separators.length).toBe(0);
         });
     });
 

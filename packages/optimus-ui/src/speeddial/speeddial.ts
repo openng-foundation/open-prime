@@ -44,7 +44,7 @@ const SPEED_DIAL_INSTANCE = new InjectionToken<SpeedDial>('SPEED_DIAL_INSTANCE')
     imports: [ButtonModule, Ripple, TooltipModule, RouterModule, PlusIcon, SharedModule, Bind, NgFor, NgIf, NgStyle, NgTemplateOutlet],
     template: `
         <div #container [pBind]="ptm('root')" [class]="cn(cx('root'), className)" [style]="style" [ngStyle]="sx('root')">
-            <ng-container *ngIf="!buttonTemplate && !_buttonTemplate">
+            @if (!buttonTemplate && !_buttonTemplate) {
                 <button
                     type="button"
                     pButton
@@ -64,13 +64,15 @@ const SPEED_DIAL_INSTANCE = new InjectionToken<SpeedDial>('SPEED_DIAL_INSTANCE')
                     [pt]="ptm('pcButton')"
                     [unstyled]="unstyled()"
                 >
-                    <svg data-p-icon="plus" pButtonIcon [pt]="ptm('pcButton')['icon']" *ngIf="!buttonIconClass && !iconTemplate && !_iconTemplate" />
+                    @if (!buttonIconClass && !iconTemplate && !_iconTemplate) {
+                        <svg data-p-icon="plus" pButtonIcon [pt]="ptm('pcButton')['icon']" />
+                    }
                     <ng-container *ngTemplateOutlet="iconTemplate || _iconTemplate"></ng-container>
                 </button>
-            </ng-container>
-            <ng-container *ngIf="buttonTemplate || _buttonTemplate">
+            }
+            @if (buttonTemplate || _buttonTemplate) {
                 <ng-container *ngTemplateOutlet="buttonTemplate || _buttonTemplate; context: { toggleCallback: onButtonClick.bind(this) }"></ng-container>
-            </ng-container>
+            }
             <ul
                 #list
                 [pBind]="ptm('list')"
@@ -84,47 +86,52 @@ const SPEED_DIAL_INSTANCE = new InjectionToken<SpeedDial>('SPEED_DIAL_INSTANCE')
                 [tabindex]="-1"
                 [ngStyle]="sx('list')"
             >
-                <li
-                    *ngFor="let item of model; let i = index"
-                    [pBind]="getPTOptions(id + '_' + i, 'item')"
-                    [ngStyle]="getItemStyle(i)"
-                    [class]="cx('item', { item, i })"
-                    pTooltip
-                    [pTooltipUnstyled]="unstyled()"
-                    [tooltipOptions]="item.tooltipOptions || getTooltipOptions(item)"
-                    [id]="id + '_' + i"
-                    [attr.aria-controls]="id + '_item'"
-                    role="menuitem"
-                    [attr.data-p-active]="isItemActive(id + '_' + i)"
-                >
-                    <ng-container *ngIf="itemTemplate || _itemTemplate">
-                        <ng-container *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: item, index: i, toggleCallback: onItemClick.bind(this) }"></ng-container>
-                    </ng-container>
-                    <ng-container *ngIf="!itemTemplate && !_itemTemplate">
-                        <button
-                            type="button"
-                            pButton
-                            pRipple
-                            [class]="cx('pcAction')"
-                            severity="secondary"
-                            [rounded]="true"
-                            size="small"
-                            role="menuitem"
-                            (click)="onItemClick($event, item)"
-                            [disabled]="item?.disabled"
-                            (keydown.enter)="onItemClick($event, item)"
-                            [attr.aria-label]="item.label"
-                            [attr.tabindex]="item.disabled || !visible ? null : item.tabindex ? item.tabindex : '0'"
-                            [pt]="getPTOptions(id + '_' + i, 'pcAction')"
-                            [unstyled]="unstyled()"
-                        >
-                            <span *ngIf="item.icon" pButtonIcon [pt]="getPTOptions(id + '_' + i, 'actionIcon')" [class]="item.icon"></span>
-                        </button>
-                    </ng-container>
-                </li>
+                @for (item of model; track item; let i = $index) {
+                    <li
+                        [pBind]="getPTOptions(id + '_' + i, 'item')"
+                        [ngStyle]="getItemStyle(i)"
+                        [class]="cx('item', { item, i })"
+                        pTooltip
+                        [pTooltipUnstyled]="unstyled()"
+                        [tooltipOptions]="item.tooltipOptions || getTooltipOptions(item)"
+                        [id]="id + '_' + i"
+                        [attr.aria-controls]="id + '_item'"
+                        role="menuitem"
+                        [attr.data-p-active]="isItemActive(id + '_' + i)"
+                    >
+                        @if (itemTemplate || _itemTemplate) {
+                            <ng-container *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: item, index: i, toggleCallback: onItemClick.bind(this) }"></ng-container>
+                        }
+                        @if (!itemTemplate && !_itemTemplate) {
+                            <button
+                                type="button"
+                                pButton
+                                pRipple
+                                [class]="cx('pcAction')"
+                                severity="secondary"
+                                [rounded]="true"
+                                size="small"
+                                role="menuitem"
+                                (click)="onItemClick($event, item)"
+                                [disabled]="item?.disabled"
+                                (keydown.enter)="onItemClick($event, item)"
+                                [attr.aria-label]="item.label"
+                                [attr.tabindex]="item.disabled || !visible ? null : item.tabindex ? item.tabindex : '0'"
+                                [pt]="getPTOptions(id + '_' + i, 'pcAction')"
+                                [unstyled]="unstyled()"
+                            >
+                                @if (item.icon) {
+                                    <span pButtonIcon [pt]="getPTOptions(id + '_' + i, 'actionIcon')" [class]="item.icon"></span>
+                                }
+                            </button>
+                        }
+                    </li>
+                }
             </ul>
         </div>
-        <div *ngIf="mask && visible" [pBind]="ptm('mask')" [class]="cn(cx('mask'), maskClassName)" [ngStyle]="maskStyle" animate.enter="p-overlay-mask-enter-active" animate.leave="p-overlay-mask-leave-active"></div>
+        @if (mask && visible) {
+            <div [pBind]="ptm('mask')" [class]="cn(cx('mask'), maskClassName)" [ngStyle]="maskStyle" animate.enter="p-overlay-mask-enter-active" animate.leave="p-overlay-mask-leave-active"></div>
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,

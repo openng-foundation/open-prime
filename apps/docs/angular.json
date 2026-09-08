@@ -48,9 +48,6 @@
                         ],
                         "allowedCommonJsDependencies": [
                             "chart.js",
-                            "jspdf-autotable",
-                            "file-saver",
-                            "jspdf",
                             "quill",
                             "quill-delta",
                             "core-js",

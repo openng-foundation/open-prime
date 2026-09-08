@@ -136,10 +136,11 @@ export interface AutoCompleteDropdownClickEvent {
 }
 /**
  * Custom select event.
+ * @template T Type of the suggestion.
  * @see {@link AutoComplete.onSelect}
  * @group Events
  */
-export interface AutoCompleteSelectEvent {
+export interface AutoCompleteSelectEvent<T = any> {
     /**
      * Browser event.
      */
@@ -147,14 +148,16 @@ export interface AutoCompleteSelectEvent {
     /**
      * Selected value.
      */
-    value: any;
+    value: T;
 }
 /**
  * Custom unselect event.
+ * @template T Type of the removed value. Note that when `optionValue` is defined the removed value is the
+ * resolved option value rather than the suggestion itself, so the type argument should be set accordingly.
  * @see {@link AutoComplete.onUnSelect}
  * @group Events
  */
-export interface AutoCompleteUnselectEvent {
+export interface AutoCompleteUnselectEvent<T = any> {
     /**
      * Browser event.
      */
@@ -162,14 +165,16 @@ export interface AutoCompleteUnselectEvent {
     /**
      * Removed value.
      */
-    value: any;
+    value: T;
 }
 /**
  * Custom add event.
+ * @template T Type of the added value. Values added through the `addOnBlur`, `addOnTab` or `separator`
+ * features are free text, hence the `string` default.
  * @see {@link AutoComplete.onAdd}
  * @group Events
  */
-export interface AutoCompleteAddEvent {
+export interface AutoCompleteAddEvent<T = string> {
     /**
      * Browser event.
      */
@@ -177,7 +182,7 @@ export interface AutoCompleteAddEvent {
     /**
      * Added value.
      */
-    value: any;
+    value: T;
 }
 /**
  * Custom lazy load event.

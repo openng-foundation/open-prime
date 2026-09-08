@@ -20,6 +20,13 @@ const presets = {
     Nora
 };
 
+export type ColorPalette = Record<string, string>;
+
+export interface PrimaryColor {
+    name: string;
+    palette: ColorPalette;
+}
+
 @Component({
     selector: 'app-configurator',
     standalone: true,
@@ -272,10 +279,10 @@ export class AppConfiguratorComponent {
 
     selectedPreset = computed(() => this.configService.appState().preset);
 
-    primaryColors = computed(() => {
+    primaryColors = computed<PrimaryColor[]>(() => {
         const presetPalette = presets[this.configService.appState().preset].primitive;
-        const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
-        const palettes = [{ name: 'noir', palette: {} }];
+        const colors: string[] = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
+        const palettes: PrimaryColor[] = [{ name: 'noir', palette: {} }];
 
         colors.forEach((color) => {
             palettes.push({

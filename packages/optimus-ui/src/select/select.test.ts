@@ -3223,7 +3223,7 @@ describe('Select PT (PassThrough)', () => {
     @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         standalone: true,
-        imports: [CommonModule, FormsModule, Select],
+        imports: [FormsModule, Select],
         template: `
             <p-select
                 [options]="options"

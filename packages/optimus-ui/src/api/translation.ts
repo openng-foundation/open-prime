@@ -92,6 +92,7 @@ export interface Aria {
     previous?: string;
     next?: string;
     navigation?: string;
+    home?: string;
     scrollTop?: string;
     moveTop?: string;
     moveUp?: string;

@@ -15,7 +15,6 @@ const css = /*css*/ `
     position: absolute;
     top: 0;
     left: 0;
-    min-height: 100%;
     min-width: 100%;
     will-change: transform;
 }
@@ -54,6 +53,7 @@ const css = /*css*/ `
 
 .p-virtualscroller-horizontal > .p-virtualscroller-content {
     display: flex;
+    min-height: 100%;
 }
 
 .p-virtualscroller-inline .p-virtualscroller-content {

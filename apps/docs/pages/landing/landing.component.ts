@@ -10,13 +10,14 @@ import { Subscription } from 'rxjs';
 import { FeaturesSectionComponent } from './featuressection.component';
 import { FooterSectionComponent } from './footersection.component';
 import { HeroSectionComponent } from './herosection.component';
+import { TemplateSectionComponent } from './templatesection.component';
 import { ThemeSectionComponent } from './themesection.component';
 
 @Component({
     selector: 'landing',
     standalone: true,
     templateUrl: './landing.component.html',
-    imports: [CommonModule, AppTopBarComponent, AppMenuComponent, ButtonModule, HeroSectionComponent, FeaturesSectionComponent, ThemeSectionComponent, FooterSectionComponent]
+    imports: [CommonModule, AppTopBarComponent, AppMenuComponent, ButtonModule, HeroSectionComponent, FeaturesSectionComponent, ThemeSectionComponent, TemplateSectionComponent, FooterSectionComponent]
 })
 export class LandingComponent implements OnInit {
     subscription!: Subscription;

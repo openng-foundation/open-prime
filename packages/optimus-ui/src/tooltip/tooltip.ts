@@ -198,6 +198,8 @@ export class Tooltip extends BaseComponent<TooltipPassThroughOptions> {
 
     interactionInProgress = false;
 
+    pointerInside = false;
+
     /**
      * Used to pass attributes to DOM elements inside the Tooltip component.
      * @defaultValue undefined
@@ -375,12 +377,24 @@ export class Tooltip extends BaseComponent<TooltipPassThroughOptions> {
     }
 
     onMouseEnter(e: Event) {
+        // Chrome re-dispatches mouseenter on the host when the element the pointer sits on is
+        // detached (e.g. an overlay rendered inside the host closing on click), without the
+        // pointer ever leaving. An enter without a preceding leave is not a new hover, so
+        // ignore it - otherwise a tooltip dismissed by that very click comes straight back.
+        if (this.pointerInside) {
+            return;
+        }
+
+        this.pointerInside = true;
+
         if (!this.container && !this.showTimeout) {
             this.activate();
         }
     }
 
     onMouseLeave(e: MouseEvent) {
+        this.pointerInside = false;
+
         if (!this.isAutoHide()) {
             const valid = hasClass(e.relatedTarget as any, 'p-tooltip') || hasClass(e.relatedTarget as any, 'p-tooltip-text') || hasClass(e.relatedTarget as any, 'p-tooltip-arrow');
             !valid && this.deactivate();
@@ -588,7 +602,7 @@ export class Tooltip extends BaseComponent<TooltipPassThroughOptions> {
             embeddedViewRef.detectChanges();
             embeddedViewRef.rootNodes.forEach((node) => this.tooltipText.appendChild(node));
         } else if (this.getOption('escape')) {
-            this.tooltipText.innerHTML = '';
+            this.tooltipText.textContent = '';
             this.tooltipText.appendChild(document.createTextNode(content));
         } else {
             this.tooltipText.innerHTML = content;
@@ -769,6 +783,8 @@ export class Tooltip extends BaseComponent<TooltipPassThroughOptions> {
 
     unbindEvents() {
         const tooltipEvent = this.getOption('tooltipEvent');
+
+        this.pointerInside = false;
 
         if (tooltipEvent === 'hover' || tooltipEvent === 'both') {
             this.el.nativeElement.removeEventListener('mouseenter', this.mouseEnterListener);

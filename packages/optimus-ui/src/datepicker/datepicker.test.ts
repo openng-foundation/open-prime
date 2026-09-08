@@ -159,8 +159,12 @@ class TestReactiveFormDatePickerComponent {
             <ng-template pTemplate="date" let-date="date">
                 <div class="custom-date" data-testid="date-template">
                     <span class="day">{{ date.day }}</span>
-                    <span class="month" *ngIf="date.month">{{ date.month }}</span>
-                    <span class="year" *ngIf="date.year">{{ date.year }}</span>
+                    @if (date.month) {
+                        <span class="month">{{ date.month }}</span>
+                    }
+                    @if (date.year) {
+                        <span class="year">{{ date.year }}</span>
+                    }
                 </div>
             </ng-template>
 
@@ -251,8 +255,12 @@ class TestPTemplatesDatePickerComponent {
             <ng-template #date let-date="date">
                 <div class="custom-date-ref" data-testid="date-ref-template">
                     <span class="day">{{ date?.day }}</span>
-                    <span class="month" *ngIf="date?.month">{{ date?.month }}</span>
-                    <span class="year" *ngIf="date?.year">{{ date?.year }}</span>
+                    @if (date?.month) {
+                        <span class="month">{{ date?.month }}</span>
+                    }
+                    @if (date?.year) {
+                        <span class="year">{{ date?.year }}</span>
+                    }
                 </div>
             </ng-template>
 
@@ -425,6 +433,25 @@ describe('DatePicker', () => {
             expect(inputElement.nativeElement.getAttribute('placeholder')).toBe('Select a date');
         });
 
+        it('should render popup calendar cells only after the overlay is opened', async () => {
+            const dayClassSpy = vi.spyOn(DatePicker.prototype, 'dayClass');
+            const lazyFixture = TestBed.createComponent(TestDatePickerComponent);
+
+            await lazyFixture.whenStable();
+
+            expect(dayClassSpy).not.toHaveBeenCalled();
+            expect(lazyFixture.debugElement.query(By.css('p-motion'))).toBeNull();
+
+            lazyFixture.debugElement.query(By.css('input')).nativeElement.click();
+            lazyFixture.changeDetectorRef.markForCheck();
+            await lazyFixture.whenStable();
+
+            expect(dayClassSpy).toHaveBeenCalled();
+            expect(lazyFixture.debugElement.query(By.css('p-motion'))).toBeTruthy();
+
+            lazyFixture.destroy();
+        });
+
         it('should open calendar on input click', async () => {
             const inputElement = testFixture.debugElement.query(By.css('input'));
             const datePickerComponent = testFixture.debugElement.query(By.css('p-datepicker')).componentInstance;
@@ -434,6 +461,21 @@ describe('DatePicker', () => {
             await testFixture.whenStable();
 
             expect(datePickerComponent.overlayVisible).toBe(true);
+        });
+
+        it('should keep popup motion mounted until overlay cleanup finishes', async () => {
+            const datePickerComponent = testFixture.debugElement.query(By.css('p-datepicker')).componentInstance as DatePicker;
+            datePickerComponent.overlay = document.createElement('div');
+            datePickerComponent.cd.markForCheck();
+            await testFixture.whenStable();
+
+            expect(testFixture.debugElement.query(By.css('p-motion'))).toBeTruthy();
+
+            datePickerComponent.onOverlayHide();
+            datePickerComponent.cd.markForCheck();
+            await testFixture.whenStable();
+
+            expect(testFixture.debugElement.query(By.css('p-motion'))).toBeNull();
         });
 
         it('should handle date selection', async () => {
@@ -620,6 +662,7 @@ describe('DatePicker', () => {
 
             const datePickerComponent = testFixture.debugElement.query(By.css('p-datepicker')).componentInstance;
             expect(datePickerComponent.inline).toBe(true);
+            expect(testFixture.debugElement.query(By.css('p-motion'))).toBeTruthy();
         });
     });
 

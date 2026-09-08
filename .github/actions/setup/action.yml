@@ -1,0 +1,46 @@
+name: Setup
+description: Install pnpm, Node.js and the workspace dependencies.
+
+inputs:
+    node-version:
+        description: Node.js version to install.
+        default: 24.x
+
+runs:
+    using: composite
+
+    steps:
+        - uses: pnpm/action-setup@v6
+          with:
+              run_install: false
+
+        - name: Use Node.js ${{ inputs.node-version }}
+          uses: actions/setup-node@v7
+          with:
+              node-version: ${{ inputs.node-version }}
+
+        # Deliberately not setup-node's `cache: pnpm`: for pnpm it restores on an exact
+        # lockfile-hash match only (it passes restore-keys just for yarn berry), so every
+        # lockfile change starts from a completely empty store. Caching the store here adds
+        # the prefix fallback, which keeps the packages the change did not touch.
+        - name: Locate pnpm store
+          id: pnpm-store
+          shell: bash
+          run: |
+              # Assign first: inside echo the command substitution's exit status would be
+              # masked, and an empty path makes the cache step fail with a vague error.
+              store_path="$(pnpm store path --silent)"
+              echo "path=$store_path" >> "$GITHUB_OUTPUT"
+
+        - name: Cache pnpm store
+          uses: actions/cache@v6
+          with:
+              path: ${{ steps.pnpm-store.outputs.path }}
+              key: pnpm-store-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
+              restore-keys: |
+                  pnpm-store-${{ runner.os }}-${{ runner.arch }}-
+
+        - name: Install packages
+          shell: bash
+          run: |
+              pnpm install --frozen-lockfile

@@ -49,6 +49,12 @@ fs.writeJsonSync(path.join(schematicsDir, 'utils/versions.json'), versions, { sp
 fs.removeSync(outDir);
 execSync('npx tsc -p tsconfig.json', { cwd: schematicsDir, stdio: 'inherit' });
 
+// ng-packagr writes `"type": "module"` into the published package.json, but tsc compiles the
+// schematics to CommonJS, so Node would load them as ES modules and crash ("exports is not
+// defined in ES module scope"). Ship a nested package.json that re-scopes everything under
+// dist/schematics back to CommonJS — the same layout @angular/cdk publishes.
+fs.writeJsonSync(path.join(outDir, 'package.json'), { type: 'commonjs' }, { spaces: 4 });
+
 fs.copySync(path.join(schematicsDir, 'collection.json'), path.join(outDir, 'collection.json'));
 fs.copySync(path.join(schematicsDir, 'migrations.json'), path.join(outDir, 'migrations.json'));
 fs.copySync(path.join(schematicsDir, 'utils/versions.json'), path.join(outDir, 'utils/versions.json'));

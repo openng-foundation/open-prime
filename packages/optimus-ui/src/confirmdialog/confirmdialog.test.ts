@@ -791,6 +791,86 @@ describe('ConfirmDialog', () => {
         });
     });
 
+    describe('Confirmation State Isolation', () => {
+        let confirmationService: ConfirmationService;
+
+        const showConfirmation = async (confirmation: any) => {
+            confirmationService.confirm(confirmation);
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+        };
+
+        const closeConfirmation = async () => {
+            confirmDialogInstance.close();
+            confirmDialogInstance.onDialogHide();
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+        };
+
+        beforeEach(() => {
+            confirmationService = TestBed.inject(ConfirmationService);
+        });
+
+        it('should not reuse acceptButtonProps from a previous confirmation', async () => {
+            await showConfirmation({ message: 'Do you want to delete this record?', acceptButtonProps: { severity: 'danger' } });
+
+            expect(confirmDialogInstance.getAcceptButtonProps()).toEqual({ severity: 'danger' });
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Something else' });
+
+            expect(confirmDialogInstance.getAcceptButtonProps()).toBeUndefined();
+        });
+
+        it('should not reuse rejectButtonProps from a previous confirmation', async () => {
+            await showConfirmation({ message: 'Do you want to delete this record?', rejectButtonProps: { severity: 'secondary', outlined: true } });
+
+            expect(confirmDialogInstance.getRejectButtonProps()).toEqual({ severity: 'secondary', outlined: true });
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Something else' });
+
+            expect(confirmDialogInstance.getRejectButtonProps()).toBeUndefined();
+        });
+
+        it('should restore the closable input default after a confirmation that disabled it', async () => {
+            await showConfirmation({ message: 'First', closable: false });
+
+            expect(confirmDialogInstance.option('closable')).toBe(false);
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Second' });
+
+            expect(confirmDialogInstance.option('closable')).toBe(true);
+        });
+
+        it('should restore the position input default after a confirmation that changed it', async () => {
+            await showConfirmation({ message: 'First', position: 'top' });
+
+            expect(confirmDialogInstance.option('position')).toBe('top');
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Second' });
+
+            expect(confirmDialogInstance.option('position')).toBe('center');
+        });
+
+        it('should not copy confirmation keys onto the component instance', async () => {
+            await showConfirmation({ message: 'First', closable: false, acceptButtonProps: { severity: 'danger' } });
+
+            expect(confirmDialogInstance.closable).toBe(true);
+            expect((confirmDialogInstance as any).acceptButtonProps).toBeUndefined();
+        });
+
+        it('should read a sub-key of a confirmation option', async () => {
+            await showConfirmation({ message: 'First', acceptButtonProps: { ariaLabel: 'Confirm deletion' } });
+
+            expect(confirmDialogInstance.option('acceptButtonProps', 'ariaLabel')).toBe('Confirm deletion');
+        });
+    });
+
     describe('ConfirmationService Integration', () => {
         it('should work with ConfirmationService', async () => {
             const serviceFixture = TestBed.createComponent(TestConfirmationServiceComponent);

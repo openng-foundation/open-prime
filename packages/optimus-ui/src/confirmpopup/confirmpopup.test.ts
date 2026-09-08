@@ -769,6 +769,70 @@ describe('ConfirmPopup', () => {
         });
     });
 
+    describe('Confirmation State Isolation', () => {
+        const showConfirmation = async (confirmation: any) => {
+            confirmationService.confirm(confirmation);
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+            await fixture.whenStable();
+        };
+
+        const closeConfirmation = async () => {
+            confirmPopupInstance.hide();
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+            await fixture.whenStable();
+        };
+
+        it('should not reuse acceptButtonProps from a previous confirmation', async () => {
+            await showConfirmation({ message: 'Do you want to delete this record?', acceptButtonProps: { severity: 'danger' } });
+
+            expect(confirmPopupInstance.getAcceptButtonProps()).toEqual({ severity: 'danger' });
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Something else' });
+
+            expect(confirmPopupInstance.getAcceptButtonProps()).toBeUndefined();
+        });
+
+        it('should not reuse rejectButtonProps from a previous confirmation', async () => {
+            await showConfirmation({ message: 'Do you want to delete this record?', rejectButtonProps: { severity: 'secondary', outlined: true } });
+
+            expect(confirmPopupInstance.getRejectButtonProps()).toEqual({ severity: 'secondary', outlined: true });
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Something else' });
+
+            expect(confirmPopupInstance.getRejectButtonProps()).toBeUndefined();
+        });
+
+        it('should not copy confirmation keys onto the component instance', async () => {
+            await showConfirmation({ message: 'First', defaultFocus: 'reject', acceptButtonProps: { severity: 'danger' } });
+
+            expect(confirmPopupInstance.defaultFocus).toBe('accept');
+            expect((confirmPopupInstance as any).acceptButtonProps).toBeUndefined();
+        });
+
+        it('should resolve defaultFocus from the confirmation and fall back to the input', async () => {
+            await showConfirmation({ message: 'First', defaultFocus: 'reject' });
+
+            expect(confirmPopupInstance.option('defaultFocus')).toBe('reject');
+
+            await closeConfirmation();
+            await showConfirmation({ message: 'Second' });
+
+            expect(confirmPopupInstance.option('defaultFocus')).toBe('accept');
+        });
+
+        it('should read a sub-key of a confirmation option', async () => {
+            await showConfirmation({ message: 'First', acceptButtonProps: { ariaLabel: 'Confirm deletion' } });
+
+            expect(confirmPopupInstance.option('acceptButtonProps', 'ariaLabel')).toBe('Confirm deletion');
+        });
+    });
+
     describe('Position and Alignment', () => {
         it('should align popup to target element', async () => {
             const positionFixture = TestBed.createComponent(TestPositionConfirmPopupComponent);

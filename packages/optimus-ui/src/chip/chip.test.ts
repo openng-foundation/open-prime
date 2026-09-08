@@ -7,6 +7,9 @@ import { SharedModule } from '@openng/optimus-ui/api';
 import { ChipProps } from '@openng/optimus-ui/types/chip';
 import { Chip, ChipModule } from './chip';
 
+const TEST_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const TEST_IMAGE_2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false,
@@ -43,7 +46,7 @@ class TestIconChipComponent {
     template: `<p-chip [image]="image" [alt]="alt" [label]="label" (onImageError)="onImageError($event)"></p-chip>`
 })
 class TestImageChipComponent {
-    image = '/path/to/image.jpg';
+    image = TEST_IMAGE;
     alt = 'User Avatar';
     label = 'Image Chip';
     imageError: Event | null = null as any;
@@ -154,7 +157,9 @@ class TestChipPropsComponent {
     selector: 'test-dynamic-chip',
     template: `
         <p-chip [label]="label" [icon]="icon" [image]="image" [alt]="alt" [removable]="removable" [removeIcon]="removeIcon" [styleClass]="styleClass" [chipProps]="chipProps" (onRemove)="onRemove($event)" (onImageError)="onImageError($event)">
-            <div class="dynamic-content" *ngIf="showContent">{{ content }}</div>
+            @if (showContent) {
+                <div class="dynamic-content">{{ content }}</div>
+            }
         </p-chip>
     `
 })
@@ -375,7 +380,7 @@ describe('Chip', () => {
         it('should display image', async () => {
             const imageElement = fixture.debugElement.query(By.css('.p-chip-image'));
             expect(imageElement).toBeTruthy();
-            expect(imageElement.nativeElement.src).toContain('/path/to/image.jpg');
+            expect(imageElement.nativeElement.src).toBe(component.image);
         });
 
         it('should set alt attribute', async () => {
@@ -384,12 +389,12 @@ describe('Chip', () => {
         });
 
         it('should update image src dynamically', async () => {
-            component.image = '/new/path/image.png';
+            component.image = TEST_IMAGE_2;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
             const imageElement = fixture.debugElement.query(By.css('.p-chip-image'));
-            expect(imageElement.nativeElement.src).toContain('/new/path/image.png');
+            expect(imageElement.nativeElement.src).toBe(TEST_IMAGE_2);
         });
 
         it('should handle image error event', async () => {
@@ -431,7 +436,7 @@ describe('Chip', () => {
         });
 
         it('should display image instead of icon when both are present', async () => {
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
@@ -745,7 +750,7 @@ describe('Chip', () => {
             expect(fixture.debugElement.query(By.css('.p-chip-image'))).toBeFalsy();
 
             // Switch to image
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
@@ -1100,7 +1105,7 @@ describe('Chip', () => {
 
             it('should apply string class to image section', async () => {
                 fixture.componentRef.setInput('label', undefined);
-                fixture.componentRef.setInput('image', '/path/to/image.jpg');
+                fixture.componentRef.setInput('image', TEST_IMAGE);
                 await fixture.whenStable();
 
                 fixture.componentRef.setInput('pt', { image: 'IMAGE_CLASS' });
@@ -1332,7 +1337,7 @@ describe('Chip', () => {
 
             it('should access onImageError emitter through instance in pt', async () => {
                 let emitterAccessed = false;
-                fixture.componentRef.setInput('image', '/path/to/image.jpg');
+                fixture.componentRef.setInput('image', TEST_IMAGE);
                 await fixture.whenStable();
 
                 fixture.componentRef.setInput('pt', {

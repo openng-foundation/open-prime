@@ -63,7 +63,7 @@ const TOAST_INSTANCE = new InjectionToken<Toast>('TOAST_INSTANCE');
                 <ng-container *ngTemplateOutlet="headlessTemplate; context: { $implicit: message, closeFn: onCloseIconClick }"></ng-container>
             } @else {
                 <div [pBind]="ptm('messageContent')" [class]="cn(cx('messageContent'), message?.contentStyleClass)">
-                    <ng-container *ngIf="!template">
+                    @if (!template) {
                         @if (message.icon) {
                             <span [pBind]="ptm('messageIcon')" [class]="cn(cx('messageIcon'), message?.icon)"></span>
                         } @else {
@@ -91,7 +91,7 @@ const TOAST_INSTANCE = new InjectionToken<Toast>('TOAST_INSTANCE');
                             </div>
                             <div [pBind]="ptm('detail')" [ngClass]="cx('detail')" [attr.data-p]="dataP">{{ message.detail }}</div>
                         </div>
-                    </ng-container>
+                    }
                     <ng-container *ngTemplateOutlet="template; context: { $implicit: message }"></ng-container>
                     @if (message?.closable !== false) {
                         <div>
@@ -106,7 +106,9 @@ const TOAST_INSTANCE = new InjectionToken<Toast>('TOAST_INSTANCE');
                                 [attr.data-p]="dataP"
                             >
                                 @if (message.closeIcon) {
-                                    <span [pBind]="ptm('closeIcon')" *ngIf="message.closeIcon" [class]="cn(cx('closeIcon'), message?.closeIcon)"></span>
+                                    @if (message.closeIcon) {
+                                        <span [pBind]="ptm('closeIcon')" [class]="cn(cx('closeIcon'), message?.closeIcon)"></span>
+                                    }
                                 } @else {
                                     <svg [pBind]="ptm('closeIcon')" data-p-icon="times" [class]="cx('closeIcon')" [attr.aria-hidden]="true" />
                                 }
@@ -257,21 +259,22 @@ export class ToastItem extends BaseComponent<ToastPassThrough> {
     standalone: true,
     imports: [ToastItem, SharedModule, NgFor],
     template: `
-        <p-toastItem
-            *ngFor="let msg of messages; let i = index"
-            [message]="msg"
-            [index]="i"
-            [life]="life"
-            [clearAll]="clearAllTrigger()"
-            (onClose)="onMessageClose($event)"
-            (onAnimationEnd)="onAnimationEnd()"
-            (onAnimationStart)="onAnimationStart()"
-            [template]="template || _template"
-            [headlessTemplate]="headlessTemplate || _headlessTemplate"
-            [pt]="pt"
-            [unstyled]="unstyled()"
-            [motionOptions]="computedMotionOptions()"
-        ></p-toastItem>
+        @for (msg of messages; track msg; let i = $index) {
+            <p-toastItem
+                [message]="msg"
+                [index]="i"
+                [life]="life"
+                [clearAll]="clearAllTrigger()"
+                (onClose)="onMessageClose($event)"
+                (onAnimationEnd)="onAnimationEnd()"
+                (onAnimationStart)="onAnimationStart()"
+                [template]="template || _template"
+                [headlessTemplate]="headlessTemplate || _headlessTemplate"
+                [pt]="pt"
+                [unstyled]="unstyled()"
+                [motionOptions]="computedMotionOptions()"
+            ></p-toastItem>
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,

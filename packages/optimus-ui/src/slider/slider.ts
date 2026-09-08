@@ -28,109 +28,118 @@ export const SLIDER_VALUE_ACCESSOR: any = {
     standalone: true,
     imports: [AutoFocus, SharedModule, BindModule, NgIf, NgStyle],
     template: `
-        <span
-            *ngIf="range && orientation == 'horizontal'"
-            [class]="cx('range')"
-            [ngStyle]="{
-                'inset-inline-start': offset !== null && offset !== undefined ? offset + '%' : handleValues[0] + '%',
-                width: diff ? diff + '%' : handleValues[1] - handleValues[0] + '%'
-            }"
-            [style]="sx('range')"
-            [attr.data-pc-section]="'range'"
-            [attr.data-p]="dataP"
-            [pBind]="ptm('range')"
-        ></span>
-        <span
-            *ngIf="range && orientation == 'vertical'"
-            [class]="cx('range')"
-            [ngStyle]="{
-                bottom: offset !== null && offset !== undefined ? offset + '%' : handleValues[0] + '%',
-                height: diff ? diff + '%' : handleValues[1] - handleValues[0] + '%'
-            }"
-            [style]="sx('range')"
-            [attr.data-pc-section]="'range'"
-            [attr.data-p]="dataP"
-            [pBind]="ptm('range')"
-        ></span>
-        <span *ngIf="!range && orientation == 'vertical'" [class]="cx('range')" [attr.data-pc-section]="'range'" [style]="sx('range')" [ngStyle]="{ height: handleValue + '%' }" [pBind]="ptm('range')"></span>
-        <span *ngIf="!range && orientation == 'horizontal'" [class]="cx('range')" [attr.data-pc-section]="'range'" [style]="sx('range')" [ngStyle]="{ width: handleValue + '%' }" [pBind]="ptm('range')"></span>
-        <span
-            *ngIf="!range"
-            #sliderHandle
-            [class]="cx('handle')"
-            [style.transition]="dragging ? 'none' : null"
-            [ngStyle]="{
-                'inset-inline-start': orientation == 'horizontal' ? handleValue + '%' : null,
-                bottom: orientation == 'vertical' ? handleValue + '%' : null
-            }"
-            [style]="sx('handle')"
-            (touchstart)="onDragStart($event)"
-            (touchmove)="onDrag($event)"
-            (touchend)="onDragEnd($event)"
-            (mousedown)="onMouseDown($event)"
-            (keydown)="onKeyDown($event)"
-            [attr.tabindex]="$disabled() ? null : tabindex"
-            role="slider"
-            [attr.aria-valuemin]="min"
-            [attr.aria-valuenow]="value"
-            [attr.aria-valuemax]="max"
-            [attr.aria-labelledby]="ariaLabelledBy"
-            [attr.aria-label]="ariaLabel"
-            [attr.aria-orientation]="orientation"
-            [attr.data-pc-section]="'handle'"
-            [pAutoFocus]="autofocus"
-            [pBind]="ptm('handle')"
-            [attr.data-p]="dataP"
-        ></span>
-        <span
-            *ngIf="range"
-            #sliderHandleStart
-            [style.transition]="dragging ? 'none' : null"
-            [class]="cn(cx('handle'), handleIndex == 0 && 'p-slider-handle-active')"
-            [style]="sx('handle')"
-            [ngStyle]="{ 'inset-inline-start': rangeStartLeft, bottom: rangeStartBottom }"
-            (keydown)="onKeyDown($event, 0)"
-            (mousedown)="onMouseDown($event, 0)"
-            (touchstart)="onDragStart($event, 0)"
-            (touchmove)="onDrag($event)"
-            (touchend)="onDragEnd($event)"
-            [attr.tabindex]="$disabled() ? null : tabindex"
-            role="slider"
-            [attr.aria-valuemin]="min"
-            [attr.aria-valuenow]="value ? value[0] : null"
-            [attr.aria-valuemax]="max"
-            [attr.aria-labelledby]="ariaLabelledBy"
-            [attr.aria-label]="ariaLabel"
-            [attr.aria-orientation]="orientation"
-            [attr.data-pc-section]="'startHandler'"
-            [pAutoFocus]="autofocus"
-            [pBind]="ptm('startHandler')"
-            [attr.data-p]="dataP"
-        ></span>
-        <span
-            *ngIf="range"
-            #sliderHandleEnd
-            [style.transition]="dragging ? 'none' : null"
-            [class]="cn(cx('handle'), handleIndex == 1 && 'p-slider-handle-active')"
-            [ngStyle]="{ 'inset-inline-start': rangeEndLeft, bottom: rangeEndBottom }"
-            [style]="sx('handle')"
-            (keydown)="onKeyDown($event, 1)"
-            (mousedown)="onMouseDown($event, 1)"
-            (touchstart)="onDragStart($event, 1)"
-            (touchmove)="onDrag($event)"
-            (touchend)="onDragEnd($event)"
-            [attr.tabindex]="$disabled() ? null : tabindex"
-            role="slider"
-            [attr.aria-valuemin]="min"
-            [attr.aria-valuenow]="value ? value[1] : null"
-            [attr.aria-valuemax]="max"
-            [attr.aria-labelledby]="ariaLabelledBy"
-            [attr.aria-label]="ariaLabel"
-            [attr.aria-orientation]="orientation"
-            [attr.data-pc-section]="'endHandler'"
-            [pBind]="ptm('endHandler')"
-            [attr.data-p]="dataP"
-        ></span>
+        @if (range && orientation == 'horizontal') {
+            <span
+                [class]="cx('range')"
+                [ngStyle]="{
+                    'inset-inline-start': offset !== null && offset !== undefined ? offset + '%' : handleValues[0] + '%',
+                    width: diff ? diff + '%' : handleValues[1] - handleValues[0] + '%'
+                }"
+                [style]="sx('range')"
+                [attr.data-pc-section]="'range'"
+                [attr.data-p]="dataP"
+                [pBind]="ptm('range')"
+            ></span>
+        }
+        @if (range && orientation == 'vertical') {
+            <span
+                [class]="cx('range')"
+                [ngStyle]="{
+                    bottom: offset !== null && offset !== undefined ? offset + '%' : handleValues[0] + '%',
+                    height: diff ? diff + '%' : handleValues[1] - handleValues[0] + '%'
+                }"
+                [style]="sx('range')"
+                [attr.data-pc-section]="'range'"
+                [attr.data-p]="dataP"
+                [pBind]="ptm('range')"
+            ></span>
+        }
+        @if (!range && orientation == 'vertical') {
+            <span [class]="cx('range')" [attr.data-pc-section]="'range'" [style]="sx('range')" [ngStyle]="{ height: handleValue + '%' }" [pBind]="ptm('range')"></span>
+        }
+        @if (!range && orientation == 'horizontal') {
+            <span [class]="cx('range')" [attr.data-pc-section]="'range'" [style]="sx('range')" [ngStyle]="{ width: handleValue + '%' }" [pBind]="ptm('range')"></span>
+        }
+        @if (!range) {
+            <span
+                #sliderHandle
+                [class]="cx('handle')"
+                [style.transition]="dragging ? 'none' : null"
+                [ngStyle]="{
+                    'inset-inline-start': orientation == 'horizontal' ? handleValue + '%' : null,
+                    bottom: orientation == 'vertical' ? handleValue + '%' : null
+                }"
+                [style]="sx('handle')"
+                (touchstart)="onDragStart($event)"
+                (touchmove)="onDrag($event)"
+                (touchend)="onDragEnd($event)"
+                (mousedown)="onMouseDown($event)"
+                (keydown)="onKeyDown($event)"
+                [attr.tabindex]="$disabled() ? null : tabindex"
+                role="slider"
+                [attr.aria-valuemin]="min"
+                [attr.aria-valuenow]="value"
+                [attr.aria-valuemax]="max"
+                [attr.aria-labelledby]="ariaLabelledBy"
+                [attr.aria-label]="ariaLabel"
+                [attr.aria-orientation]="orientation"
+                [attr.data-pc-section]="'handle'"
+                [pAutoFocus]="autofocus"
+                [pBind]="ptm('handle')"
+                [attr.data-p]="dataP"
+            ></span>
+        }
+        @if (range) {
+            <span
+                #sliderHandleStart
+                [style.transition]="dragging ? 'none' : null"
+                [class]="cn(cx('handle'), handleIndex == 0 && 'p-slider-handle-active')"
+                [style]="sx('handle')"
+                [ngStyle]="{ 'inset-inline-start': rangeStartLeft, bottom: rangeStartBottom }"
+                (keydown)="onKeyDown($event, 0)"
+                (mousedown)="onMouseDown($event, 0)"
+                (touchstart)="onDragStart($event, 0)"
+                (touchmove)="onDrag($event)"
+                (touchend)="onDragEnd($event)"
+                [attr.tabindex]="$disabled() ? null : tabindex"
+                role="slider"
+                [attr.aria-valuemin]="min"
+                [attr.aria-valuenow]="value ? value[0] : null"
+                [attr.aria-valuemax]="max"
+                [attr.aria-labelledby]="ariaLabelledBy"
+                [attr.aria-label]="ariaLabel"
+                [attr.aria-orientation]="orientation"
+                [attr.data-pc-section]="'startHandler'"
+                [pAutoFocus]="autofocus"
+                [pBind]="ptm('startHandler')"
+                [attr.data-p]="dataP"
+            ></span>
+        }
+        @if (range) {
+            <span
+                #sliderHandleEnd
+                [style.transition]="dragging ? 'none' : null"
+                [class]="cn(cx('handle'), handleIndex == 1 && 'p-slider-handle-active')"
+                [ngStyle]="{ 'inset-inline-start': rangeEndLeft, bottom: rangeEndBottom }"
+                [style]="sx('handle')"
+                (keydown)="onKeyDown($event, 1)"
+                (mousedown)="onMouseDown($event, 1)"
+                (touchstart)="onDragStart($event, 1)"
+                (touchmove)="onDrag($event)"
+                (touchend)="onDragEnd($event)"
+                [attr.tabindex]="$disabled() ? null : tabindex"
+                role="slider"
+                [attr.aria-valuemin]="min"
+                [attr.aria-valuenow]="value ? value[1] : null"
+                [attr.aria-valuemax]="max"
+                [attr.aria-labelledby]="ariaLabelledBy"
+                [attr.aria-label]="ariaLabel"
+                [attr.aria-orientation]="orientation"
+                [attr.data-pc-section]="'endHandler'"
+                [pBind]="ptm('endHandler')"
+                [attr.data-p]="dataP"
+            ></span>
+        }
     `,
     providers: [SLIDER_VALUE_ACCESSOR, SliderStyle, { provide: SLIDER_INSTANCE, useExisting: Slider }, { provide: PARENT_INSTANCE, useExisting: Slider }],
     changeDetection: ChangeDetectionStrategy.OnPush,

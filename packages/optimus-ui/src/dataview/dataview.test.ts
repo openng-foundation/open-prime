@@ -47,12 +47,16 @@ import { PaginatorModule } from '@openng/optimus-ui/paginator';
         >
             <ng-template #list let-items>
                 <div class="list-container">
-                    <div *ngFor="let item of items" class="list-item">{{ item.name }} - {{ item.price }}</div>
+                    @for (item of items; track item) {
+                        <div class="list-item">{{ item.name }} - {{ item.price }}</div>
+                    }
                 </div>
             </ng-template>
             <ng-template #grid let-items>
                 <div class="grid-container">
-                    <div *ngFor="let item of items" class="grid-item">{{ item.name }} - {{ item.price }}</div>
+                    @for (item of items; track item) {
+                        <div class="grid-item">{{ item.name }} - {{ item.price }}</div>
+                    }
                 </div>
             </ng-template>
         </p-dataview>
@@ -128,9 +132,11 @@ class TestBasicDataViewComponent {
             </p-header>
             <ng-template #list let-items>
                 <div class="list-container">
-                    <div *ngFor="let item of items" class="list-item">
-                        {{ item.name }}
-                    </div>
+                    @for (item of items; track item) {
+                        <div class="list-item">
+                            {{ item.name }}
+                        </div>
+                    }
                 </div>
             </ng-template>
             <p-footer>
@@ -153,9 +159,11 @@ class TestHeaderFooterDataViewComponent {
         <p-dataview [value]="products" [paginator]="true" [rows]="2">
             <ng-template #list let-items>
                 <div class="list-container">
-                    <div *ngFor="let item of items" class="list-item">
-                        {{ item.name }}
-                    </div>
+                    @for (item of items; track item) {
+                        <div class="list-item">
+                            {{ item.name }}
+                        </div>
+                    }
                 </div>
             </ng-template>
             <ng-template #header>
@@ -187,12 +195,16 @@ class TestTemplatesDataViewComponent {
         <p-dataview [value]="products()" [layout]="layout">
             <ng-template #list let-items>
                 <div class="list-container">
-                    <div *ngFor="let item of items" class="list-item">List: {{ item.name }}</div>
+                    @for (item of items; track item) {
+                        <div class="list-item">List: {{ item.name }}</div>
+                    }
                 </div>
             </ng-template>
             <ng-template #grid let-items>
                 <div class="grid-container">
-                    <div *ngFor="let item of items" class="grid-item">Grid: {{ item.name }}</div>
+                    @for (item of items; track item) {
+                        <div class="grid-item">Grid: {{ item.name }}</div>
+                    }
                 </div>
             </ng-template>
         </p-dataview>
@@ -1649,12 +1661,16 @@ describe('DataView', () => {
         >
             <ng-template #list let-items>
                 <div class="dynamic-list-container">
-                    <div *ngFor="let item of items" class="dynamic-list-item">{{ item.name }} - {{ item.price }}</div>
+                    @for (item of items; track item) {
+                        <div class="dynamic-list-item">{{ item.name }} - {{ item.price }}</div>
+                    }
                 </div>
             </ng-template>
             <ng-template #grid let-items>
                 <div class="dynamic-grid-container">
-                    <div *ngFor="let item of items" class="dynamic-grid-item">{{ item.name }} - {{ item.price }}</div>
+                    @for (item of items; track item) {
+                        <div class="dynamic-grid-item">{{ item.name }} - {{ item.price }}</div>
+                    }
                 </div>
             </ng-template>
         </p-dataview>

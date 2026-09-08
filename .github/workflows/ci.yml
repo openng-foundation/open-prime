@@ -12,7 +12,6 @@ concurrency:
 
 permissions:
     contents: read
-    pull-requests: write
 
 jobs:
     commitlint:
@@ -20,56 +19,58 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v7
               with:
+                  # commitlint needs every commit between the base and head SHAs, so the
+                  # history cannot be shallow. It only reads commit messages though, and
+                  # blobs are 94% of this repository's history, so fetch the commits and
+                  # trees without the file contents.
                   fetch-depth: 0
-            - uses: pnpm/action-setup@v4
-              with:
-                  run_install: false
-
-            - name: Use Node.js 24.x
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 24.x
-                  cache: 'pnpm'
-
-            - name: Install packages
-              run: |
-                  pnpm install
+                  filter: blob:none
+            - uses: ./.github/actions/setup
 
             - name: Lint commit messages
               run: |
                   pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-    ci:
+    # Formatting, the dependency audit, the schematics suite and the optimus-ui-styled unit
+    # tests are all short and need no browser, so they share a job rather than each paying
+    # the setup cost.
+    checks:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
+
+            - name: Code Format
+              run: |
+                  pnpm run format:check
+
+            - name: Security Audit
+              run: |
+                  pnpm run security:check
+
+            - name: Schematic Tests
+              run: |
+                  pnpm --filter @openng/optimus-ui test:schematics
+
+            - name: Styled Utils Tests
+              run: |
+                  pnpm run test:styled
+
+    test-vitest:
         permissions:
-            issues: write
-            pull-requests: write
+            contents: read # a job-level block replaces the workflow default, so restate it
             checks: write # action-junit-report publishes the results as a check run
         runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [24.x]
-
         steps:
-            - uses: actions/checkout@v3
-            - uses: pnpm/action-setup@v4
-              with:
-                  run_install: false
-
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: 'pnpm'
-
-            - name: Install packages
-              run: |
-                  pnpm install
+            - uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
 
             - name: Cache Playwright browsers
-              uses: actions/cache@v4
+              uses: actions/cache@v6
               with:
                   path: ~/.cache/ms-playwright
                   key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
@@ -80,55 +81,43 @@ jobs:
               run: |
                   pnpm --filter @openng/optimus-ui exec playwright install --with-deps chromium
 
-            - name: Code Format
-              id: codeFormat
-              run: |
-                  pnpm run format:check
-
-            # Both suites run to completion even when one fails, so the report below
-            # always covers both. The gate step afterwards fails the job.
-            - name: Unit Test (jasmine)
-              id: unitTest
-              continue-on-error: true
+            - name: Unit Test (vitest)
               run: |
                   pnpm run test:unit
 
-            - name: Schematic Tests
-              id: schematicTest
-              run: |
-                  pnpm --filter @openng/optimus-ui test:schematics
-
-            - name: Unit Test (vitest)
-              id: unitTestVitest
-              continue-on-error: true
-              run: |
-                  pnpm run test:vitest
-
+            # A pull_request from a fork gets a read-only GITHUB_TOKEN whatever the
+            # permissions block asks for, so creating the check run fails there. The report
+            # is still uploaded as an artifact below.
             - name: Publish test report
-              if: always()
-              uses: mikepenz/action-junit-report@v5
+              if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+              uses: mikepenz/action-junit-report@v6
               with:
-                  report_paths: 'packages/optimus-ui/reports/junit/*.xml'
-                  check_name: 'Test Results'
+                  report_paths: 'packages/optimus-ui/reports/junit/vitest.xml'
+                  check_name: 'Test Results (vitest)'
                   detailed_summary: true
                   include_passed: false
                   fail_on_failure: false
 
-            - name: Upload test reports
+            - name: Upload test report
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               with:
-                  name: junit-reports
-                  path: packages/optimus-ui/reports/junit/*.xml
+                  name: junit-vitest
+                  path: packages/optimus-ui/reports/junit/vitest.xml
                   if-no-files-found: warn
 
-            - name: Fail if any unit test failed
-              if: steps.unitTest.outcome == 'failure' || steps.unitTestVitest.outcome == 'failure'
-              run: |
-                  echo "jasmine: ${{ steps.unitTest.outcome }} / vitest: ${{ steps.unitTestVitest.outcome }}"
-                  exit 1
+    build:
+        runs-on: ubuntu-latest
 
+        steps:
+            - uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
+
+            # build:packages rather than build, because build re-runs format:check and
+            # security:check, which the checks job already covers. NODE_ENV belongs on this
+            # step only: setting it job-wide would make pnpm install skip devDependencies.
             - name: Build
-              id: build
+              env:
+                  NODE_ENV: production
               run: |
-                  pnpm run build
+                  pnpm run build:packages

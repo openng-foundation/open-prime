@@ -18,15 +18,21 @@ const TOOLBAR_INSTANCE = new InjectionToken<Toolbar>('TOOLBAR_INSTANCE');
     imports: [SharedModule, BindModule, NgIf, NgTemplateOutlet],
     template: `
         <ng-content></ng-content>
-        <div [class]="cx('start')" *ngIf="startTemplate || _startTemplate" [pBind]="ptm('start')">
-            <ng-container *ngTemplateOutlet="startTemplate || _startTemplate"></ng-container>
-        </div>
-        <div [class]="cx('center')" *ngIf="centerTemplate || _centerTemplate" [pBind]="ptm('center')">
-            <ng-container *ngTemplateOutlet="centerTemplate || _centerTemplate"></ng-container>
-        </div>
-        <div [class]="cx('end')" *ngIf="endTemplate || _endTemplate" [pBind]="ptm('end')">
-            <ng-container *ngTemplateOutlet="endTemplate || _endTemplate"></ng-container>
-        </div>
+        @if (startTemplate || _startTemplate) {
+            <div [class]="cx('start')" [pBind]="ptm('start')">
+                <ng-container *ngTemplateOutlet="startTemplate || _startTemplate"></ng-container>
+            </div>
+        }
+        @if (centerTemplate || _centerTemplate) {
+            <div [class]="cx('center')" [pBind]="ptm('center')">
+                <ng-container *ngTemplateOutlet="centerTemplate || _centerTemplate"></ng-container>
+            </div>
+        }
+        @if (endTemplate || _endTemplate) {
+            <div [class]="cx('end')" [pBind]="ptm('end')">
+                <ng-container *ngTemplateOutlet="endTemplate || _endTemplate"></ng-container>
+            </div>
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,

@@ -1,4 +1,4 @@
-import { isEmpty, isNotEmpty, isObject, matchRegex, minifyCSS, resolve } from '@openng/optimus-ui-utils/object';
+import { isEmpty, isNotEmpty, isObject, matchRegex, minifyCSS, omit, resolve } from '@openng/optimus-ui-utils/object';
 import { dt, toVariables } from '../helpers/index';
 import { CALC_REGEX, EXPR_REGEX, getRule, toTokenKey, VAR_REGEX } from './sharedUtils';
 
@@ -53,10 +53,14 @@ export default {
         // @todo - check if options is not empty
         if (isNotEmpty(preset) && options.transform !== 'strict') {
             const { primitive, semantic, extend } = preset;
-            const { colorScheme, ...sRest } = semantic || {};
-            const { colorScheme: eColorScheme, ...eRest } = extend || {};
-            const { dark, ...csRest } = colorScheme || {};
-            const { dark: eDark, ...ecsRest } = eColorScheme || {};
+            const colorScheme = semantic?.colorScheme;
+            const sRest: any = omit(semantic, 'colorScheme');
+            const eColorScheme = extend?.colorScheme;
+            const eRest: any = omit(extend, 'colorScheme');
+            const dark = colorScheme?.dark;
+            const csRest: any = omit(colorScheme, 'dark');
+            const eDark = eColorScheme?.dark;
+            const ecsRest: any = omit(eColorScheme, 'dark');
             const prim_var: any = isNotEmpty(primitive) ? this._toVariables({ primitive }, options) : {};
             const sRest_var: any = isNotEmpty(sRest) ? this._toVariables({ semantic: sRest }, options) : {};
             const csRest_var: any = isNotEmpty(csRest) ? this._toVariables({ light: csRest }, options) : {};
@@ -76,13 +80,13 @@ export default {
             primitive_css = this.transformCSS(name, prim_css, 'light', 'variable', options, set, defaults);
             primitive_tokens = prim_tokens;
 
-            const semantic_light_css = this.transformCSS(name, `${sRest_css}${csRest_css}`, 'light', 'variable', options, set, defaults);
+            const semantic_light_css = this.transformCSS(name, `${csRest_css}${sRest_css}`, 'light', 'variable', options, set, defaults);
             const semantic_dark_css = this.transformCSS(name, `${csDark_css}`, 'dark', 'variable', options, set, defaults);
 
             semantic_css = `${semantic_light_css}${semantic_dark_css}`;
             semantic_tokens = [...new Set([...sRest_tokens, ...csRest_tokens, ...csDark_tokens])];
 
-            const global_light_css = this.transformCSS(name, `${eRest_css}${ecsRest_css}color-scheme:light`, 'light', 'variable', options, set, defaults);
+            const global_light_css = this.transformCSS(name, `${ecsRest_css}${eRest_css}color-scheme:light`, 'light', 'variable', options, set, defaults);
             const global_dark_css = this.transformCSS(name, `${ecsDark_css}color-scheme:dark`, 'dark', 'variable', options, set, defaults);
 
             global_css = `${global_light_css}${global_dark_css}`;
@@ -112,10 +116,14 @@ export default {
 
         if (isNotEmpty(preset) && options.transform !== 'strict') {
             const _name = name.replace('-directive', '');
-            const { colorScheme, extend, css, ...vRest } = preset;
-            const { colorScheme: eColorScheme, ...evRest } = extend || {};
-            const { dark, ...csRest } = colorScheme || {};
-            const { dark: ecsDark, ...ecsRest } = eColorScheme || {};
+            const { colorScheme, extend, css } = preset;
+            const vRest: any = omit(preset, 'colorScheme', 'extend', 'css');
+            const eColorScheme = extend?.colorScheme;
+            const evRest: any = omit(extend, 'colorScheme');
+            const dark = colorScheme?.dark;
+            const csRest: any = omit(colorScheme, 'dark');
+            const ecsDark = eColorScheme?.dark;
+            const ecsRest: any = omit(eColorScheme, 'dark');
             const vRest_var: any = isNotEmpty(vRest) ? this._toVariables({ [_name]: { ...vRest, ...evRest } }, options) : {};
             const csRest_var: any = isNotEmpty(csRest) ? this._toVariables({ [_name]: { ...csRest, ...ecsRest } }, options) : {};
             const csDark_var: any = isNotEmpty(dark) ? this._toVariables({ [_name]: { ...dark, ...ecsDark } }, options) : {};
@@ -124,7 +132,7 @@ export default {
             const [csRest_css, csRest_tokens] = [csRest_var.declarations ?? '', csRest_var.tokens || []];
             const [csDark_css, csDark_tokens] = [csDark_var.declarations ?? '', csDark_var.tokens || []];
 
-            const light_variable_css = this.transformCSS(_name, `${vRest_css}${csRest_css}`, 'light', 'variable', options, set, defaults, selector);
+            const light_variable_css = this.transformCSS(_name, `${csRest_css}${vRest_css}`, 'light', 'variable', options, set, defaults, selector);
             const dark_variable_css = this.transformCSS(_name, csDark_css, 'dark', 'variable', options, set, defaults, selector);
 
             p_css = `${light_variable_css}${dark_variable_css}`;

@@ -34,23 +34,24 @@ const COLORPICKER_INSTANCE = new InjectionToken<ColorPicker>('COLORPICKER_INSTAN
     imports: [AutoFocusModule, SharedModule, Bind, MotionModule, OverlayModule, NgIf],
     hostDirectives: [Bind],
     template: `
-        <input
-            *ngIf="!inline"
-            #input
-            type="text"
-            [class]="cx('preview')"
-            readonly
-            [attr.tabindex]="tabindex"
-            [attr.disabled]="$disabled() ? '' : undefined"
-            (click)="onInputClick()"
-            (keydown)="onInputKeydown($event)"
-            (focus)="onInputFocus()"
-            [attr.id]="inputId"
-            [style.backgroundColor]="inputBgColor"
-            [attr.aria-label]="ariaLabel"
-            [pAutoFocus]="autofocus"
-            [pBind]="ptm('preview')"
-        />
+        @if (!inline) {
+            <input
+                #input
+                type="text"
+                [class]="cx('preview')"
+                readonly
+                [attr.tabindex]="tabindex"
+                [attr.disabled]="$disabled() ? '' : undefined"
+                (click)="onInputClick()"
+                (keydown)="onInputKeydown($event)"
+                (focus)="onInputFocus()"
+                [attr.id]="inputId"
+                [style.backgroundColor]="inputBgColor"
+                [attr.aria-label]="ariaLabel"
+                [pAutoFocus]="autofocus"
+                [pBind]="ptm('preview')"
+            />
+        }
 
         <p-overlay
             #overlay

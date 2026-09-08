@@ -18,18 +18,11 @@ jobs:
         node-version: [24.x]
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v4
-      with:
-         run_install: false
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+    - uses: actions/checkout@v7
+    - uses: ./.github/actions/setup
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
 
     - name: Build
       run: |
-        pnpm install
         pnpm run build

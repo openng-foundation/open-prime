@@ -1,6 +1,6 @@
 {
     "name": "@openng/optimus-ui",
-    "version": "2.0.0-rc.0",
+    "version": "2.0.2",
     "author": "OpenNg",
     "description": "Optimus UI is a community-maintained, MIT licensed UI library for Angular with 80+ accessible components and design-agnostic theming, including Aura, Material, Lara and Nora presets.",
     "homepage": "https://www.openng.org/",
@@ -55,29 +55,20 @@
         "test:schematics": "node ./scripts/build-schematics.mjs && vitest run --config vitest.schematics.config.mts",
         "dev:link": "pnpm link --global && npm link",
         "lint": "ng lint",
-        "test:unit": "ng test optimus-ui --watch=false --browsers=ChromeHeadless",
-        "test:unit:watch": "ng test optimus-ui",
-        "test:unit:coverage": "ng test optimus-ui --coverage",
-        "test:vitest": "ng run optimus-ui:test-vitest --watch=false",
-        "test:vitest:watch": "ng run optimus-ui:test-vitest --watch",
-        "test:vitest:coverage": "ng run optimus-ui:test-vitest --watch=false --coverage"
+        "test:unit": "ng run optimus-ui:test-vitest --watch=false",
+        "test:unit:watch": "ng run optimus-ui:test-vitest --watch",
+        "test:unit:coverage": "ng run optimus-ui:test-vitest --watch=false --coverage"
     },
     "devDependencies": {
-        "@angular-devkit/schematics": "^22.0.0",
+        "@angular-devkit/schematics": "^22.1.6",
         "@angular/build": "catalog:angular22",
-        "@schematics/angular": "^22.0.0",
-        "@types/node": "^22.10.0",
-        "@vitest/browser-playwright": "^4.0.8",
-        "@vitest/coverage-v8": "^4.0.8",
-        "karma": "~6.4.4",
-        "karma-chrome-launcher": "~3.2.0",
-        "karma-coverage": "~2.2.1",
-        "karma-jasmine": "~5.1.0",
-        "karma-jasmine-html-reporter": "~2.1.0",
-        "karma-junit-reporter": "^2.0.1",
+        "@schematics/angular": "^22.1.6",
+        "@types/node": "^26.2.0",
+        "@vitest/browser-playwright": "^4.1.11",
+        "@vitest/coverage-v8": "^4.1.11",
         "tslib": "^2.8.1",
         "typescript": "catalog:angular22",
-        "vitest": "^4.0.8"
+        "vitest": "^4.1.11"
     },
     "peerDependencies": {
         "@angular/cdk": "catalog:angular22",

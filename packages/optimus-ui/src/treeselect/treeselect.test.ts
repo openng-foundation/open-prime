@@ -97,9 +97,15 @@ const mockTreeNodes: TreeNode[] = [
             <!-- Value template -->
             <ng-template #value let-value let-placeholder="placeholder">
                 <div class="custom-value" data-testid="template-value">
-                    <span *ngIf="value && !isArray(value)">{{ value.label }} - Custom</span>
-                    <span *ngIf="value && isArray(value)">{{ value.length }} item(s) selected - Custom</span>
-                    <span *ngIf="!value">{{ placeholder }}</span>
+                    @if (value && !isArray(value)) {
+                        <span>{{ value.label }} - Custom</span>
+                    }
+                    @if (value && isArray(value)) {
+                        <span>{{ value.length }} item(s) selected - Custom</span>
+                    }
+                    @if (!value) {
+                        <span>{{ placeholder }}</span>
+                    }
                 </div>
             </ng-template>
 
@@ -156,9 +162,11 @@ const mockTreeNodes: TreeNode[] = [
         </p-treeselect>
 
         <!-- Reactive Forms test -->
-        <form [formGroup]="reactiveForm" *ngIf="showReactiveForm">
-            <p-treeselect formControlName="selectedNodes" [options]="formOptions" [placeholder]="'Select nodes'" (onNodeSelect)="onFormNodeSelect($event)"> </p-treeselect>
-        </form>
+        @if (showReactiveForm) {
+            <form [formGroup]="reactiveForm">
+                <p-treeselect formControlName="selectedNodes" [options]="formOptions" [placeholder]="'Select nodes'" (onNodeSelect)="onFormNodeSelect($event)"> </p-treeselect>
+            </form>
+        }
     `
 })
 class TestTreeSelectComponent {
@@ -338,9 +346,15 @@ class TestTreeSelectComponent {
             <!-- Value template with pTemplate -->
             <ng-template pTemplate="value" let-value let-placeholder="placeholder">
                 <div class="ptemplate-value" [attr.data-testid]="'ptemplate-value'">
-                    <span class="value-text" *ngIf="value && !isArrayValue(value)">{{ value.label }} - pTemplate</span>
-                    <span class="multi-value-text" *ngIf="value && isArrayValue(value)">{{ value.length }} selected - pTemplate</span>
-                    <span class="placeholder-text" *ngIf="!value">{{ placeholder }} (pTemplate)</span>
+                    @if (value && !isArrayValue(value)) {
+                        <span class="value-text">{{ value.label }} - pTemplate</span>
+                    }
+                    @if (value && isArrayValue(value)) {
+                        <span class="multi-value-text">{{ value.length }} selected - pTemplate</span>
+                    }
+                    @if (!value) {
+                        <span class="placeholder-text">{{ placeholder }} (pTemplate)</span>
+                    }
                 </div>
             </ng-template>
 

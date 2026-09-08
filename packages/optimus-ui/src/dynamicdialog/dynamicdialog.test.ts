@@ -87,7 +87,9 @@ class DialogWithinDialogComponent {
             <h3>Maximizable Dialog</h3>
             <p>This dialog can be maximized</p>
             <div style="height: 200px; overflow-y: auto;">
-                <p *ngFor="let item of items">{{ item }}</p>
+                @for (item of items; track item) {
+                    <p>{{ item }}</p>
+                }
             </div>
         </div>
     `
@@ -225,6 +227,29 @@ describe('DynamicDialog', () => {
             await fixture.whenStable();
             component.ngAfterViewInit();
             expect(component.ariaLabelledBy).toBeNull();
+        });
+
+        it('should use ariaLabelledBy from config when provided', async () => {
+            mockConfig.showHeader = true;
+            mockConfig.ariaLabelledBy = 'custom-label-id';
+            component.visible = true;
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+            component.ngAfterViewInit();
+
+            expect(component.ariaLabelledBy).toBe('custom-label-id');
+        });
+
+        it('should prioritize ariaLabelledBy from config over header when showHeader is false', async () => {
+            mockConfig.header = null as any;
+            mockConfig.showHeader = false;
+            mockConfig.ariaLabelledBy = 'custom-label-id';
+            component.visible = true;
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+            component.ngAfterViewInit();
+
+            expect(component.ariaLabelledBy).toBe('custom-label-id');
         });
     });
 
@@ -622,6 +647,15 @@ describe('DynamicDialog', () => {
             expect(dialogElement).toBeTruthy();
             expect(dialogElement.nativeElement.getAttribute('role')).toBe('dialog');
             expect(dialogElement.nativeElement.getAttribute('aria-modal')).toBe('true');
+        });
+
+        it('should pass ariaLabelledBy from config to the dialog', async () => {
+            mockConfig.ariaLabelledBy = 'custom-label-id';
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            const dialogElement = fixture.debugElement.query(By.css('[role="dialog"]'));
+            expect(dialogElement.nativeElement.getAttribute('aria-labelledby')).toBe('custom-label-id');
         });
 
         // Focus management is now handled by Dialog component, removing focus tests

@@ -7,6 +7,19 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputPath = path.resolve(__dirname, '../../../apps/docs/doc/apidoc/');
+const outputFile = path.resolve(outputPath, 'index.json');
+
+// On a clean checkout apps/docs/doc/apidoc/index.json doesn't exist yet (it's
+// gitignored, generated output). TypeDoc bootstraps its own TS program from
+// the docs app's tsconfig, which type-checks components that `import APIDoc
+// from '@/doc/apidoc/index.json'` — so the file needs to exist, with *some*
+// valid JSON, before that program loads, or TS2307 errors abort generation
+// before the real content below ever gets written. Seed an empty placeholder
+// so the module resolves; it's overwritten with real content further down.
+if (!fs.existsSync(outputFile)) {
+    fs.mkdirSync(outputPath, { recursive: true });
+    fs.writeFileSync(outputFile, '{}', 'utf-8');
+}
 
 const staticMessages = {
     methods: "Defines methods that can be accessed by the component's reference.",
@@ -615,8 +628,8 @@ async function main() {
         // Replace generic type "T" with "unknown" for better documentation clarity
         typedocJSON = typedocJSON.replace(/"type": "T"/g, '"type": "unknown"');
 
-        !fs.existsSync(outputPath) && fs.mkdirSync(outputPath);
-        fs.writeFileSync(path.resolve(outputPath, 'index.json'), typedocJSON);
+        !fs.existsSync(outputPath) && fs.mkdirSync(outputPath, { recursive: true });
+        fs.writeFileSync(outputFile, typedocJSON);
     }
 }
 

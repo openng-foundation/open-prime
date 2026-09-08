@@ -1,7 +1,7 @@
 import { NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ContentChild, ContentChildren, EventEmitter, inject, InjectionToken, Input, NgModule, Output, QueryList, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { MenuItem, PrimeTemplate, SharedModule } from '@openng/optimus-ui/api';
+import { MenuItem, PrimeTemplate, SharedModule, TranslationKeys } from '@openng/optimus-ui/api';
 import { Badge } from '@openng/optimus-ui/badge';
 import { BaseComponent, PARENT_INSTANCE } from '@openng/optimus-ui/basecomponent';
 import { Bind } from '@openng/optimus-ui/bind';
@@ -23,145 +23,186 @@ const BREADCRUMB_INSTANCE = new InjectionToken<Breadcrumb>('BREADCRUMB_INSTANCE'
     template: `
         <nav [pBind]="ptm('root')" [class]="cn(cx('root'), styleClass)" [style]="style">
             <ol [class]="cx('list')" [pBind]="ptm('list')">
-                <li [attr.id]="home.id" [class]="cn(cx('homeItem'), home.styleClass)" [ngStyle]="home.style" *ngIf="home && home.visible !== false" pTooltip [tooltipOptions]="home.tooltipOptions" [pBind]="ptm('homeItem')" [unstyled]="unstyled()">
-                    @if (itemTemplate || _itemTemplate) {
-                        <ng-template *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: home }"></ng-template>
-                    } @else {
-                        <a
-                            [href]="home.url ? home.url : null"
-                            *ngIf="!home.routerLink"
-                            [attr.aria-label]="homeAriaLabel"
-                            [class]="cn(cx('itemLink'), home.linkClass)"
-                            [ngStyle]="home.linkStyle"
-                            (click)="onClick($event, home)"
-                            [target]="home.target"
-                            [attr.title]="home.title"
-                            [attr.tabindex]="home.disabled ? null : home.tabindex || '0'"
-                            [attr.data-automationid]="home.automationId"
-                            [pBind]="ptm('itemLink')"
-                        >
-                            <span *ngIf="home.icon" [class]="cn(cx('itemIcon'), home.icon, home.iconClass)" [ngStyle]="home.iconStyle" [pBind]="ptm('itemIcon')"></span>
-                            <svg data-p-icon="home" *ngIf="!home.icon" [class]="cx('itemIcon')" [pBind]="ptm('itemIcon')" />
-                            <ng-container *ngIf="home.label">
-                                <span *ngIf="home.escape !== false; else htmlHomeLabel" [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [pBind]="ptm('itemLabel')">{{ home.label }}</span>
-                                <ng-template #htmlHomeLabel><span [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [innerHTML]="home.label" [pBind]="ptm('itemLabel')"></span></ng-template>
-                            </ng-container>
-                            <p-badge *ngIf="home.badge" [styleClass]="home.badgeStyleClass" [value]="home.badge" [pt]="ptm('pcBadge')" [unstyled]="unstyled()" />
-                        </a>
-                        <a
-                            *ngIf="home.routerLink"
-                            [routerLink]="home.routerLink"
-                            routerLinkActive="p-menuitem-link-active"
-                            [attr.aria-label]="homeAriaLabel"
-                            [queryParams]="home.queryParams"
-                            [routerLinkActiveOptions]="home.routerLinkActiveOptions || { exact: false }"
-                            [class]="cn(cx('itemLink'), home.linkClass)"
-                            [ngStyle]="home.linkStyle"
-                            (click)="onClick($event, home)"
-                            [target]="home.target"
-                            [attr.title]="home.title"
-                            [attr.tabindex]="home.disabled ? null : home.tabindex || '0'"
-                            [attr.data-automationid]="home.automationId"
-                            [fragment]="home.fragment"
-                            [queryParamsHandling]="home.queryParamsHandling"
-                            [preserveFragment]="home.preserveFragment"
-                            [skipLocationChange]="home.skipLocationChange"
-                            [replaceUrl]="home.replaceUrl"
-                            [state]="home.state"
-                            [pBind]="ptm('itemLink')"
-                        >
-                            <span *ngIf="home.icon" [class]="cn(cx('itemIcon'), home.icon, home.iconClass)" [ngStyle]="home.iconStyle" [pBind]="ptm('itemIcon')"></span>
-                            <svg data-p-icon="home" *ngIf="!home.icon" [class]="cx('itemIcon')" [pBind]="ptm('itemIcon')" />
-                            <ng-container *ngIf="home.label">
-                                <span *ngIf="home.escape !== false; else htmlHomeRouteLabel" [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [pBind]="ptm('itemLabel')">{{ home.label }}</span>
-                                <ng-template #htmlHomeRouteLabel><span [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [innerHTML]="home.label" [pBind]="ptm('itemLabel')"></span></ng-template>
-                            </ng-container>
-                            <p-badge *ngIf="home.badge" [styleClass]="home.badgeStyleClass" [value]="home.badge" [pt]="ptm('pcBadge')" [unstyled]="unstyled()" />
-                        </a>
-                    }
-                </li>
-                <li *ngIf="model && home" [class]="cx('separator')" [pBind]="ptm('separator')" aria-hidden="true">
-                    <svg data-p-icon="chevron-right" *ngIf="!separatorTemplate && !_separatorTemplate" [pBind]="ptm('separatorIcon')" />
-                    <ng-template *ngTemplateOutlet="separatorTemplate || _separatorTemplate"></ng-template>
-                </li>
-                <ng-template ngFor let-menuitem let-end="last" let-i="index" [ngForOf]="model">
-                    <li
-                        *ngIf="menuitem.visible !== false"
-                        [class]="cn(cx('item', { menuitem }), menuitem.styleClass)"
-                        [attr.id]="menuitem.id"
-                        [style]="menuitem.style"
-                        pTooltip
-                        [tooltipOptions]="menuitem.tooltipOptions"
-                        [pBind]="getPTOptions(menuitem, i, 'item')"
-                        [pTooltipUnstyled]="unstyled()"
-                    >
+                @if (home && home.visible !== false) {
+                    <li [attr.id]="home.id" [class]="cn(cx('homeItem'), home.styleClass)" [ngStyle]="home.style" pTooltip [tooltipOptions]="home.tooltipOptions" [pBind]="ptm('homeItem')" [unstyled]="unstyled()">
                         @if (itemTemplate || _itemTemplate) {
-                            <ng-template *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: menuitem }"></ng-template>
+                            <ng-template *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: home }"></ng-template>
                         } @else {
-                            <a
-                                *ngIf="!menuitem?.routerLink"
-                                [attr.href]="menuitem?.url ? menuitem?.url : null"
-                                [class]="cn(cx('itemLink'), menuitem?.linkClass)"
-                                [ngStyle]="menuitem?.linkStyle"
-                                (click)="onClick($event, menuitem)"
-                                [target]="menuitem?.target"
-                                [attr.title]="menuitem?.title"
-                                [attr.tabindex]="menuitem?.disabled ? null : menuitem?.tabindex || '0'"
-                                [attr.data-automationid]="menuitem?.automationId"
-                                [pBind]="getPTOptions(menuitem, i, 'itemLink')"
-                            >
-                                <ng-container *ngIf="!itemTemplate && !_itemTemplate">
-                                    <span *ngIf="menuitem?.icon" [class]="cn(cx('itemIcon'), menuitem?.icon, menuitem?.iconClass)" [ngStyle]="menuitem?.iconStyle" [pBind]="getPTOptions(menuitem, i, 'itemIcon')"></span>
-                                    <ng-container *ngIf="menuitem?.label">
-                                        <span *ngIf="menuitem?.escape !== false; else htmlLabel" [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [pBind]="getPTOptions(menuitem, i, 'itemLabel')">{{
-                                            menuitem?.label
-                                        }}</span>
-                                        <ng-template #htmlLabel
-                                            ><span [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [innerHTML]="menuitem?.label" [pBind]="getPTOptions(menuitem, i, 'itemLabel')"></span
-                                        ></ng-template>
-                                    </ng-container>
-                                    <p-badge *ngIf="menuitem?.badge" [styleClass]="menuitem?.badgeStyleClass" [value]="menuitem?.badge" [pt]="getPTOptions(menuitem, i, 'pcBadge')" [unstyled]="unstyled()" />
-                                </ng-container>
-                            </a>
-                            <a
-                                *ngIf="menuitem?.routerLink"
-                                [routerLink]="menuitem?.routerLink"
-                                routerLinkActive="p-menuitem-link-active"
-                                [queryParams]="menuitem?.queryParams"
-                                [routerLinkActiveOptions]="menuitem?.routerLinkActiveOptions || { exact: false }"
-                                [class]="cn(cx('itemLink'), menuitem?.linkClass)"
-                                [ngStyle]="menuitem?.linkStyle"
-                                (click)="onClick($event, menuitem)"
-                                [target]="menuitem?.target"
-                                [attr.title]="menuitem?.title"
-                                [attr.tabindex]="menuitem?.disabled ? null : menuitem?.tabindex || '0'"
-                                [attr.data-automationid]="menuitem?.automationId"
-                                [fragment]="menuitem?.fragment"
-                                [queryParamsHandling]="menuitem?.queryParamsHandling"
-                                [preserveFragment]="menuitem?.preserveFragment"
-                                [skipLocationChange]="menuitem?.skipLocationChange"
-                                [replaceUrl]="menuitem?.replaceUrl"
-                                [state]="menuitem?.state"
-                                [pBind]="getPTOptions(menuitem, i, 'itemLink')"
-                            >
-                                <span *ngIf="menuitem?.icon" [class]="cn(cx('itemIcon'), menuitem?.icon, menuitem?.iconClass)" [ngStyle]="menuitem?.iconStyle" [pBind]="getPTOptions(menuitem, i, 'itemIcon')"></span>
-                                <ng-container *ngIf="menuitem?.label">
-                                    <span *ngIf="menuitem?.escape !== false; else htmlRouteLabel" [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [pBind]="getPTOptions(menuitem, i, 'itemLabel')">{{
-                                        menuitem?.label
-                                    }}</span>
-                                    <ng-template #htmlRouteLabel
-                                        ><span [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [innerHTML]="menuitem?.label" [pBind]="getPTOptions(menuitem, i, 'itemLabel')"></span
-                                    ></ng-template>
-                                </ng-container>
-                                <p-badge *ngIf="menuitem?.badge" [styleClass]="menuitem?.badgeStyleClass" [value]="menuitem?.badge" [pt]="getPTOptions(menuitem, i, 'pcBadge')" [unstyled]="unstyled()" />
-                            </a>
+                            @if (!home.routerLink) {
+                                <a
+                                    [href]="home.url ? home.url : null"
+                                    [attr.aria-label]="homeLinkAriaLabel"
+                                    [class]="cn(cx('itemLink'), home.linkClass)"
+                                    [ngStyle]="home.linkStyle"
+                                    (click)="onClick($event, home)"
+                                    [target]="home.target"
+                                    [attr.title]="home.title"
+                                    [attr.tabindex]="home.disabled ? null : home.tabindex || '0'"
+                                    [attr.data-automationid]="home.automationId"
+                                    [pBind]="ptm('itemLink')"
+                                >
+                                    @if (home.icon) {
+                                        <span [class]="cn(cx('itemIcon'), home.icon, home.iconClass)" [ngStyle]="home.iconStyle" [pBind]="ptm('itemIcon')"></span>
+                                    }
+                                    @if (!home.icon) {
+                                        <svg data-p-icon="home" [class]="cx('itemIcon')" [pBind]="ptm('itemIcon')" />
+                                    }
+                                    @if (home.label) {
+                                        @if (home.escape !== false) {
+                                            <span [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [pBind]="ptm('itemLabel')">{{ home.label }}</span>
+                                        } @else {
+                                            <span [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [innerHTML]="home.label" [pBind]="ptm('itemLabel')"></span>
+                                        }
+                                    }
+                                    @if (home.badge) {
+                                        <p-badge [styleClass]="home.badgeStyleClass" [value]="home.badge" [pt]="ptm('pcBadge')" [unstyled]="unstyled()" />
+                                    }
+                                </a>
+                            }
+                            @if (home.routerLink) {
+                                <a
+                                    [routerLink]="home.routerLink"
+                                    routerLinkActive="p-menuitem-link-active"
+                                    [attr.aria-label]="homeLinkAriaLabel"
+                                    [queryParams]="home.queryParams"
+                                    [routerLinkActiveOptions]="home.routerLinkActiveOptions || { exact: false }"
+                                    [class]="cn(cx('itemLink'), home.linkClass)"
+                                    [ngStyle]="home.linkStyle"
+                                    (click)="onClick($event, home)"
+                                    [target]="home.target"
+                                    [attr.title]="home.title"
+                                    [attr.tabindex]="home.disabled ? null : home.tabindex || '0'"
+                                    [attr.data-automationid]="home.automationId"
+                                    [fragment]="home.fragment"
+                                    [queryParamsHandling]="home.queryParamsHandling"
+                                    [preserveFragment]="home.preserveFragment"
+                                    [skipLocationChange]="home.skipLocationChange"
+                                    [replaceUrl]="home.replaceUrl"
+                                    [state]="home.state"
+                                    [pBind]="ptm('itemLink')"
+                                >
+                                    @if (home.icon) {
+                                        <span [class]="cn(cx('itemIcon'), home.icon, home.iconClass)" [ngStyle]="home.iconStyle" [pBind]="ptm('itemIcon')"></span>
+                                    }
+                                    @if (!home.icon) {
+                                        <svg data-p-icon="home" [class]="cx('itemIcon')" [pBind]="ptm('itemIcon')" />
+                                    }
+                                    @if (home.label) {
+                                        @if (home.escape !== false) {
+                                            <span [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [pBind]="ptm('itemLabel')">{{ home.label }}</span>
+                                        } @else {
+                                            <span [class]="cn(cx('itemLabel'), home.labelClass)" [ngStyle]="home.labelStyle" [innerHTML]="home.label" [pBind]="ptm('itemLabel')"></span>
+                                        }
+                                    }
+                                    @if (home.badge) {
+                                        <p-badge [styleClass]="home.badgeStyleClass" [value]="home.badge" [pt]="ptm('pcBadge')" [unstyled]="unstyled()" />
+                                    }
+                                </a>
+                            }
                         }
                     </li>
-                    <li *ngIf="!end && menuitem.visible !== false" [class]="cx('separator')" [pBind]="ptm('separator')" aria-hidden="true">
-                        <svg data-p-icon="chevron-right" *ngIf="!separatorTemplate && !_separatorTemplate" [pBind]="ptm('separatorIcon')" />
+                }
+                @if (model && home) {
+                    <li [class]="cx('separator')" [pBind]="ptm('separator')" aria-hidden="true">
+                        @if (!separatorTemplate && !_separatorTemplate) {
+                            <svg data-p-icon="chevron-right" [pBind]="ptm('separatorIcon')" />
+                        }
                         <ng-template *ngTemplateOutlet="separatorTemplate || _separatorTemplate"></ng-template>
                     </li>
-                </ng-template>
+                }
+                @for (menuitem of model; track menuitem; let end = $last; let i = $index) {
+                    @if (menuitem.visible !== false) {
+                        <li
+                            [class]="cn(cx('item', { menuitem }), menuitem.styleClass)"
+                            [attr.id]="menuitem.id"
+                            [style]="menuitem.style"
+                            pTooltip
+                            [tooltipOptions]="menuitem.tooltipOptions"
+                            [pBind]="getPTOptions(menuitem, i, 'item')"
+                            [pTooltipUnstyled]="unstyled()"
+                        >
+                            @if (itemTemplate || _itemTemplate) {
+                                <ng-template *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: menuitem }"></ng-template>
+                            } @else {
+                                @if (!menuitem?.routerLink) {
+                                    <a
+                                        [attr.href]="menuitem?.url ? menuitem?.url : null"
+                                        [class]="cn(cx('itemLink'), menuitem?.linkClass)"
+                                        [ngStyle]="menuitem?.linkStyle"
+                                        (click)="onClick($event, menuitem)"
+                                        [target]="menuitem?.target"
+                                        [attr.title]="menuitem?.title"
+                                        [attr.tabindex]="menuitem?.disabled ? null : menuitem?.tabindex || '0'"
+                                        [attr.data-automationid]="menuitem?.automationId"
+                                        [attr.aria-current]="isCurrentPage(i) ? 'page' : undefined"
+                                        [pBind]="getPTOptions(menuitem, i, 'itemLink')"
+                                    >
+                                        @if (!itemTemplate && !_itemTemplate) {
+                                            @if (menuitem?.icon) {
+                                                <span [class]="cn(cx('itemIcon'), menuitem?.icon, menuitem?.iconClass)" [ngStyle]="menuitem?.iconStyle" [pBind]="getPTOptions(menuitem, i, 'itemIcon')"></span>
+                                            }
+                                            @if (menuitem?.label) {
+                                                @if (menuitem?.escape !== false) {
+                                                    <span [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [pBind]="getPTOptions(menuitem, i, 'itemLabel')">{{ menuitem?.label }}</span>
+                                                } @else {
+                                                    <span [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [innerHTML]="menuitem?.label" [pBind]="getPTOptions(menuitem, i, 'itemLabel')"></span>
+                                                }
+                                            }
+                                            @if (menuitem?.badge) {
+                                                <p-badge [styleClass]="menuitem?.badgeStyleClass" [value]="menuitem?.badge" [pt]="getPTOptions(menuitem, i, 'pcBadge')" [unstyled]="unstyled()" />
+                                            }
+                                        }
+                                    </a>
+                                }
+                                @if (menuitem?.routerLink) {
+                                    <a
+                                        [routerLink]="menuitem?.routerLink"
+                                        routerLinkActive="p-menuitem-link-active"
+                                        [queryParams]="menuitem?.queryParams"
+                                        [routerLinkActiveOptions]="menuitem?.routerLinkActiveOptions || { exact: false }"
+                                        [class]="cn(cx('itemLink'), menuitem?.linkClass)"
+                                        [ngStyle]="menuitem?.linkStyle"
+                                        (click)="onClick($event, menuitem)"
+                                        [target]="menuitem?.target"
+                                        [attr.title]="menuitem?.title"
+                                        [attr.tabindex]="menuitem?.disabled ? null : menuitem?.tabindex || '0'"
+                                        [attr.data-automationid]="menuitem?.automationId"
+                                        [fragment]="menuitem?.fragment"
+                                        [queryParamsHandling]="menuitem?.queryParamsHandling"
+                                        [preserveFragment]="menuitem?.preserveFragment"
+                                        [skipLocationChange]="menuitem?.skipLocationChange"
+                                        [replaceUrl]="menuitem?.replaceUrl"
+                                        [state]="menuitem?.state"
+                                        [ariaCurrentWhenActive]="isCurrentPage(i) ? 'page' : undefined"
+                                        [pBind]="getPTOptions(menuitem, i, 'itemLink')"
+                                    >
+                                        @if (menuitem?.icon) {
+                                            <span [class]="cn(cx('itemIcon'), menuitem?.icon, menuitem?.iconClass)" [ngStyle]="menuitem?.iconStyle" [pBind]="getPTOptions(menuitem, i, 'itemIcon')"></span>
+                                        }
+                                        @if (menuitem?.label) {
+                                            @if (menuitem?.escape !== false) {
+                                                <span [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [pBind]="getPTOptions(menuitem, i, 'itemLabel')">{{ menuitem?.label }}</span>
+                                            } @else {
+                                                <span [class]="cn(cx('itemLabel'), menuitem?.labelClass)" [ngStyle]="menuitem?.labelStyle" [innerHTML]="menuitem?.label" [pBind]="getPTOptions(menuitem, i, 'itemLabel')"></span>
+                                            }
+                                        }
+                                        @if (menuitem?.badge) {
+                                            <p-badge [styleClass]="menuitem?.badgeStyleClass" [value]="menuitem?.badge" [pt]="getPTOptions(menuitem, i, 'pcBadge')" [unstyled]="unstyled()" />
+                                        }
+                                    </a>
+                                }
+                            }
+                        </li>
+                    }
+                    @if (!end && menuitem.visible !== false) {
+                        <li [class]="cx('separator')" [pBind]="ptm('separator')" aria-hidden="true">
+                            @if (!separatorTemplate && !_separatorTemplate) {
+                                <svg data-p-icon="chevron-right" [pBind]="ptm('separatorIcon')" />
+                            }
+                            <ng-template *ngTemplateOutlet="separatorTemplate || _separatorTemplate"></ng-template>
+                        </li>
+                    }
+                }
             </ol>
         </nav>
     `,
@@ -195,7 +236,7 @@ export class Breadcrumb extends BaseComponent<BreadcrumbPassThrough> {
      */
     @Input() home: MenuItem | undefined;
     /**
-     * Defines a string that labels the home icon for accessibility.
+     * Defines a string that labels the home icon for accessibility. Defaults to the `aria.home` translation when the home item has no visible label.
      * @group Props
      */
     @Input() homeAriaLabel: string | undefined;
@@ -209,6 +250,15 @@ export class Breadcrumb extends BaseComponent<BreadcrumbPassThrough> {
     _componentStyle = inject(BreadCrumbStyle);
 
     router = inject(Router);
+
+    get homeLinkAriaLabel(): string | undefined {
+        if (this.homeAriaLabel) {
+            return this.homeAriaLabel;
+        }
+
+        // A visible label already names the link, so an aria-label would only override it.
+        return this.home?.label ? undefined : this.config.getTranslation(TranslationKeys.ARIA)?.home;
+    }
 
     onClick(event: MouseEvent, item: MenuItem) {
         if (item.disabled) {
@@ -280,6 +330,20 @@ export class Breadcrumb extends BaseComponent<BreadcrumbPassThrough> {
                 index
             }
         });
+    }
+
+    isCurrentPage(index: number): boolean {
+        if (!this.model) {
+            return false;
+        }
+
+        for (let i = this.model.length - 1; i >= 0; i--) {
+            if (this.model[i]?.visible !== false) {
+                return i === index;
+            }
+        }
+
+        return false;
     }
 }
 

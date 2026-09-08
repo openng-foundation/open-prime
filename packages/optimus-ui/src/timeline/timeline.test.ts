@@ -502,15 +502,7 @@ describe('Timeline', () => {
         });
 
         it('should handle malformed data gracefully', async () => {
-            const malformedEvents = [
-                { status: 'Valid Event' },
-                'invalid string event' as any,
-                123 as any,
-                {
-                    /* empty object */
-                },
-                { status: null, date: undefined }
-            ];
+            const malformedEvents = [{ status: 'Valid Event' }, 'invalid string event' as any, 123 as any, {/* empty object */}, { status: null, date: undefined }];
 
             component.events = malformedEvents;
 

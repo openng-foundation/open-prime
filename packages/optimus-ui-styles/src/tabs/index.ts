@@ -82,6 +82,8 @@ export const style = /*css*/ `
     }
 
     .p-tab {
+        display: flex;
+        align-items: center;
         flex-shrink: 0;
         cursor: pointer;
         user-select: none;

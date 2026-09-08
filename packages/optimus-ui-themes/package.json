@@ -1,6 +1,6 @@
 {
     "name": "@openng/optimus-ui-themes",
-    "version": "2.0.0-rc.0",
+    "version": "2.0.2",
     "author": "OpenNG",
     "description": "Themes for Optimus UI Libraries",
     "keywords": [
@@ -71,6 +71,6 @@
         "@openng/optimus-ui-styled": "workspace:*"
     },
     "devDependencies": {
-        "typedoc": "0.27.6"
+        "typedoc": "0.28.20"
     }
 }

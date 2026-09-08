@@ -18,7 +18,7 @@ function _deepEquals(obj1: unknown, obj2: unknown, visited: WeakSet<object> = ne
     if (arrObj1 && arrObj2) {
         length = obj1.length;
         if (length != obj2.length) return false;
-        for (i = length; i-- !== 0; ) if (!_deepEquals(obj1[i], obj2[i], visited)) return false;
+        for (i = length; i-- !== 0;) if (!_deepEquals(obj1[i], obj2[i], visited)) return false;
 
         return true;
     }
@@ -43,9 +43,9 @@ function _deepEquals(obj1: unknown, obj2: unknown, visited: WeakSet<object> = ne
 
     if (length !== Object.keys(obj2).length) return false;
 
-    for (i = length; i-- !== 0; ) if (!Object.prototype.hasOwnProperty.call(obj2, keys[i])) return false;
+    for (i = length; i-- !== 0;) if (!Object.prototype.hasOwnProperty.call(obj2, keys[i])) return false;
 
-    for (i = length; i-- !== 0; ) {
+    for (i = length; i-- !== 0;) {
         key = keys[i];
         if (!_deepEquals((obj1 as Record<string, unknown>)[key], (obj2 as Record<string, unknown>)[key], visited)) return false;
     }

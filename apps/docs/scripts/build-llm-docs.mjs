@@ -162,12 +162,6 @@ const GUIDE_PAGES = [
         description: 'Licensing, migration from PrimeNG, the ecosystem, and how support works.'
     },
     {
-        route: 'migration/primeng',
-        docPath: 'migration/primeng',
-        title: 'Migrate from PrimeNG',
-        description: 'Moving a PrimeNG v21 application to Optimus UI.'
-    },
-    {
         route: 'contribution',
         docPath: 'contribution',
         title: 'Contribution Guide',
@@ -544,7 +538,8 @@ function getAllComponents() {
         'passthrough',
         'cdn',
         'nuxt',
-        'accessibility'
+        'accessibility',
+        'templates'
     ];
 
     for (const entry of entries) {

@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
-import { SharedModule } from '@openng/optimus-ui/api';
+import { SharedModule, SortMeta } from '@openng/optimus-ui/api';
 import { Select } from '@openng/optimus-ui/select';
 import { Table, TableModule, TableService } from './table';
 
@@ -124,6 +124,29 @@ describe('Table', () => {
         changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
         template: `
+            <p-table [value]="products" [sortMode]="'multiple'" [multiSortMeta]="multiSortMeta" [groupRowsBy]="'category'">
+                <ng-template #body let-product>
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        `
+    })
+    class TestGroupedSortingTableComponent {
+        products = [
+            { id: '1001', name: 'Gaming Laptop', price: 1299.99, category: 'Electronics' },
+            { id: '1002', name: 'Wireless Mouse', price: 29.99, category: 'Accessories' },
+            { id: '1003', name: 'Mechanical Keyboard', price: 149.99, category: 'Accessories' }
+        ];
+        multiSortMeta: SortMeta[] = [];
+    }
+
+    @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+        template: `
             <p-table [value]="products" [globalFilterFields]="['name', 'category']">
                 <ng-template #header>
                     <tr>
@@ -199,6 +222,91 @@ describe('Table', () => {
     @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
+        selector: 'test-virtual-scroll-percent-height-table',
+        template: `
+            <div style="height: 480px;">
+                <p-table [value]="products" [scrollable]="true" [virtualScroll]="true" [virtualScrollItemSize]="40" [scrollHeight]="'100%'">
+                    <ng-template #header>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-product>
+                        <tr style="height: 40px">
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.name }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        `
+    })
+    class TestVirtualScrollPercentHeightTableComponent {
+        products = Array.from({ length: 1000 }, (_, i) => ({
+            id: i + 1,
+            name: `Product ${i + 1}`
+        }));
+    }
+
+    @Component({
+        standalone: false,
+        selector: 'test-scrollable-non-virtual-table',
+        template: `
+            <p-table [value]="products" [scrollable]="true" [scrollHeight]="'400px'">
+                <ng-template #header>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-product>
+                    <tr>
+                        <td>{{ product.id }}</td>
+                        <td>{{ product.name }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        `
+    })
+    class TestScrollableNonVirtualTableComponent {
+        products = Array.from({ length: 20 }, (_, i) => ({
+            id: i + 1,
+            name: `Product ${i + 1}`
+        }));
+    }
+
+    @Component({
+        standalone: false,
+        selector: 'test-virtual-scroll-flex-height-table',
+        template: `
+            <div style="height: 480px;">
+                <p-table [value]="products" [scrollable]="true" [virtualScroll]="true" [virtualScrollItemSize]="40" [scrollHeight]="'flex'">
+                    <ng-template #header>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-product>
+                        <tr style="height: 40px">
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.name }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        `
+    })
+    class TestVirtualScrollFlexHeightTableComponent {
+        products = Array.from({ length: 1000 }, (_, i) => ({
+            id: i + 1,
+            name: `Product ${i + 1}`
+        }));
+    }
+
+    @Component({
+        standalone: false,
         template: `
             <p-table [value]="products" [lazy]="true" [totalRecords]="totalRecords" [paginator]="true" [rows]="10" (onLazyLoad)="loadProducts($event)">
                 <ng-template #header>
@@ -271,7 +379,20 @@ describe('Table', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [Table, TestBasicTableComponent, TestSelectionTableComponent, TestSortingTableComponent, TestFilteringTableComponent, TestVirtualScrollTableComponent, TestLazyLoadTableComponent, TestTemplatesTableComponent],
+            declarations: [
+                Table,
+                TestBasicTableComponent,
+                TestSelectionTableComponent,
+                TestSortingTableComponent,
+                TestGroupedSortingTableComponent,
+                TestFilteringTableComponent,
+                TestVirtualScrollTableComponent,
+                TestVirtualScrollPercentHeightTableComponent,
+                TestScrollableNonVirtualTableComponent,
+                TestVirtualScrollFlexHeightTableComponent,
+                TestLazyLoadTableComponent,
+                TestTemplatesTableComponent
+            ],
             imports: [CommonModule, FormsModule, TableModule, SharedModule, Select],
             providers: [TableService, provideZonelessChangeDetection()]
         }).compileComponents();
@@ -370,6 +491,43 @@ describe('Table', () => {
             const sortableColumns = testFixture.debugElement.queryAll(By.css('[pSortableColumn]'));
             expect(sortableColumns.length).toBe(3);
         });
+
+        describe('Row Grouping With An Empty multiSortMeta', () => {
+            let groupedComponent: TestGroupedSortingTableComponent;
+            let groupedFixture: ComponentFixture<TestGroupedSortingTableComponent>;
+
+            const createGroupedFixture = async () => {
+                groupedFixture = TestBed.createComponent(TestGroupedSortingTableComponent);
+                groupedComponent = groupedFixture.componentInstance;
+                await groupedFixture.whenStable();
+                groupedFixture.detectChanges();
+            };
+
+            it('should not throw when multiSortMeta starts out as an empty array', async () => {
+                await createGroupedFixture();
+            });
+
+            it('should sort by the grouped field when multiSortMeta is empty', async () => {
+                await createGroupedFixture();
+
+                const tableInstance: Table = groupedFixture.debugElement.query(By.css('p-table')).componentInstance;
+
+                expect(tableInstance.multiSortMeta).toEqual([{ field: 'category', order: 1 }]);
+                expect(tableInstance.value.map((product: any) => product.category)).toEqual(['Accessories', 'Accessories', 'Electronics']);
+            });
+
+            it('should keep the grouped field first when multiSortMeta is emptied later', async () => {
+                await createGroupedFixture();
+
+                groupedComponent.multiSortMeta = [];
+                groupedFixture.detectChanges();
+                await groupedFixture.whenStable();
+
+                const tableInstance: Table = groupedFixture.debugElement.query(By.css('p-table')).componentInstance;
+
+                expect(tableInstance.multiSortMeta).toEqual([{ field: 'category', order: 1 }]);
+            });
+        });
     });
 
     describe('Filtering Functionality', () => {
@@ -417,6 +575,55 @@ describe('Table', () => {
 
         it('should handle large datasets efficiently', () => {
             expect(testComponent.products.length).toBe(10000);
+        });
+
+        it('should apply host and container height for virtual scroll with 100% scrollHeight', async () => {
+            const percentHeightFixture = TestBed.createComponent(TestVirtualScrollPercentHeightTableComponent);
+            await percentHeightFixture.whenStable();
+            percentHeightFixture.detectChanges();
+
+            const tableElement = percentHeightFixture.debugElement.query(By.css('p-table')).nativeElement as HTMLElement;
+            const containerElement = percentHeightFixture.nativeElement.querySelector('.p-datatable-table-container') as HTMLElement;
+            const scrollerElement = percentHeightFixture.nativeElement.querySelector('.p-virtualscroller');
+
+            expect(tableElement.style.height).toBe('100%');
+            expect(containerElement.style.height).toBe('100%');
+            expect(scrollerElement).toBeTruthy();
+            expect(scrollerElement.offsetHeight).toBeGreaterThan(0);
+        });
+
+        it('should apply explicit height for virtual scroll with pixel scrollHeight', () => {
+            const tableElement = testFixture.debugElement.query(By.css('p-table')).nativeElement as HTMLElement;
+            const containerElement = testFixture.nativeElement.querySelector('.p-datatable-table-container') as HTMLElement;
+
+            expect(tableElement.style.height).toBe('400px');
+            expect(containerElement.style.height).toBe('400px');
+        });
+
+        it('should not apply host height when virtualScroll is false', async () => {
+            const nonVirtualFixture = TestBed.createComponent(TestScrollableNonVirtualTableComponent);
+            await nonVirtualFixture.whenStable();
+            nonVirtualFixture.detectChanges();
+
+            const tableElement = nonVirtualFixture.debugElement.query(By.css('p-table')).nativeElement as HTMLElement;
+            const containerElement = nonVirtualFixture.nativeElement.querySelector('.p-datatable-table-container') as HTMLElement;
+
+            expect(tableElement.style.height).toBe('');
+            expect(containerElement.style.maxHeight).toBe('400px');
+        });
+
+        it('should keep flex mode on class-based path without inline height', async () => {
+            const flexFixture = TestBed.createComponent(TestVirtualScrollFlexHeightTableComponent);
+            await flexFixture.whenStable();
+            flexFixture.detectChanges();
+
+            const tableElement = flexFixture.debugElement.query(By.css('p-table')).nativeElement as HTMLElement;
+            const containerElement = flexFixture.nativeElement.querySelector('.p-datatable-table-container') as HTMLElement;
+            const rootElement = flexFixture.nativeElement.querySelector('.p-datatable') as HTMLElement;
+
+            expect(tableElement.style.height).toBe('');
+            expect(containerElement.style.height).toBe('');
+            expect(rootElement.classList.contains('p-datatable-flex-scrollable')).toBe(true);
         });
     });
 

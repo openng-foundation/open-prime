@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
+import { DISCORD_URL } from '@/utils/constants';
 
 @Component({
     selector: 'helpneeded-doc',
@@ -22,9 +23,11 @@ import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
             <h3>Community Support</h3>
             <p>
                 Assist other users by participating in the issue tracker, <a href="https://github.com/openng-org/optimus-ui/discussions" target="_blank" rel="noopener noreferrer">GitHub discussions</a>, and the
-                <a href="https://discord.gg/angular" target="_blank" rel="noopener noreferrer">Angular community Discord</a>. Your expertise can help others solve problems and improve their experience with Optimus UI.
+                <a [href]="discordUrl" target="_blank" rel="noopener noreferrer">Optimus UI Discord</a>. Your expertise can help others solve problems and improve their experience with Optimus UI.
             </p>
         </app-docsectiontext>
     `
 })
-export class HelpNeededDoc {}
+export class HelpNeededDoc {
+    readonly discordUrl = DISCORD_URL;
+}

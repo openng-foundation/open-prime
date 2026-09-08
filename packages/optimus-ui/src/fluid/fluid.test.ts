@@ -125,20 +125,26 @@ class TestFluidResponsiveComponent {}
     selector: 'test-fluid-dynamic-content',
     template: `
         <p-fluid>
-            <div *ngIf="showFirstSection" class="first-section">
-                <input type="text" class="dynamic-input-1" />
-                <button class="dynamic-button-1">Button 1</button>
-            </div>
-            <div *ngIf="showSecondSection" class="second-section">
-                <textarea class="dynamic-textarea"></textarea>
-                <select class="dynamic-select">
-                    <option>Dynamic Option</option>
-                </select>
-            </div>
-            <div *ngFor="let item of dynamicItems" class="dynamic-item">
-                <span>{{ item.label }}</span>
-                <input type="text" [value]="item.value" class="dynamic-list-input" />
-            </div>
+            @if (showFirstSection) {
+                <div class="first-section">
+                    <input type="text" class="dynamic-input-1" />
+                    <button class="dynamic-button-1">Button 1</button>
+                </div>
+            }
+            @if (showSecondSection) {
+                <div class="second-section">
+                    <textarea class="dynamic-textarea"></textarea>
+                    <select class="dynamic-select">
+                        <option>Dynamic Option</option>
+                    </select>
+                </div>
+            }
+            @for (item of dynamicItems; track item) {
+                <div class="dynamic-item">
+                    <span>{{ item.label }}</span>
+                    <input type="text" [value]="item.value" class="dynamic-list-input" />
+                </div>
+            }
         </p-fluid>
     `
 })

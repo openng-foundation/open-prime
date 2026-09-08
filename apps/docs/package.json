@@ -1,6 +1,7 @@
 {
     "name": "docs",
-    "version": "2.0.0-rc.0",
+    "private": true,
+    "version": "2.0.2",
     "license": "MIT",
     "type": "module",
     "scripts": {
@@ -24,40 +25,28 @@
         "url": "https://github.com/openng-org/optimus-ui.git"
     },
     "devDependencies": {
-        "@algolia/client-search": "^4.19.1",
         "@angular/ssr": "catalog:angular22",
-        "@docsearch/css": "^3.3.4",
+        "@docsearch/css": "^5.0.3",
         "@docsearch/js": "^3.3.4",
         "@openng/optimus-ui-themes": "workspace:*",
         "@angular/cdk": "catalog:angular22",
-        "@stackblitz/sdk": "1.9.0",
-        "@types/express": "^4.17.17",
-        "@types/jasmine": "~4.3.1",
-        "@types/jest": "^29.5.14",
-        "@types/node": "^22.9.0",
-        "@types/react": "^18.3.12",
-        "chart.js": "4.4.2",
-        "codelyzer": "^0.0.28",
-        "del": "^7.1.0",
-        "esbuild": "^0.19.8",
-        "express": "^4.19.2",
-        "file-saver": "^2.0.5",
-        "jasmine-core": "~4.6.0",
-        "jspdf": "^4.0.0",
-        "jspdf-autotable": "^3.5.28",
+        "@stackblitz/sdk": "1.11.1",
+        "@types/express": "^5.0.6",
+        "@types/node": "^26.2.0",
+        "chart.js": "4.5.1",
+        "express": "^5.2.1",
         "@openng/icons": "catalog:",
         "@openng/optimus-ui": "workspace:*",
         "prismjs": "^1.29.0",
-        "quill": "2.0.2",
+        "quill": "2.0.3",
         "rxjs": "~7.8.2",
-        "ts-node": "~10.9.2",
         "tslib": "^2.8.1",
-        "typedoc": "0.28.5"
+        "typedoc": "0.28.20"
     },
     "dependencies": {
         "@openng/optimus-ui-tailwindcss": "workspace:*",
-        "autoprefixer": "^10.4.20",
-        "postcss": "^8.5.23",
+        "autoprefixer": "^10.5.4",
+        "postcss": "^8.5.26",
         "tailwindcss": "^3.4.10"
     }
 }

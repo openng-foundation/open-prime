@@ -42,11 +42,16 @@ const SCROLLTOP_INSTANCE = new InjectionToken<ScrollTop>('SCROLLTOP_INSTANCE');
                 [unstyled]="unstyled()"
             >
                 <ng-template #icon>
-                    <ng-container *ngIf="!iconTemplate && !_iconTemplate">
-                        <span *ngIf="_icon" [class]="cn(cx('icon'), _icon)"></span>
-                        <svg data-p-icon="chevron-up" *ngIf="!_icon" [class]="cx('icon')" />
-                    </ng-container>
-                    <ng-template [ngIf]="!icon" *ngTemplateOutlet="iconTemplate || _iconTemplate; context: { styleClass: cx('icon') }"></ng-template>
+                    @if (!iconTemplate && !_iconTemplate) {
+                        @if (_icon) {
+                            <span [class]="cn(cx('icon'), _icon)"></span>
+                        }
+                        @if (!_icon) {
+                            <svg data-p-icon="chevron-up" [class]="cx('icon')" />
+                        }
+                    } @else {
+                        <ng-template *ngTemplateOutlet="iconTemplate || _iconTemplate; context: { styleClass: cx('icon') }"></ng-template>
+                    }
                 </ng-template>
             </p-button>
         }

@@ -24,3 +24,9 @@ export interface BadgePassThroughOptions<I = unknown> {
  * @template I Type of instance.
  */
 export type BadgePassThrough<I = unknown> = PassThrough<I, BadgePassThroughOptions<I>>;
+
+/**
+ * Severity levels of the badge, also shared by the components that render one or follow the same severities, such as Tag, OverlayBadge and FileUpload.
+ * @group Types
+ */
+export type BadgeSeverity = 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';

@@ -49,49 +49,49 @@ const SCROLLER_INSTANCE = new InjectionToken<Scroller>('SCROLLER_INSTANCE');
     imports: [SpinnerIcon, SharedModule, Bind, NgFor, NgIf, NgStyle, NgTemplateOutlet],
     standalone: true,
     template: `
-        <ng-container *ngIf="!_disabled; else disabledContainer">
+        @if (!_disabled) {
             <div #element [attr.id]="_id" [attr.tabindex]="tabindex" [ngStyle]="_style" [class]="cn(cx('root'), styleClass)" (scroll)="onContainerScroll($event)" [pBind]="ptm('root')">
-                <ng-container *ngIf="contentTemplate || _contentTemplate; else buildInContent">
+                @if (contentTemplate || _contentTemplate) {
                     <ng-container *ngTemplateOutlet="contentTemplate || _contentTemplate; context: { $implicit: loadedItems, options: getContentOptions() }"></ng-container>
-                </ng-container>
-                <ng-template #buildInContent>
+                } @else {
                     <div #content [class]="cn(cx('content'), contentStyleClass)" [style]="contentStyle" [pBind]="ptm('content')">
-                        <ng-container *ngFor="let item of loadedItems; let index = index; trackBy: _trackBy">
+                        @for (item of loadedItems; track _trackBy ? _trackBy($index, item) : item; let index = $index) {
                             <ng-container *ngTemplateOutlet="itemTemplate || _itemTemplate; context: { $implicit: item, options: getOptions(index) }"></ng-container>
-                        </ng-container>
+                        }
                     </div>
-                </ng-template>
-                <div *ngIf="_showSpacer" [class]="cx('spacer')" [ngStyle]="spacerStyle" [pBind]="ptm('spacer')"></div>
-                <div *ngIf="!loaderDisabled && _showLoader && d_loading" [class]="cx('loader')" [pBind]="ptm('loader')">
-                    <ng-container *ngIf="loaderTemplate || _loaderTemplate; else buildInLoader">
-                        <ng-container *ngFor="let item of loaderArr; let index = index">
-                            <ng-container
-                                *ngTemplateOutlet="
-                                    loaderTemplate || _loaderTemplate;
-                                    context: {
-                                        options: getLoaderOptions(index, both && { numCols: numItemsInViewport.cols })
-                                    }
-                                "
-                            ></ng-container>
-                        </ng-container>
-                    </ng-container>
-                    <ng-template #buildInLoader>
-                        <ng-container *ngIf="loaderIconTemplate || _loaderIconTemplate; else buildInLoaderIcon">
-                            <ng-container *ngTemplateOutlet="loaderIconTemplate || _loaderIconTemplate; context: { options: { styleClass: 'p-virtualscroller-loading-icon' } }"></ng-container>
-                        </ng-container>
-                        <ng-template #buildInLoaderIcon>
-                            <svg data-p-icon="spinner" [class]="cx('loadingIcon')" [spin]="true" [pBind]="ptm('loadingIcon')" />
-                        </ng-template>
-                    </ng-template>
-                </div>
+                }
+                @if (_showSpacer) {
+                    <div [class]="cx('spacer')" [ngStyle]="spacerStyle" [pBind]="ptm('spacer')"></div>
+                }
+                @if (!loaderDisabled && _showLoader && d_loading) {
+                    <div [class]="cx('loader')" [pBind]="ptm('loader')">
+                        @if (loaderTemplate || _loaderTemplate) {
+                            @for (item of loaderArr; track item; let index = $index) {
+                                <ng-container
+                                    *ngTemplateOutlet="
+                                        loaderTemplate || _loaderTemplate;
+                                        context: {
+                                            options: getLoaderOptions(index, both && { numCols: numItemsInViewport.cols })
+                                        }
+                                    "
+                                ></ng-container>
+                            }
+                        } @else {
+                            @if (loaderIconTemplate || _loaderIconTemplate) {
+                                <ng-container *ngTemplateOutlet="loaderIconTemplate || _loaderIconTemplate; context: { options: { styleClass: 'p-virtualscroller-loading-icon' } }"></ng-container>
+                            } @else {
+                                <svg data-p-icon="spinner" [class]="cx('loadingIcon')" [spin]="true" [pBind]="ptm('loadingIcon')" />
+                            }
+                        }
+                    </div>
+                }
             </div>
-        </ng-container>
-        <ng-template #disabledContainer>
+        } @else {
             <ng-content></ng-content>
-            <ng-container *ngIf="contentTemplate || _contentTemplate">
+            @if (contentTemplate || _contentTemplate) {
                 <ng-container *ngTemplateOutlet="contentTemplate || _contentTemplate; context: { $implicit: items, options: { rows: _items, columns: loadedColumns } }"></ng-container>
-            </ng-container>
-        </ng-template>
+            }
+        }
     `,
     changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None,
@@ -1087,6 +1087,13 @@ export class Scroller extends BaseComponent<VirtualScrollerPassThrough> {
 
             this.setContentPosition(newState);
 
+            // When the range moves anywhere other than one page forward (a backward scroll or a
+            // multi-page jump), the page before the landing page can still be (partially) visible
+            // through the tolerated items, so it must be included in the lazy load request.
+            const currentPage = this.getPageByFirst(first);
+            const previousPage = this.getPageByFirst(this.first);
+            const loadPreviousPage = currentPage !== previousPage && currentPage !== previousPage + 1;
+
             this.first = first;
             this.last = last;
             this.lastScrollPos = scrollPos;
@@ -1095,10 +1102,10 @@ export class Scroller extends BaseComponent<VirtualScrollerPassThrough> {
 
             if (this._lazy && this.isPageChanged(first)) {
                 const lazyLoadState = {
-                    first: this._step ? Math.min(this.getPageByFirst(first) * this._step, (<any[]>this._items).length - this._step) : first,
-                    last: Math.min(this._step ? (this.getPageByFirst(first) + 1) * this._step : last, (<any[]>this._items).length)
+                    first: this._step ? Math.max(0, Math.min((currentPage - (loadPreviousPage ? 1 : 0)) * this._step, (<any[]>this._items).length - this._step)) : first,
+                    last: Math.min(this._step ? (currentPage + 1) * this._step : last, (<any[]>this._items).length)
                 };
-                const isLazyStateChanged = this.lazyLoadState.first !== lazyLoadState.first || this.lazyLoadState.last !== lazyLoadState.last;
+                const isLazyStateChanged = lazyLoadState.first < this.lazyLoadState.first || lazyLoadState.last > this.lazyLoadState.last;
 
                 isLazyStateChanged && this.handleEvents('onLazyLoad', lazyLoadState);
                 this.lazyLoadState = lazyLoadState;

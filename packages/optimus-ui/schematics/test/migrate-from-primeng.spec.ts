@@ -51,6 +51,19 @@ describe('migrate-from-primeng', () => {
         expect(JSON.parse(result.readContent('/package.json')).dependencies['@openng/optimus-ui']).toBe(VERSIONS['@openng/optimus-ui']);
     });
 
+    it('version gate accepts primeng v21 declared only in peerDependencies (#1448)', async () => {
+        const { primeng, ...dependencies } = PRIMENG_PKG.dependencies;
+        const tree = primengTree({}, { ...PRIMENG_PKG, dependencies, peerDependencies: { primeng } });
+        const result = await createRunner().runSchematic('migrate-from-primeng', { skipInstall: true }, tree);
+        expect(result.readContent('/src/app/app.config.ts')).toContain(`from '@openng/optimus-ui/config'`);
+    });
+
+    it('version gate reports the version (not "not installed") for old primeng in peerDependencies (#1448)', async () => {
+        const { primeng, ...dependencies } = PRIMENG_PKG.dependencies;
+        const tree = primengTree({}, { ...PRIMENG_PKG, dependencies, peerDependencies: { primeng: '^19.0.0' } });
+        await expect(createRunner().runSchematic('migrate-from-primeng', { skipInstall: true }, tree)).rejects.toThrow(/v21/);
+    });
+
     it('succeeds when primeng is only present in a workspace sub-package (not the root)', async () => {
         const runner = createRunner();
         const tree = createAppTree({

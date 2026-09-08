@@ -23,6 +23,16 @@
             ]
         },
         {
+            "name": "Templates",
+            "icon": "pi pi-clone",
+            "children": [
+                {
+                    "name": "Sparked",
+                    "routerLink": "/templates"
+                }
+            ]
+        },
+        {
             "name": "Theming",
             "icon": "pi pi-palette",
             "children": [
@@ -552,7 +562,11 @@
             "children": [
                 {
                     "name": "From PrimeNG",
-                    "routerLink": "/migration/primeng"
+                    "href": "https://v1.optimus.openng.org/migration/primeng"
+                },
+                {
+                    "name": "Update Optimus UI",
+                    "routerLink": "/migration/update"
                 }
             ]
         },
@@ -565,8 +579,8 @@
                     "routerLink": "/faq"
                 },
                 {
-                    "name": "Angular Discord",
-                    "href": "https://discord.gg/angular"
+                    "name": "Discord",
+                    "href": "https://discord.gg/auSfMzVVPr"
                 },
                 {
                     "name": "GitHub Discussions",

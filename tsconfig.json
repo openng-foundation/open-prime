@@ -105,5 +105,5 @@
         "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
     },
     "include": ["**/src/**/*", "**/dist/**/*", "**/types/**/*"],
-    "exclude": ["**/node_modules", "**/**/*.spec.ts", "packages/optimus-ui-*"]
+    "exclude": ["**/node_modules", "packages/optimus-ui-*"]
 }

@@ -3,6 +3,7 @@ import { SharedModule } from '@openng/optimus-ui/api';
 import { BadgeModule } from '@openng/optimus-ui/badge';
 import { BaseComponent, PARENT_INSTANCE } from '@openng/optimus-ui/basecomponent';
 import { Bind } from '@openng/optimus-ui/bind';
+import type { BadgeSeverity } from '@openng/optimus-ui/types/badge';
 import { OverlayBadgePassThrough } from '@openng/optimus-ui/types/overlaybadge';
 import { OverlayBadgeStyle } from './style/overlaybadgestyle';
 
@@ -53,7 +54,7 @@ export class OverlayBadge extends BaseComponent<OverlayBadgePassThrough> {
      * Severity type of the badge.
      * @group Props
      */
-    @Input() severity: 'secondary' | 'info' | 'success' | 'warn' | 'danger' | 'contrast' | null | undefined;
+    @Input() severity: BadgeSeverity | null | undefined;
     /**
      * Value to display inside the badge.
      * @group Props

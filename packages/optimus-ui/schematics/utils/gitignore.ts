@@ -1,5 +1,6 @@
 import { Tree } from '@angular-devkit/schematics';
 import { SKIP_DIRS } from './package-json';
+import { visitWorkspaceFiles } from './workspace-files';
 
 /**
  * Minimal `.gitignore` matcher.
@@ -32,15 +33,23 @@ const REGEXP_SPECIALS = /[.+^${}()|[\]\\]/g;
 
 export function createIgnoreMatcher(tree: Tree): IgnoreMatcher {
     const files: IgnoreFile[] = [];
-    tree.visit((path, entry) => {
-        if (SKIP_DIRS.test(path) || !entry || path.slice(path.lastIndexOf('/') + 1) !== GITIGNORE_NAME) {
-            return;
+    visitWorkspaceFiles(
+        tree,
+        (path, read) => {
+            const content = read();
+            if (content === undefined) {
+                return;
+            }
+            const rules = parseGitignore(content);
+            if (rules.length > 0) {
+                files.push({ base: path.slice(0, path.lastIndexOf('/') + 1), rules });
+            }
+        },
+        {
+            shouldDescend: (path) => !SKIP_DIRS.test(path),
+            shouldVisitFile: (path) => path.slice(path.lastIndexOf('/') + 1) === GITIGNORE_NAME
         }
-        const rules = parseGitignore(entry.content.toString());
-        if (rules.length > 0) {
-            files.push({ base: path.slice(0, path.lastIndexOf('/') + 1), rules });
-        }
-    });
+    );
     if (files.length === 0) {
         return () => false;
     }

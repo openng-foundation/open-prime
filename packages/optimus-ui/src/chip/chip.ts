@@ -36,47 +36,40 @@ const CHIP_INSTANCE = new InjectionToken<Chip>('CHIP_INSTANCE');
     imports: [TimesCircleIcon, SharedModule, Bind, NgClass, NgIf, NgTemplateOutlet],
     template: `
         <ng-content></ng-content>
-        <img [pBind]="ptm('image')" [class]="cx('image')" [src]="image" *ngIf="image; else iconTemplate" (error)="imageError($event)" [alt]="alt" />
-        <ng-template #iconTemplate><span [pBind]="ptm('icon')" *ngIf="icon" [class]="icon" [ngClass]="cx('icon')"></span></ng-template>
-        <div [pBind]="ptm('label')" [class]="cx('label')" *ngIf="label">{{ label }}</div>
-        <ng-container *ngIf="removable">
-            <ng-container *ngIf="!removeIconTemplate && !_removeIconTemplate">
-                <span
-                    [pBind]="ptm('removeIcon')"
-                    *ngIf="removeIcon"
-                    [class]="removeIcon"
-                    [ngClass]="cx('removeIcon')"
-                    (click)="close($event)"
-                    (keydown)="onKeydown($event)"
-                    [attr.tabindex]="disabled ? -1 : 0"
-                    [attr.aria-label]="removeAriaLabel"
-                    role="button"
-                ></span>
-                <svg
-                    [pBind]="ptm('removeIcon')"
-                    data-p-icon="times-circle"
-                    *ngIf="!removeIcon"
-                    [class]="cx('removeIcon')"
-                    (click)="close($event)"
-                    (keydown)="onKeydown($event)"
-                    [attr.tabindex]="disabled ? -1 : 0"
-                    [attr.aria-label]="removeAriaLabel"
-                    role="button"
-                />
-            </ng-container>
-            <span
-                [pBind]="ptm('removeIcon')"
-                *ngIf="removeIconTemplate || _removeIconTemplate"
-                [attr.tabindex]="disabled ? -1 : 0"
-                [class]="cx('removeIcon')"
-                (click)="close($event)"
-                (keydown)="onKeydown($event)"
-                [attr.aria-label]="removeAriaLabel"
-                role="button"
-            >
-                <ng-template *ngTemplateOutlet="removeIconTemplate || _removeIconTemplate"></ng-template>
-            </span>
-        </ng-container>
+        @if (image) {
+            <img [pBind]="ptm('image')" [class]="cx('image')" [src]="image" (error)="imageError($event)" [alt]="alt" />
+        } @else {
+            @if (icon) {
+                <span [pBind]="ptm('icon')" [class]="icon" [ngClass]="cx('icon')"></span>
+            }
+        }
+        @if (label) {
+            <div [pBind]="ptm('label')" [class]="cx('label')">{{ label }}</div>
+        }
+        @if (removable) {
+            @if (!removeIconTemplate && !_removeIconTemplate) {
+                @if (removeIcon) {
+                    <span
+                        [pBind]="ptm('removeIcon')"
+                        [class]="removeIcon"
+                        [ngClass]="cx('removeIcon')"
+                        (click)="close($event)"
+                        (keydown)="onKeydown($event)"
+                        [attr.tabindex]="disabled ? -1 : 0"
+                        [attr.aria-label]="removeAriaLabel"
+                        role="button"
+                    ></span>
+                }
+                @if (!removeIcon) {
+                    <svg [pBind]="ptm('removeIcon')" data-p-icon="times-circle" [class]="cx('removeIcon')" (click)="close($event)" (keydown)="onKeydown($event)" [attr.tabindex]="disabled ? -1 : 0" [attr.aria-label]="removeAriaLabel" role="button" />
+                }
+            }
+            @if (removeIconTemplate || _removeIconTemplate) {
+                <span [pBind]="ptm('removeIcon')" [attr.tabindex]="disabled ? -1 : 0" [class]="cx('removeIcon')" (click)="close($event)" (keydown)="onKeydown($event)" [attr.aria-label]="removeAriaLabel" role="button">
+                    <ng-template *ngTemplateOutlet="removeIconTemplate || _removeIconTemplate"></ng-template>
+                </span>
+            }
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,

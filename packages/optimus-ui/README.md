@@ -43,7 +43,7 @@ Optimus UI is API-compatible with PrimeNG v21. On a PrimeNG v21 workspace, run t
 migration schematic:
 
 ```bash
-ng generate @openng/optimus-ui:migrate-from-primeng            # options: --skip-install, --force
+ng generate @openng/optimus-ui@1:migrate-from-primeng          # options: --skip-install, --force
 ```
 
 This replaces `primeng` and `@primeuix/*` dependencies with their `@openng` counterparts, rewrites

@@ -118,6 +118,7 @@ export class Optimus extends ThemeProvider {
             previous: 'Previous',
             next: 'Next',
             navigation: 'Navigation',
+            home: 'Home',
             scrollTop: 'Scroll Top',
             moveTop: 'Move Top',
             moveUp: 'Move Up',

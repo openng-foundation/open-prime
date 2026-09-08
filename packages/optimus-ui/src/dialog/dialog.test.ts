@@ -45,6 +45,7 @@ import { Dialog } from './dialog';
             [closeButtonProps]="closeButtonProps"
             [maximizeButtonProps]="maximizeButtonProps"
             [role]="role"
+            [ariaLabelledBy]="ariaLabelledBy"
             (onShow)="onShowEvent($event)"
             (onHide)="onHideEvent($event)"
             (onMaximize)="onMaximizeEvent($event)"
@@ -92,6 +93,7 @@ class TestBasicDialogComponent {
     closeButtonProps: any = {};
     maximizeButtonProps: any = {};
     role = 'dialog';
+    ariaLabelledBy: string | undefined;
     breakpoints: any = null as any;
 
     // Event handlers
@@ -326,7 +328,7 @@ describe('Dialog', () => {
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
-            expect(dialogInstance.header).toBe('Custom Header');
+            expect(dialogInstance.header()).toBe('Custom Header');
             expect(dialogInstance.modal).toBe(false);
             expect(dialogInstance.draggable).toBe(false);
             expect(dialogInstance.maximizable).toBe(true);
@@ -635,7 +637,7 @@ describe('Dialog', () => {
             expect(() => {
                 fixture.changeDetectorRef.markForCheck();
             }).not.toThrow();
-            expect(dialogInstance.header).toBeUndefined();
+            expect(dialogInstance.header()).toBeUndefined();
         });
 
         it('should handle invalid position values', async () => {
@@ -739,6 +741,35 @@ describe('Dialog', () => {
             await new Promise((resolve) => setTimeout(resolve, 0));
 
             expect(dialogInstance.focusOnShow).toBe(true);
+        });
+
+        it('should label the dialog by the generated header id by default', async () => {
+            component.visible = true;
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            const dialogElement = fixture.debugElement.query(By.css('[role="dialog"]'));
+            const titleElement = fixture.debugElement.query(By.css('.p-dialog-title'));
+            expect(dialogInstance.headerId()).toContain('_header');
+            expect(dialogElement.nativeElement.getAttribute('aria-labelledby')).toBe(dialogInstance.headerId());
+            expect(titleElement.nativeElement.getAttribute('id')).toBe(dialogInstance.headerId());
+        });
+
+        it('should use ariaLabelledBy input over the generated header id', async () => {
+            component.ariaLabelledBy = 'custom-label-id';
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            component.visible = true;
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+            await new Promise((resolve) => setTimeout(resolve, 0));
+
+            const dialogElement = fixture.debugElement.query(By.css('[role="dialog"]'));
+            const titleElement = fixture.debugElement.query(By.css('.p-dialog-title'));
+            expect(dialogElement.nativeElement.getAttribute('aria-labelledby')).toBe('custom-label-id');
+            expect(titleElement.nativeElement.getAttribute('id')).toBe(dialogInstance.headerId());
         });
 
         it('should handle custom role attribute', async () => {

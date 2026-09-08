@@ -10,7 +10,7 @@
 [![license](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE.md)
 [![angular](https://img.shields.io/badge/angular-%3E%3D21-black.svg)](https://angular.dev)
 
-[Documentation](https://optimus.openng.org) · [Getting started](https://optimus.openng.org/installation) · [Migrating from PrimeNG](https://optimus.openng.org/migration/primeng) · [Philosophy](https://optimus.openng.org/philosophy) · [FAQ](https://optimus.openng.org/faq)
+[Documentation](https://optimus.openng.org) · [Getting started](https://optimus.openng.org/installation) · [Migrating from PrimeNG](https://v1.optimus.openng.org/migration/primeng) · [Philosophy](https://optimus.openng.org/philosophy) · [FAQ](https://optimus.openng.org/faq)
 
 </div>
 
@@ -33,7 +33,7 @@ ng add @openng/optimus-ui
 The schematic asks which theme preset you want, adds the packages, wires `provideOptimus` into your root providers and installs everything.
 
 ```ts
-import { ButtonModule } from '@openng/optimus-ui/button';
+import { Button } from '@openng/optimus-ui/button';
 ```
 
 ```html
@@ -44,13 +44,14 @@ Full setup, including the manual path and icons, is in the [getting started guid
 
 ## Migrating from PrimeNG
 
-Run the same command in an existing PrimeNG v21 workspace. It detects the `primeng` dependency and runs the migration instead of a fresh install — packages swapped, imports rewritten, then a report of anything it could not handle automatically, with file and line numbers.
+`ng add` does not migrate an existing workspace. It sets up new projects only, and when it detects a `primeng` dependency it leaves your code untouched and fails with an error pointing you here rather than reporting success. Use the `migrate-from-primeng` schematic instead: install the package so the Angular CLI can resolve it, then run the schematic. Packages are swapped, imports are rewritten, and you get a report of anything it could not handle automatically, with file and line numbers.
 
 ```bash
-ng add @openng/optimus-ui
+npm install @openng/optimus-ui@1
+ng generate @openng/optimus-ui@1:migrate-from-primeng
 ```
 
-See the [migration guide](https://optimus.openng.org/migration/primeng) for prerequisites and the manual cases. If you are on PrimeNG v20 or older, upgrade to v21 first.
+See the [migration guide](https://v1.optimus.openng.org/migration/primeng) for prerequisites and the manual cases. If you are on PrimeNG v20 or older, upgrade to v21 first.
 
 ## Packages
 

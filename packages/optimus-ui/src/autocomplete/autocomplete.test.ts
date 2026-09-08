@@ -93,9 +93,11 @@ const mockItems = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
         </p-autocomplete>
 
         <!-- Reactive Forms test -->
-        <form [formGroup]="reactiveForm" *ngIf="showReactiveForm">
-            <p-autocomplete formControlName="selectedItems" [suggestions]="formSuggestions" [optionLabel]="'name'" [multiple]="true" (completeMethod)="onFormSearch($event)"> </p-autocomplete>
-        </form>
+        @if (showReactiveForm) {
+            <form [formGroup]="reactiveForm">
+                <p-autocomplete formControlName="selectedItems" [suggestions]="formSuggestions" [optionLabel]="'name'" [multiple]="true" (completeMethod)="onFormSearch($event)"> </p-autocomplete>
+            </form>
+        }
     `
 })
 class TestAutocompleteComponent {
@@ -681,6 +683,69 @@ describe('AutoComplete', () => {
             expect(valueResult).toBe('CUSTOM_AF');
         });
 
+        it('should display the option label in the input when the model holds an optionValue', async () => {
+            fixture.componentRef.setInput('optionLabel', 'name');
+            fixture.componentRef.setInput('optionValue', 'code');
+            fixture.componentRef.setInput('suggestions', mockCountries);
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            component.writeValue('AF');
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            const inputElement = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+            expect(inputElement.value).toBe('Afghanistan');
+        });
+
+        it('should display the option label in the input when a numeric optionValue is written before suggestions arrive', async () => {
+            fixture.componentRef.setInput('optionLabel', 'name');
+            fixture.componentRef.setInput('optionValue', 'id');
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            component.writeValue(2);
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            fixture.componentRef.setInput('suggestions', [
+                { id: 1, name: 'One' },
+                { id: 2, name: 'Two' }
+            ]);
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            expect(component.inputValue()).toBe('Two');
+        });
+
+        it('should mark the option matching the written optionValue as selected', async () => {
+            fixture.componentRef.setInput('optionLabel', 'name');
+            fixture.componentRef.setInput('optionValue', 'code');
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            component.writeValue('AL');
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            fixture.componentRef.setInput('suggestions', mockCountries);
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            expect(mockCountries.map((country) => component.isSelected(country))).toEqual([false, true, false, false, false]);
+        });
+
+        it('should pass the resolved option to the selected item template when the model holds an optionValue', async () => {
+            testComponent.optionValue = 'code';
+            testComponent.suggestions = testComponent.objectOptions;
+            testComponent.selectedValue = 'AF';
+            testFixture.changeDetectorRef.markForCheck();
+            await testFixture.whenStable();
+
+            const inputElement = testFixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+            expect(inputElement.value).toBe('Afghanistan');
+        });
+
         it('should work with optionDisabled as string', async () => {
             testComponent.optionDisabled = 'disabled';
             testComponent.suggestions = [
@@ -1086,6 +1151,18 @@ describe('AutoComplete', () => {
                     const autocompleteInstance = pTemplateFixture.debugElement.query(By.directive(AutoComplete)).componentInstance;
                     expect(autocompleteInstance._selectedItemTemplate).toBeTruthy();
                 }
+            });
+
+            it('should use pTemplate="selecteditem" as the input display value in single mode', async () => {
+                pTemplateComponent.multiple = false;
+                pTemplateFixture.detectChanges();
+                await pTemplateFixture.whenStable();
+                const autocompleteInstance = pTemplateFixture.debugElement.query(By.directive(AutoComplete)).componentInstance;
+                autocompleteInstance.onOptionSelect(new Event('click'), mockCountries[0], false);
+                pTemplateFixture.detectChanges();
+                await pTemplateFixture.whenStable();
+                const inputElement = pTemplateFixture.debugElement.query(By.css('input')).nativeElement;
+                expect(inputElement.value).toBe('🏳️Afghanistan');
             });
 
             it('should set _selectedItemTemplate in ngAfterContentInit', () => {
@@ -2639,5 +2716,61 @@ describe('AutoComplete', () => {
                 expect(dropdownButton?.getAttribute('data-has-suggestions')).toBe('true');
             });
         });
+    });
+});
+
+describe('AutoComplete generic typing', () => {
+    interface Country {
+        name: string;
+        code: string;
+    }
+
+    const afghanistan: Country = { name: 'Afghanistan', code: 'AF' };
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [AutoCompleteModule],
+            providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+    });
+
+    it('should type the select event value as the suggestion type', () => {
+        const event: AutoCompleteSelectEvent<Country> = { originalEvent: new Event('click'), value: afghanistan };
+
+        // Fails to compile if `value` is widened back to `any`.
+        const name: string = event.value.name;
+
+        expect(name).toBe('Afghanistan');
+    });
+
+    it('should type the unselect event value as the suggestion type', () => {
+        const event: AutoCompleteUnselectEvent<Country> = { originalEvent: new Event('click'), value: afghanistan };
+
+        const code: string = event.value.code;
+
+        expect(code).toBe('AF');
+    });
+
+    it('should propagate the component type argument to the select output', () => {
+        const typedFixture: ComponentFixture<AutoComplete<Country>> = TestBed.createComponent<AutoComplete<Country>>(AutoComplete);
+        const typedComponent = typedFixture.componentInstance;
+        let selectedName: string | undefined;
+
+        typedComponent.onSelect.subscribe((event) => (selectedName = event.value.name));
+        typedComponent.suggestions = [afghanistan];
+        typedComponent.onOptionSelect(new Event('click'), afghanistan);
+
+        expect(selectedName).toBe('Afghanistan');
+    });
+
+    it('should type the add event value as free text', () => {
+        const typedFixture: ComponentFixture<AutoComplete<Country>> = TestBed.createComponent<AutoComplete<Country>>(AutoComplete);
+        const typedComponent = typedFixture.componentInstance;
+        let addedValue: string | undefined;
+
+        typedComponent.onAdd.subscribe((event) => (addedValue = event.value.trim()));
+        typedComponent.onAdd.emit({ originalEvent: new Event('blur'), value: ' Afghanistan ' });
+
+        expect(addedValue).toBe('Afghanistan');
     });
 });

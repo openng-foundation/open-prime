@@ -1,6 +1,6 @@
 {
     "name": "@openng/optimus-ui-styled",
-    "version": "2.0.0-rc.0",
+    "version": "2.0.2",
     "author": "OpenNG",
     "description": "Styled utilities for Optimus UI Libraries",
     "keywords": ["styled", "css", "style utilities", "optimus", "angular"],
@@ -33,10 +33,15 @@
         "build:dev": "cross-env NODE_ENV=development INPUT_DIR=src/ OUTPUT_DIR=dist/ pnpm run build:dev:package",
         "build:package": "tsdown",
         "build:dev:package": "tsdown --watch",
-        "dev:link": "pnpm link --global && npm link"
+        "dev:link": "pnpm link --global && npm link",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "dependencies": {
         "@openng/optimus-ui-utils": "workspace:*"
+    },
+    "devDependencies": {
+        "vitest": "^4.1.11"
     },
     "engines": {
         "node": ">=12.11.0"

@@ -51,6 +51,7 @@ export const SELECTBUTTON_VALUE_ACCESSOR: any = {
                 [autofocus]="autofocus"
                 [styleClass]="styleClass"
                 [ngModel]="isSelected(option)"
+                [ngModelOptions]="{ standalone: true }"
                 [onLabel]="this.getOptionLabel(option)"
                 [offLabel]="this.getOptionLabel(option)"
                 [disabled]="$disabled() || isOptionDisabled(option)"

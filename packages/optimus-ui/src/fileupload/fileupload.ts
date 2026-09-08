@@ -33,6 +33,7 @@ import { PlusIcon, TimesIcon, UploadIcon } from '@openng/optimus-ui/icons';
 import { Message } from '@openng/optimus-ui/message';
 import { ProgressBar } from '@openng/optimus-ui/progressbar';
 import { VoidListener } from '@openng/optimus-ui/ts-helpers';
+import type { BadgeSeverity } from '@openng/optimus-ui/types/badge';
 import {
     FileBeforeUploadEvent,
     FileProgressEvent,
@@ -90,7 +91,7 @@ export class FileContent extends BaseComponent {
 
     files = input<any>();
 
-    badgeSeverity = input<'secondary' | 'info' | 'success' | 'warn' | 'danger' | 'contrast'>('warn');
+    badgeSeverity = input<BadgeSeverity>('warn');
 
     badgeValue = input<string>();
 

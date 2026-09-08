@@ -1,4 +1,4 @@
-import { DISCORD_URL, GITHUB_DISCUSSIONS_URL, GITHUB_REPO_URL } from '@/utils/constants';
+import { DISCORD_URL, GITHUB_DISCUSSIONS_URL, GITHUB_REPO_URL, SPARKED_DEMO_URL } from '@/utils/constants';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -18,7 +18,7 @@ import { RouterModule } from '@angular/router';
                                 <a [routerLink]="['installation']" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300"> Get Started </a>
                             </li>
                             <li class="mb-6">
-                                <a [href]="githubRepoUrl" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">Examples</a>
+                                <a [routerLink]="['templates']" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300"> Templates </a>
                             </li>
                         </ul>
                     </div>
@@ -29,7 +29,7 @@ import { RouterModule } from '@angular/router';
                                 <a [href]="githubDiscussionsUrl" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">GitHub Discussions</a>
                             </li>
                             <li class="mb-6">
-                                <a [href]="discordUrl" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">Angular Discord</a>
+                                <a [href]="discordUrl" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">Discord</a>
                             </li>
                         </ul>
                     </div>
@@ -46,6 +46,9 @@ import { RouterModule } from '@angular/router';
                             <li class="font-bold mt-8 lg:mt-0 mb-8">Resources</li>
                             <li class="mb-6">
                                 <a [href]="githubRepoUrl" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">Source Code</a>
+                            </li>
+                            <li class="mb-6">
+                                <a [href]="sparkedDemoUrl" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">Sparked Demo</a>
                             </li>
                             <li class="mb-6">
                                 <a href="mailto:contact@openng.org" target="_blank" rel="noopener noreferrer" class="text-surface-500 dark:text-surface-400 font-medium hover:text-primary rounded transition-all duration-300">Contact Us</a>
@@ -78,4 +81,6 @@ export class FooterSectionComponent {
     readonly githubRepoUrl = GITHUB_REPO_URL;
     readonly githubDiscussionsUrl = GITHUB_DISCUSSIONS_URL;
     readonly discordUrl = DISCORD_URL;
+
+    readonly sparkedDemoUrl = SPARKED_DEMO_URL;
 }

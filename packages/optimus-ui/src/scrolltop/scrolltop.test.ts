@@ -86,7 +86,9 @@ class TestScrollTopWithStylesComponent {
     template: `
         <div class="dynamic-container" style="height: 300px; overflow-y: auto;">
             <div [style.height.px]="contentHeight">
-                <p *ngFor="let item of items">{{ item }}</p>
+                @for (item of items; track item) {
+                    <p>{{ item }}</p>
+                }
                 <p-scrolltop target="parent" [threshold]="dynamicThreshold"> </p-scrolltop>
             </div>
         </div>

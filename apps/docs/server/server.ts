@@ -14,7 +14,7 @@ export function app(): express.Express {
     const llmsFolder = join(browserDistFolder, 'llms');
 
     const commonEngine = new CommonEngine({
-        allowedHosts: ['*.vercel.app', 'optimus.openng.org']
+        allowedHosts: ['*.vercel.app', 'optimus.openng.org', '*.optimus.openng.org']
     });
 
     server.set('view engine', 'html');
@@ -39,7 +39,7 @@ export function app(): express.Express {
 
     // Pages that have their own markdown files (not components)
     // These are defined in GUIDE_PAGES in build-llm-docs.mjs
-    const pageNames = new Set(['installation', 'configuration', 'styled', 'unstyled', 'icons', 'customicons', 'passthrough', 'tailwind', 'llms', 'accessibility', 'animations', 'rtl', 'primeflex', 'philosophy', 'faq', 'primeng', 'contribution']);
+    const pageNames = new Set(['installation', 'configuration', 'styled', 'unstyled', 'icons', 'customicons', 'passthrough', 'tailwind', 'llms', 'accessibility', 'animations', 'rtl', 'primeflex', 'philosophy', 'faq', 'contribution']);
 
     // Serve markdown files - handles both components and pages
     server.get('/:name.md', (req, res, next) => {
@@ -163,16 +163,26 @@ export function app(): express.Express {
         });
     });
 
-    // Serve static files from /browser
-    server.get(
-        '*.*',
+    // The PrimeNG migration guide moved to the v1 docs archive — redirect rather than 404.
+    server.get('/migration/primeng', (req, res) => {
+        res.redirect(301, 'https://v1.optimus.openng.org/migration/primeng');
+    });
+
+    // Serve static files from /browser.
+    // Registered as plain middleware (with a regex catch-all below) instead of the old
+    // '*.*' / '*' string patterns, which throw "Missing parameter name" at startup under
+    // express 5 (path-to-regexp v8). `index: false` and `redirect: false` preserve the old
+    // behavior: extensionless URLs (including '/') fall through to the Angular engine.
+    server.use(
         express.static(browserDistFolder, {
-            maxAge: '1y'
+            maxAge: '1y',
+            index: false,
+            redirect: false
         })
     );
 
     // All regular routes use the Angular engine
-    server.get('*', (req, res, next) => {
+    server.get(/.*/, (req, res, next) => {
         const { protocol, originalUrl, baseUrl, headers } = req;
 
         commonEngine

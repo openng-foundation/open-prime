@@ -83,14 +83,16 @@ export const MULTISELECT_VALUE_ACCESSOR: any = {
     standalone: true,
     imports: [Checkbox, FormsModule, SharedModule, NgIf, NgTemplateOutlet],
     template: `
-        <p-checkbox [ngModel]="selected" [binary]="true" [tabindex]="-1" [variant]="variant" [ariaLabel]="label" [pt]="getPTOptions('pcOptionCheckbox')" [unstyled]="unstyled()">
-            <ng-container *ngIf="itemCheckboxIconTemplate">
+        <p-checkbox [ngModel]="selected" [ngModelOptions]="{ standalone: true }" [binary]="true" [tabindex]="-1" [variant]="variant" [ariaLabel]="label" [pt]="getPTOptions('pcOptionCheckbox')" [unstyled]="unstyled()">
+            @if (itemCheckboxIconTemplate) {
                 <ng-template #icon let-klass="class">
                     <ng-template *ngTemplateOutlet="itemCheckboxIconTemplate; context: { checked: selected, class: klass }"></ng-template>
                 </ng-template>
-            </ng-container>
+            }
         </p-checkbox>
-        <span *ngIf="!template">{{ label ?? 'empty' }}</span>
+        @if (!template) {
+            <span>{{ label ?? 'empty' }}</span>
+        }
         <ng-container *ngTemplateOutlet="template; context: { $implicit: option }"></ng-container>
     `,
     encapsulation: ViewEncapsulation.None,
@@ -350,6 +352,7 @@ export class MultiSelectItem extends BaseComponent {
                             <p-checkbox
                                 [pt]="getHeaderCheckboxPTOptions('pcHeaderCheckbox')"
                                 [ngModel]="allSelected()"
+                                [ngModelOptions]="{ standalone: true }"
                                 [ariaLabel]="toggleAllAriaLabel"
                                 [binary]="true"
                                 (onChange)="onToggleAll($event)"
@@ -1849,19 +1852,13 @@ export class MultiSelect extends BaseEditableHolder<MultiSelectPassThrough> {
         }
     }
 
-    onTabKey(event, pressedInInputText = false) {
+    onTabKey(event: KeyboardEvent, pressedInInputText = false) {
         if (!pressedInInputText) {
             if (this.overlayVisible && this.hasFocusableElements()) {
                 focus(event.shiftKey ? this.lastHiddenFocusableElementOnOverlay?.nativeElement : this.firstHiddenFocusableElementOnOverlay?.nativeElement);
 
                 event.preventDefault();
             } else {
-                if (this.focusedOptionIndex() !== -1) {
-                    const option = this.visibleOptions()[this.focusedOptionIndex()];
-
-                    !this.isSelected(option) && this.onOptionSelect({ originalEvent: event, option });
-                }
-
                 this.overlayVisible && this.hide(this.filter);
             }
         }

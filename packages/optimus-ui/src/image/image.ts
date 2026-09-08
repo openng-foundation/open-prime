@@ -47,7 +47,7 @@ const IMAGE_INSTANCE = new InjectionToken<Image>('IMAGE_INSTANCE');
     standalone: true,
     imports: [RefreshIcon, EyeIcon, UndoIcon, SearchMinusIcon, SearchPlusIcon, TimesIcon, FocusTrap, SharedModule, BindModule, MotionModule, NgIf, NgStyle, NgTemplateOutlet],
     template: `
-        <ng-container *ngIf="!imageTemplate && !_imageTemplate">
+        @if (!imageTemplate && !_imageTemplate) {
             <img
                 [attr.src]="src"
                 [attr.srcset]="srcSet"
@@ -61,18 +61,19 @@ const IMAGE_INSTANCE = new InjectionToken<Image>('IMAGE_INSTANCE');
                 (error)="imageError($event)"
                 [pBind]="ptm('image')"
             />
-        </ng-container>
+        }
 
         <ng-container *ngTemplateOutlet="imageTemplate || _imageTemplate; context: { errorCallback: imageError.bind(this) }"></ng-container>
 
-        <button *ngIf="preview" [attr.aria-label]="zoomImageAriaLabel" type="button" [class]="cx('previewMask')" (click)="onImageClick()" #previewButton [ngStyle]="{ height: height + 'px', width: width + 'px' }" [pBind]="ptm('previewMask')">
-            <ng-container *ngIf="indicatorTemplate || _indicatorTemplate; else defaultTemplate">
-                <ng-container *ngTemplateOutlet="indicatorTemplate || _indicatorTemplate"></ng-container>
-            </ng-container>
-            <ng-template #defaultTemplate>
-                <svg data-p-icon="eye" [class]="cx('previewIcon')" [pBind]="ptm('previewIcon')" />
-            </ng-template>
-        </button>
+        @if (preview) {
+            <button [attr.aria-label]="zoomImageAriaLabel" type="button" [class]="cx('previewMask')" (click)="onImageClick()" #previewButton [ngStyle]="{ height: height + 'px', width: width + 'px' }" [pBind]="ptm('previewMask')">
+                @if (indicatorTemplate || _indicatorTemplate) {
+                    <ng-container *ngTemplateOutlet="indicatorTemplate || _indicatorTemplate"></ng-container>
+                } @else {
+                    <svg data-p-icon="eye" [class]="cx('previewIcon')" [pBind]="ptm('previewIcon')" />
+                }
+            </button>
+        }
         @if (renderMask()) {
             <div
                 #mask
@@ -92,29 +93,39 @@ const IMAGE_INSTANCE = new InjectionToken<Image>('IMAGE_INSTANCE');
             >
                 <div [class]="cx('toolbar')" (click)="handleToolbarClick($event)" [pBind]="ptm('toolbar')">
                     <button [class]="cx('rotateRightButton')" (click)="rotateRight()" type="button" [attr.aria-label]="rightAriaLabel()" [pBind]="ptm('rotateRightButton')">
-                        <svg data-p-icon="refresh" *ngIf="!rotateRightIconTemplate && !_rotateRightIconTemplate" />
+                        @if (!rotateRightIconTemplate && !_rotateRightIconTemplate) {
+                            <svg data-p-icon="refresh" />
+                        }
                         <ng-template *ngTemplateOutlet="rotateRightIconTemplate || _rotateRightIconTemplate"></ng-template>
                     </button>
                     <button [class]="cx('rotateLeftButton')" (click)="rotateLeft()" type="button" [attr.aria-label]="leftAriaLabel()" [pBind]="ptm('rotateLeftButton')">
-                        <svg data-p-icon="undo" *ngIf="!rotateLeftIconTemplate && !_rotateLeftIconTemplate" />
+                        @if (!rotateLeftIconTemplate && !_rotateLeftIconTemplate) {
+                            <svg data-p-icon="undo" />
+                        }
                         <ng-template *ngTemplateOutlet="rotateLeftIconTemplate || _rotateLeftIconTemplate"></ng-template>
                     </button>
                     <button [class]="cx('zoomOutButton')" (click)="zoomOut()" type="button" [disabled]="isZoomOutDisabled" [attr.aria-label]="zoomOutAriaLabel()" [pBind]="ptm('zoomOutButton')">
-                        <svg data-p-icon="search-minus" *ngIf="!zoomOutIconTemplate && !_zoomOutIconTemplate" />
+                        @if (!zoomOutIconTemplate && !_zoomOutIconTemplate) {
+                            <svg data-p-icon="search-minus" />
+                        }
                         <ng-template *ngTemplateOutlet="zoomOutIconTemplate || _zoomOutIconTemplate"></ng-template>
                     </button>
                     <button [class]="cx('zoomInButton')" (click)="zoomIn()" type="button" [disabled]="isZoomInDisabled" [attr.aria-label]="zoomInAriaLabel()" [pBind]="ptm('zoomInButton')">
-                        <svg data-p-icon="search-plus" *ngIf="!zoomInIconTemplate && !_zoomInIconTemplate" />
+                        @if (!zoomInIconTemplate && !_zoomInIconTemplate) {
+                            <svg data-p-icon="search-plus" />
+                        }
                         <ng-template *ngTemplateOutlet="zoomInIconTemplate || _zoomInIconTemplate"></ng-template>
                     </button>
                     <button [class]="cx('closeButton')" type="button" (click)="closePreview()" [attr.aria-label]="closeAriaLabel()" #closeButton [pBind]="ptm('closeButton')">
-                        <svg data-p-icon="times" *ngIf="!closeIconTemplate && !_closeIconTemplate" />
+                        @if (!closeIconTemplate && !_closeIconTemplate) {
+                            <svg data-p-icon="times" />
+                        }
                         <ng-template *ngTemplateOutlet="closeIconTemplate || _closeIconTemplate"></ng-template>
                     </button>
                 </div>
                 @if (renderPreview()) {
                     <p-motion [visible]="previewVisible" name="p-image-original" [appear]="true" [options]="computedMotionOptions()" (onBeforeEnter)="onAnimationStart($event)" (onBeforeLeave)="onBeforeLeave()" (onAfterLeave)="onAnimationEnd($event)">
-                        <ng-container *ngIf="!previewTemplate && !_previewTemplate">
+                        @if (!previewTemplate && !_previewTemplate) {
                             <img
                                 [attr.src]="previewImageSrc ? previewImageSrc : src"
                                 [attr.srcset]="previewImageSrcSet"
@@ -124,7 +135,7 @@ const IMAGE_INSTANCE = new InjectionToken<Image>('IMAGE_INSTANCE');
                                 (click)="onPreviewImageClick()"
                                 [pBind]="ptm('original')"
                             />
-                        </ng-container>
+                        }
                         <ng-container
                             *ngTemplateOutlet="
                                 previewTemplate || _previewTemplate;

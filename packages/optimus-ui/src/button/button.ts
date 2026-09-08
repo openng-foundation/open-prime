@@ -597,32 +597,33 @@ export class ButtonDirective extends BaseComponent {
         >
             <ng-content></ng-content>
             <ng-container *ngTemplateOutlet="contentTemplate || _contentTemplate"></ng-container>
-            <ng-container *ngIf="loading || buttonProps?.loading">
-                <ng-container *ngIf="!loadingIconTemplate && !_loadingIconTemplate">
-                    <span *ngIf="loadingIcon || buttonProps?.loadingIcon" [class]="cn(cx('loadingIcon'), 'pi-spin', loadingIcon || buttonProps?.loadingIcon)" [pBind]="ptm('loadingIcon')" [attr.aria-hidden]="true"></span>
-                    <svg data-p-icon="spinner" *ngIf="!(loadingIcon || buttonProps?.loadingIcon)" [class]="cn(cx('loadingIcon'), cx('spinnerIcon'))" [pBind]="ptm('loadingIcon')" [spin]="true" [attr.aria-hidden]="true" />
-                </ng-container>
-                <ng-template [ngIf]="loadingIconTemplate || _loadingIconTemplate" *ngTemplateOutlet="loadingIconTemplate || _loadingIconTemplate; context: { class: cx('loadingIcon'), pt: ptm('loadingIcon') }"></ng-template>
-            </ng-container>
-            <ng-container *ngIf="!(loading || buttonProps?.loading)">
-                <span *ngIf="(icon || buttonProps?.icon) && !iconTemplate && !_iconTemplate" [class]="cn(cx('icon'), icon || buttonProps?.icon)" [pBind]="ptm('icon')" [attr.data-p]="dataIconP"></span>
-                <ng-template [ngIf]="!icon && (iconTemplate || _iconTemplate)" *ngTemplateOutlet="iconTemplate || _iconTemplate; context: { class: cx('icon'), pt: ptm('icon') }"></ng-template>
-            </ng-container>
-            <span
-                [class]="cx('label')"
-                [attr.aria-hidden]="(icon || buttonProps?.icon) && !(label || buttonProps?.label)"
-                *ngIf="!contentTemplate && !_contentTemplate && (label || buttonProps?.label)"
-                [pBind]="ptm('label')"
-                [attr.data-p]="dataLabelP"
-                >{{ label || buttonProps?.label }}</span
-            >
-            <p-badge
-                *ngIf="!contentTemplate && !_contentTemplate && (badge || buttonProps?.badge)"
-                [value]="badge || buttonProps?.badge"
-                [severity]="badgeSeverity || buttonProps?.badgeSeverity"
-                [pt]="ptm('pcBadge')"
-                [unstyled]="unstyled()"
-            ></p-badge>
+            @if (loading || buttonProps?.loading) {
+                @if (!loadingIconTemplate && !_loadingIconTemplate) {
+                    @if (loadingIcon || buttonProps?.loadingIcon) {
+                        <span [class]="cn(cx('loadingIcon'), 'pi-spin', loadingIcon || buttonProps?.loadingIcon)" [pBind]="ptm('loadingIcon')" [attr.aria-hidden]="true"></span>
+                    }
+                    @if (!(loadingIcon || buttonProps?.loadingIcon)) {
+                        <svg data-p-icon="spinner" [class]="cn(cx('loadingIcon'), cx('spinnerIcon'))" [pBind]="ptm('loadingIcon')" [spin]="true" [attr.aria-hidden]="true" />
+                    }
+                }
+                @if (loadingIconTemplate || _loadingIconTemplate) {
+                    <ng-template *ngTemplateOutlet="loadingIconTemplate || _loadingIconTemplate; context: { class: cx('loadingIcon'), pt: ptm('loadingIcon') }"></ng-template>
+                }
+            }
+            @if (!(loading || buttonProps?.loading)) {
+                @if ((icon || buttonProps?.icon) && !iconTemplate && !_iconTemplate) {
+                    <span [class]="cn(cx('icon'), icon || buttonProps?.icon)" [pBind]="ptm('icon')" [attr.data-p]="dataIconP"></span>
+                }
+                @if (!icon && (iconTemplate || _iconTemplate)) {
+                    <ng-template *ngTemplateOutlet="iconTemplate || _iconTemplate; context: { class: cx('icon'), pt: ptm('icon') }"></ng-template>
+                }
+            }
+            @if (!contentTemplate && !_contentTemplate && (label || buttonProps?.label)) {
+                <span [class]="cx('label')" [attr.aria-hidden]="(icon || buttonProps?.icon) && !(label || buttonProps?.label)" [pBind]="ptm('label')" [attr.data-p]="dataLabelP">{{ label || buttonProps?.label }}</span>
+            }
+            @if (!contentTemplate && !_contentTemplate && (badge || buttonProps?.badge)) {
+                <p-badge [value]="badge || buttonProps?.badge" [severity]="badgeSeverity || buttonProps?.badgeSeverity" [pt]="ptm('pcBadge')" [unstyled]="unstyled()"></p-badge>
+            }
         </button>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -116,9 +116,9 @@ class TestSimpleTextCardComponent {}
     standalone: false,
     template: `
         <p-card [header]="header" [subheader]="subheader">
-            <ng-container *ngIf="showContent">
+            @if (showContent) {
                 <div class="dynamic-content">Dynamic Content</div>
-            </ng-container>
+            }
         </p-card>
     `
 })

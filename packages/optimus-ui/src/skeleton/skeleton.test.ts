@@ -95,12 +95,14 @@ class TestSkeletonCardLayoutComponent {}
                 <p-skeleton width="100%" height="2rem" styleClass="mb-2"></p-skeleton>
             </div>
             <div class="table-rows">
-                <div *ngFor="let row of rows; trackBy: trackByFn" class="table-row">
-                    <p-skeleton width="25%" height="1.5rem" styleClass="mr-2"></p-skeleton>
-                    <p-skeleton width="25%" height="1.5rem" styleClass="mr-2"></p-skeleton>
-                    <p-skeleton width="25%" height="1.5rem" styleClass="mr-2"></p-skeleton>
-                    <p-skeleton width="25%" height="1.5rem"></p-skeleton>
-                </div>
+                @for (row of rows; track trackByFn($index, row)) {
+                    <div class="table-row">
+                        <p-skeleton width="25%" height="1.5rem" styleClass="mr-2"></p-skeleton>
+                        <p-skeleton width="25%" height="1.5rem" styleClass="mr-2"></p-skeleton>
+                        <p-skeleton width="25%" height="1.5rem" styleClass="mr-2"></p-skeleton>
+                        <p-skeleton width="25%" height="1.5rem"></p-skeleton>
+                    </div>
+                }
             </div>
         </div>
     `
@@ -738,9 +740,11 @@ describe('Skeleton', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 standalone: false,
                 template: `
-                    <div *ngFor="let item of items; trackBy: trackByFn">
-                        <p-skeleton [width]="item.width" [height]="item.height"></p-skeleton>
-                    </div>
+                    @for (item of items; track trackByFn($index, item)) {
+                        <div>
+                            <p-skeleton [width]="item.width" [height]="item.height"></p-skeleton>
+                        </div>
+                    }
                 `
             })
             class TestMultipleSkeletonsComponent {
@@ -845,9 +849,13 @@ describe('Skeleton', () => {
                 changeDetection: ChangeDetectionStrategy.Eager,
                 standalone: false,
                 template: `
-                    <div *ngIf="showSkeletons">
-                        <p-skeleton *ngFor="let item of skeletonItems" [width]="item.width" [height]="item.height" [shape]="item.shape"> </p-skeleton>
-                    </div>
+                    @if (showSkeletons) {
+                        <div>
+                            @for (item of skeletonItems; track item) {
+                                <p-skeleton [width]="item.width" [height]="item.height" [shape]="item.shape"> </p-skeleton>
+                            }
+                        </div>
+                    }
                 `
             })
             class TestConditionalSkeletonsComponent {

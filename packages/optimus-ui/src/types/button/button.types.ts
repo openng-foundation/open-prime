@@ -124,4 +124,8 @@ export interface ButtonProps {
     variant?: string | undefined;
 }
 
+/**
+ * Severity levels of the button.
+ * @group Types
+ */
 export type ButtonSeverity = 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined;

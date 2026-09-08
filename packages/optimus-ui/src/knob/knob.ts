@@ -5,8 +5,7 @@ import { $dt } from '@openng/optimus-ui-styled';
 import { SharedModule } from '@openng/optimus-ui/api';
 import { PARENT_INSTANCE } from '@openng/optimus-ui/basecomponent';
 import { BaseEditableHolder } from '@openng/optimus-ui/baseeditableholder';
-import { Bind } from '@openng/optimus-ui/bind';
-import { BindModule } from '@openng/optimus-ui/bind';
+import { Bind, BindModule } from '@openng/optimus-ui/bind';
 import { VoidListener } from '@openng/optimus-ui/ts-helpers';
 import { KnobPassThrough } from '@openng/optimus-ui/types/knob';
 import { KnobStyle } from './style/knobstyle';
@@ -49,9 +48,11 @@ export const KNOB_VALUE_ACCESSOR: any = {
         >
             <path [attr.d]="rangePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="rangeColor" [class]="cx('range')" [pBind]="ptm('range')"></path>
             <path [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" [class]="cx('value')" [pBind]="ptm('value')"></path>
-            <text *ngIf="showValue" [attr.x]="50" [attr.y]="57" text-anchor="middle" [attr.fill]="textColor" [class]="cx('text')" [attr.name]="name()" [pBind]="ptm('text')">
-                {{ valueToDisplay() }}
-            </text>
+            @if (showValue) {
+                <text [attr.x]="50" [attr.y]="57" text-anchor="middle" [attr.fill]="textColor" [class]="cx('text')" [attr.name]="name()" [pBind]="ptm('text')">
+                    {{ valueToDisplay() }}
+                </text>
+            }
         </svg>
     `,
     providers: [KNOB_VALUE_ACCESSOR, KnobStyle, { provide: KNOB_INSTANCE, useExisting: Knob }, { provide: PARENT_INSTANCE, useExisting: Knob }],

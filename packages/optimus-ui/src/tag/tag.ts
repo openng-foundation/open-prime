@@ -3,6 +3,7 @@ import { AfterContentInit, booleanAttribute, ChangeDetectionStrategy, Component,
 import { PrimeTemplate, SharedModule } from '@openng/optimus-ui/api';
 import { BaseComponent, PARENT_INSTANCE } from '@openng/optimus-ui/basecomponent';
 import { Bind } from '@openng/optimus-ui/bind';
+import type { BadgeSeverity } from '@openng/optimus-ui/types/badge';
 import { TagPassThrough } from '@openng/optimus-ui/types/tag';
 import { TagStyle } from './style/tagstyle';
 
@@ -18,12 +19,16 @@ const TAG_INSTANCE = new InjectionToken<Tag>('TAG_INSTANCE');
     imports: [SharedModule, Bind, NgClass, NgIf, NgTemplateOutlet],
     template: `
         <ng-content></ng-content>
-        <ng-container *ngIf="!iconTemplate && !_iconTemplate">
-            <span [class]="cx('icon')" [ngClass]="icon" [pBind]="ptm('icon')" *ngIf="icon"></span>
-        </ng-container>
-        <span [class]="cx('icon')" [pBind]="ptm('icon')" *ngIf="iconTemplate || _iconTemplate">
-            <ng-template *ngTemplateOutlet="iconTemplate || _iconTemplate"></ng-template>
-        </span>
+        @if (!iconTemplate && !_iconTemplate) {
+            @if (icon) {
+                <span [class]="cx('icon')" [ngClass]="icon" [pBind]="ptm('icon')"></span>
+            }
+        }
+        @if (iconTemplate || _iconTemplate) {
+            <span [class]="cx('icon')" [pBind]="ptm('icon')">
+                <ng-template *ngTemplateOutlet="iconTemplate || _iconTemplate"></ng-template>
+            </span>
+        }
         <span [class]="cx('label')" [pBind]="ptm('label')">{{ value }}</span>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,7 +60,7 @@ export class Tag extends BaseComponent<TagPassThrough> implements AfterContentIn
      * Severity type of the tag.
      * @group Props
      */
-    @Input() severity: 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined | null;
+    @Input() severity: BadgeSeverity | undefined | null;
     /**
      * Value to display inside the tag.
      * @group Props

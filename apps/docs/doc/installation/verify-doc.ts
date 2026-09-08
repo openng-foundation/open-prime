@@ -2,12 +2,12 @@ import { AppCode } from '@/components/doc/app.code';
 import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
 import { Code } from '@/domain/code';
 import { Component } from '@angular/core';
-import { ButtonModule } from '@openng/optimus-ui/button';
+import { Button } from '@openng/optimus-ui/button';
 
 @Component({
     selector: 'verify-doc',
     standalone: true,
-    imports: [AppDocSectionText, AppCode, ButtonModule],
+    imports: [AppDocSectionText, AppCode, Button],
     template: `
         <app-docsectiontext>
             <p>
@@ -25,12 +25,12 @@ import { ButtonModule } from '@openng/optimus-ui/button';
 export class VerifyDoc {
     code1: Code = {
         typescript: `import { Component } from '@angular/core';
-import { ButtonModule } from '@openng/optimus-ui/button';
+import { Button } from '@openng/optimus-ui/button';
 
 @Component({
     selector: 'button-demo',
     templateUrl: './button-demo.html',
-    imports: [ButtonModule]
+    imports: [Button]
 })
 export class ButtonDemo {}`
     };

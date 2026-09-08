@@ -4,6 +4,9 @@ import { By } from '@angular/platform-browser';
 import { SharedModule } from '@openng/optimus-ui/api';
 import { Avatar, AvatarModule } from './avatar';
 
+const TEST_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const TEST_IMAGE_2 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false,
@@ -39,7 +42,7 @@ class TestIconAvatarComponent {
     template: `<p-avatar [image]="image" [ariaLabel]="ariaLabel" (onImageError)="onImageError($event)"></p-avatar>`
 })
 class TestImageAvatarComponent {
-    image = '/path/to/avatar.jpg';
+    image = TEST_IMAGE;
     ariaLabel = 'User Avatar';
     imageError: Event | null = null as any;
 
@@ -340,16 +343,16 @@ describe('Avatar', () => {
         it('should display image', () => {
             const imageElement = fixture.debugElement.query(By.css('img'));
             expect(imageElement).toBeTruthy();
-            expect(imageElement.nativeElement.src).toContain('/path/to/avatar.jpg');
+            expect(imageElement.nativeElement.src).toBe(component.image);
         });
 
         it('should update image src dynamically', async () => {
-            component.image = '/new/path/avatar.png';
+            component.image = TEST_IMAGE_2;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
             const imageElement = fixture.debugElement.query(By.css('img'));
-            expect(imageElement.nativeElement.src).toContain('/new/path/avatar.png');
+            expect(imageElement.nativeElement.src).toBe(TEST_IMAGE_2);
         });
 
         it('should set aria-label on image', () => {
@@ -626,7 +629,7 @@ describe('Avatar', () => {
         it('should prioritize label over icon and image', async () => {
             component.label = 'AB';
             component.icon = 'pi pi-user';
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
@@ -665,7 +668,7 @@ describe('Avatar', () => {
         });
 
         it('should show image when no label or icon is present', async () => {
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
 
@@ -721,7 +724,7 @@ describe('Avatar', () => {
         });
 
         it('should show image only when no label and no icon', async () => {
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
             expect(fixture.debugElement.query(By.css('img'))).toBeTruthy();
@@ -882,7 +885,7 @@ describe('Avatar', () => {
         });
 
         it('should combine all applicable classes correctly', async () => {
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             component.size = 'large';
             component.shape = 'circle';
             component.styleClass = 'custom-1 custom-2';
@@ -899,7 +902,7 @@ describe('Avatar', () => {
         });
 
         it('should remove p-avatar-image class when image is removed', async () => {
-            component.image = '/path/to/image.jpg';
+            component.image = TEST_IMAGE;
             fixture.changeDetectorRef.markForCheck();
             await fixture.whenStable();
             expect(element.classList.contains('p-avatar-image')).toBe(true);
@@ -983,7 +986,7 @@ describe('Avatar', () => {
 
             it('should apply string class to image section', async () => {
                 fixture.componentRef.setInput('label', undefined);
-                fixture.componentRef.setInput('image', '/path/to/image.jpg');
+                fixture.componentRef.setInput('image', TEST_IMAGE);
                 fixture.componentRef.setInput('pt', { image: 'IMAGE_CLASS' });
                 fixture.changeDetectorRef.markForCheck();
                 await fixture.whenStable();
@@ -1065,7 +1068,7 @@ describe('Avatar', () => {
 
             it('should apply object with class, style, data and aria attributes to image', async () => {
                 fixture.componentRef.setInput('label', undefined);
-                fixture.componentRef.setInput('image', '/path/to/image.jpg');
+                fixture.componentRef.setInput('image', TEST_IMAGE);
                 fixture.changeDetectorRef.markForCheck();
                 await fixture.whenStable();
                 fixture.componentRef.setInput('pt', {
@@ -1209,7 +1212,7 @@ describe('Avatar', () => {
 
             it('should use instance ariaLabel in pt function for image', async () => {
                 fixture.componentRef.setInput('label', undefined);
-                fixture.componentRef.setInput('image', '/path/to/image.jpg');
+                fixture.componentRef.setInput('image', TEST_IMAGE);
                 fixture.componentRef.setInput('ariaLabel', 'Test Avatar');
                 fixture.changeDetectorRef.markForCheck();
                 await fixture.whenStable();
@@ -1310,7 +1313,7 @@ describe('Avatar', () => {
             it('should access onImageError emitter through instance in pt', async () => {
                 let emitterCalled = false;
                 fixture.componentRef.setInput('label', undefined);
-                fixture.componentRef.setInput('image', '/path/to/image.jpg');
+                fixture.componentRef.setInput('image', TEST_IMAGE);
                 fixture.changeDetectorRef.markForCheck();
                 await fixture.whenStable();
                 fixture.componentRef.setInput('pt', {

@@ -142,21 +142,21 @@ class TestEndOnlyToolbarComponent {}
     standalone: false,
     template: `
         <p-toolbar [ariaLabelledBy]="ariaLabel">
-            <ng-container *ngIf="showStart">
+            @if (showStart) {
                 <ng-template pTemplate="start">
                     <button class="dynamic-start">Dynamic Start</button>
                 </ng-template>
-            </ng-container>
-            <ng-container *ngIf="showCenter">
+            }
+            @if (showCenter) {
                 <ng-template pTemplate="center">
                     <span class="dynamic-center">Dynamic Center</span>
                 </ng-template>
-            </ng-container>
-            <ng-container *ngIf="showEnd">
+            }
+            @if (showEnd) {
                 <ng-template pTemplate="end">
                     <button class="dynamic-end">Dynamic End</button>
                 </ng-template>
-            </ng-container>
+            }
         </p-toolbar>
     `
 })

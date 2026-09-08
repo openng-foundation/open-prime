@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ChangeDetectionStrategy, Component, provideZonelessChangeDetection, ViewChild } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Paginator, PaginatorModule } from './paginator';
 import { Select } from '@openng/optimus-ui/select';
@@ -1402,4 +1402,41 @@ class TestDynamicPaginatorComponent {
             this.rows = rows;
         }, 500);
     }
+}
+
+describe('Paginator inside a parent form', () => {
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+    });
+
+    it('should not register its internal ngModels with the parent form', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const isolationFixture = TestBed.createComponent(TestFormIsolationPaginatorComponent);
+        isolationFixture.detectChanges();
+        await isolationFixture.whenStable();
+
+        const internalNgModels = isolationFixture.debugElement.queryAll(By.directive(NgModel)).map((debugElement) => debugElement.injector.get(NgModel));
+        expect(internalNgModels.length).toBeGreaterThan(0);
+        expect(internalNgModels.every((ngModel) => ngModel.options?.standalone === true)).toBe(true);
+
+        // NG01354 is only reported by Angular 22.1.3 and up
+        expect(warnSpy.mock.calls.flat().join('\n')).not.toContain('NG01354');
+        expect(Object.keys(isolationFixture.componentInstance.form.controls)).toEqual(['value']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: true,
+    imports: [Paginator, ReactiveFormsModule],
+    template: `
+        <form [formGroup]="form">
+            <p-paginator [rows]="10" [totalRecords]="100" [rowsPerPageOptions]="[10, 20]" [showJumpToPageDropdown]="true" [showJumpToPageInput]="true" />
+        </form>
+    `
+})
+class TestFormIsolationPaginatorComponent {
+    form = new FormGroup({ value: new FormControl(1) });
 }

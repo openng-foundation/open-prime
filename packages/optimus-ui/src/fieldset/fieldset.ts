@@ -42,7 +42,7 @@ const FIELDSET_INSTANCE = new InjectionToken<Fieldset>('FIELDSET_INSTANCE');
     template: `
         <fieldset [attr.id]="id" [ngStyle]="style" [class]="cn(cx('root'), styleClass)" [pBind]="ptm('root')" [attr.data-p]="dataP">
             <legend [class]="cx('legend')" [pBind]="ptm('legend')" [attr.data-p]="dataP">
-                <ng-container *ngIf="toggleable; else legendContent">
+                @if (toggleable) {
                     <button
                         [attr.id]="id + '_header'"
                         tabindex="0"
@@ -55,21 +55,33 @@ const FIELDSET_INSTANCE = new InjectionToken<Fieldset>('FIELDSET_INSTANCE');
                         [class]="cx('toggleButton')"
                         [pBind]="ptm('toggleButton')"
                     >
-                        <ng-container *ngIf="collapsed">
-                            <svg data-p-icon="plus" *ngIf="!expandIconTemplate && !_expandIconTemplate" [class]="cx('toggleIcon')" [pBind]="ptm('toggleIcon')" />
-                            <span *ngIf="expandIconTemplate || _expandIconTemplate" [class]="cx('toggleIcon')" [pBind]="ptm('toggleIcon')">
-                                <ng-container *ngTemplateOutlet="expandIconTemplate || _expandIconTemplate"></ng-container>
-                            </span>
-                        </ng-container>
-                        <ng-container *ngIf="!collapsed">
-                            <svg data-p-icon="minus" *ngIf="!collapseIconTemplate && !_collapseIconTemplate" [class]="cx('toggleIcon')" [attr.aria-hidden]="true" [pBind]="ptm('toggleIcon')" />
-                            <span *ngIf="collapseIconTemplate || _collapseIconTemplate" [class]="cx('toggleIcon')" [pBind]="ptm('toggleIcon')">
-                                <ng-container *ngTemplateOutlet="collapseIconTemplate || _collapseIconTemplate"></ng-container>
-                            </span>
-                        </ng-container>
+                        @if (collapsed) {
+                            @if (!expandIconTemplate && !_expandIconTemplate) {
+                                <svg data-p-icon="plus" [class]="cx('toggleIcon')" [pBind]="ptm('toggleIcon')" />
+                            }
+                            @if (expandIconTemplate || _expandIconTemplate) {
+                                <span [class]="cx('toggleIcon')" [pBind]="ptm('toggleIcon')">
+                                    <ng-container *ngTemplateOutlet="expandIconTemplate || _expandIconTemplate"></ng-container>
+                                </span>
+                            }
+                        }
+                        @if (!collapsed) {
+                            @if (!collapseIconTemplate && !_collapseIconTemplate) {
+                                <svg data-p-icon="minus" [class]="cx('toggleIcon')" [attr.aria-hidden]="true" [pBind]="ptm('toggleIcon')" />
+                            }
+                            @if (collapseIconTemplate || _collapseIconTemplate) {
+                                <span [class]="cx('toggleIcon')" [pBind]="ptm('toggleIcon')">
+                                    <ng-container *ngTemplateOutlet="collapseIconTemplate || _collapseIconTemplate"></ng-container>
+                                </span>
+                            }
+                        }
                         <ng-container *ngTemplateOutlet="legendContent"></ng-container>
                     </button>
-                </ng-container>
+                } @else {
+                    <span [class]="cx('legendLabel')" [pBind]="ptm('legendLabel')">{{ legend }}</span>
+                    <ng-content select="p-header"></ng-content>
+                    <ng-container *ngTemplateOutlet="headerTemplate || _headerTemplate"></ng-container>
+                }
                 <ng-template #legendContent>
                     <span [class]="cx('legendLabel')" [pBind]="ptm('legendLabel')">{{ legend }}</span>
                     <ng-content select="p-header"></ng-content>

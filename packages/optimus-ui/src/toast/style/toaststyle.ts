@@ -10,8 +10,8 @@ const inlineStyles = {
         return {
             position: 'fixed',
             top: _position === 'top-right' || _position === 'top-left' || _position === 'top-center' ? '20px' : _position === 'center' ? '50%' : null,
-            right: (_position === 'top-right' || _position === 'bottom-right') && '20px',
-            bottom: (_position === 'bottom-left' || _position === 'bottom-right' || _position === 'bottom-center') && '20px',
+            right: _position === 'top-right' || _position === 'bottom-right' ? '20px' : null,
+            bottom: _position === 'bottom-left' || _position === 'bottom-right' || _position === 'bottom-center' ? '20px' : null,
             left: _position === 'top-left' || _position === 'bottom-left' ? '20px' : _position === 'center' || _position === 'top-center' || _position === 'bottom-center' ? '50%' : null
         };
     }

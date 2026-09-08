@@ -58,9 +58,9 @@ const CONFIRMDIALOG_INSTANCE = new InjectionToken<ConfirmDialog>('CONFIRMDIALOG_
             [closeOnEscape]="option('closeOnEscape')"
             [blockScroll]="option('blockScroll')"
             [appendTo]="$appendTo()"
-            [position]="position"
+            [position]="option('position')"
             [style]="style"
-            [dismissableMask]="dismissableMask"
+            [dismissableMask]="option('dismissableMask')"
             [draggable]="draggable"
             [baseZIndex]="baseZIndex"
             [autoZIndex]="autoZIndex"
@@ -118,7 +118,7 @@ const CONFIRMDIALOG_INSTANCE = new InjectionToken<ConfirmDialog>('CONFIRMDIALOG_
                         [unstyled]="unstyled()"
                     >
                         <ng-template #icon>
-                            @if (rejectIcon && !rejectIconTemplate && !_rejectIconTemplate) {
+                            @if (option('rejectIcon') && !rejectIconTemplate && !_rejectIconTemplate) {
                                 <i *ngIf="option('rejectIcon')" [class]="option('rejectIcon')" [pBind]="ptm('pcRejectButton')['icon']"></i>
                             }
                             <ng-template *ngTemplateOutlet="rejectIconTemplate || _rejectIconTemplate"></ng-template>
@@ -135,7 +135,7 @@ const CONFIRMDIALOG_INSTANCE = new InjectionToken<ConfirmDialog>('CONFIRMDIALOG_
                         [unstyled]="unstyled()"
                     >
                         <ng-template #icon>
-                            @if (acceptIcon && !_acceptIconTemplate && !acceptIconTemplate) {
+                            @if (option('acceptIcon') && !_acceptIconTemplate && !acceptIconTemplate) {
                                 <i *ngIf="option('acceptIcon')" [class]="option('acceptIcon')" [pBind]="ptm('pcAcceptButton')['icon']"></i>
                             }
                             <ng-template *ngTemplateOutlet="acceptIconTemplate || _acceptIconTemplate"></ng-template>
@@ -460,12 +460,6 @@ export class ConfirmDialog extends BaseComponent<ConfirmDialogPassThrough> imple
             if (confirmation.key === this.key) {
                 this.confirmation = confirmation;
 
-                const keys = Object.keys(confirmation);
-
-                keys.forEach((key) => {
-                    this[key] = confirmation[key];
-                });
-
                 if (this.confirmation.accept) {
                     this.confirmation.acceptEvent = new EventEmitter();
                     this.confirmation.acceptEvent.subscribe(this.confirmation.accept);
@@ -532,9 +526,11 @@ export class ConfirmDialog extends BaseComponent<ConfirmDialogPassThrough> imple
     }
 
     option(name: string, k?: string) {
-        const source: { [key: string]: any } = this;
-        if (source.hasOwnProperty(name)) {
-            const value = k ? source[k] : source[name];
+        const confirmation: { [key: string]: any } = this.confirmation ?? {};
+        const source: { [key: string]: any } = Object.prototype.hasOwnProperty.call(confirmation, name) ? confirmation : this;
+
+        if (Object.prototype.hasOwnProperty.call(source, name)) {
+            const value = k ? source[name]?.[k] : source[name];
             return typeof value === 'function' ? value() : value;
         }
 

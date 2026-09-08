@@ -231,10 +231,12 @@ class TestFormMultiSelectComponent {
         <p-multiselect [options]="options" [(ngModel)]="selectedCities" optionLabel="name">
             <ng-template pTemplate="selectedItems" let-value let-removeChip="removeChip">
                 <div class="custom-selected-items">
-                    <div *ngFor="let city of value" class="custom-chip">
-                        {{ city.name }}
-                        <span class="remove-chip" (click)="removeChip(city)">×</span>
-                    </div>
+                    @for (city of value; track city) {
+                        <div class="custom-chip">
+                            {{ city.name }}
+                            <span class="remove-chip" (click)="removeChip(city)">×</span>
+                        </div>
+                    }
                 </div>
             </ng-template>
 
@@ -314,7 +316,9 @@ class TestGroupedMultiSelectComponent {
         <p-multiselect [options]="options" [(ngModel)]="selectedCities" optionLabel="name">
             <ng-template #selecteditems let-value let-removeChip="removeChip">
                 <div class="content-child-selected">
-                    <div *ngFor="let city of value">{{ city.name }}</div>
+                    @for (city of value; track city) {
+                        <div>{{ city.name }}</div>
+                    }
                 </div>
             </ng-template>
 
@@ -821,6 +825,163 @@ describe('MultiSelect', () => {
             // Should focus on London (first option starting with L)
             const londonIndex = component.options.findIndex((opt) => opt.name === 'London');
             expect(multiSelect.focusedOptionIndex()).toBe(londonIndex);
+        });
+    });
+
+    describe('Tab Key Behavior', () => {
+        const dispatchTab = async (options: KeyboardEventInit = {}) => {
+            const keyEvent = new KeyboardEvent('keydown', { code: 'Tab', ...options });
+            vi.spyOn(keyEvent, 'preventDefault').mockImplementation(() => {});
+
+            multiSelect.onKeyDown(keyEvent);
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            return keyEvent;
+        };
+
+        describe('without focusable elements in the overlay', () => {
+            beforeEach(async () => {
+                component.filter = false;
+                multiSelect.showHeader = false;
+                fixture.detectChanges();
+
+                multiSelect.show();
+                await fixture.whenStable();
+                fixture.detectChanges();
+            });
+
+            it('should have no focusable elements when filter and header are disabled', () => {
+                expect(multiSelect.hasFocusableElements()).toBe(false);
+            });
+
+            it('should not select the focused option (#395)', async () => {
+                vi.spyOn(component, 'onSelectionChange').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(2);
+
+                await dispatchTab();
+
+                expect(multiSelect.modelValue()).toEqual([]);
+                expect(component.onSelectionChange).not.toHaveBeenCalled();
+            });
+
+            it('should keep previously selected options untouched', async () => {
+                multiSelect.onOptionSelect({ originalEvent: new MouseEvent('click'), option: component.options[0] });
+                await fixture.whenStable();
+                fixture.detectChanges();
+
+                vi.spyOn(component, 'onSelectionChange').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(2);
+
+                await dispatchTab();
+
+                expect(multiSelect.modelValue()).toEqual([component.options[0]]);
+                expect(component.onSelectionChange).not.toHaveBeenCalled();
+            });
+
+            it('should not deselect an already selected focused option', async () => {
+                multiSelect.onOptionSelect({ originalEvent: new MouseEvent('click'), option: component.options[1] });
+                await fixture.whenStable();
+                fixture.detectChanges();
+
+                multiSelect.focusedOptionIndex.set(1);
+
+                await dispatchTab();
+
+                expect(multiSelect.modelValue()).toEqual([component.options[1]]);
+            });
+
+            it('should close the overlay without preventing the default tab navigation', async () => {
+                multiSelect.focusedOptionIndex.set(2);
+
+                const keyEvent = await dispatchTab();
+
+                expect(multiSelect.overlayVisible).toBe(false);
+                expect(keyEvent.preventDefault).not.toHaveBeenCalled();
+            });
+
+            it('should not select anything when no option is focused', async () => {
+                vi.spyOn(component, 'onSelectionChange').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(-1);
+
+                await dispatchTab();
+
+                expect(multiSelect.modelValue()).toEqual([]);
+                expect(component.onSelectionChange).not.toHaveBeenCalled();
+                expect(multiSelect.overlayVisible).toBe(false);
+            });
+
+            it('should be a no-op while the overlay is closed', async () => {
+                multiSelect.hide();
+                await fixture.whenStable();
+                fixture.detectChanges();
+
+                vi.spyOn(component, 'onSelectionChange').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(2);
+
+                const keyEvent = await dispatchTab();
+
+                expect(multiSelect.modelValue()).toEqual([]);
+                expect(component.onSelectionChange).not.toHaveBeenCalled();
+                expect(multiSelect.overlayVisible).toBe(false);
+                expect(keyEvent.preventDefault).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('with focusable elements in the overlay', () => {
+            beforeEach(async () => {
+                component.filter = true;
+                multiSelect.showHeader = true;
+                fixture.detectChanges();
+
+                multiSelect.show();
+                await fixture.whenStable();
+                fixture.detectChanges();
+            });
+
+            it('should move focus to the first hidden focusable element and keep the overlay open', async () => {
+                vi.spyOn(component, 'onSelectionChange').mockImplementation(() => {});
+                const firstHiddenFocusableElement = multiSelect.firstHiddenFocusableElementOnOverlay!.nativeElement;
+                vi.spyOn(firstHiddenFocusableElement, 'focus').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(2);
+
+                const keyEvent = await dispatchTab();
+
+                expect(firstHiddenFocusableElement.focus).toHaveBeenCalled();
+                expect(keyEvent.preventDefault).toHaveBeenCalled();
+                expect(multiSelect.overlayVisible).toBe(true);
+                expect(multiSelect.modelValue()).toEqual([]);
+                expect(component.onSelectionChange).not.toHaveBeenCalled();
+            });
+
+            it('should move focus to the last hidden focusable element on shift+tab', async () => {
+                const lastHiddenFocusableElement = multiSelect.lastHiddenFocusableElementOnOverlay!.nativeElement;
+                vi.spyOn(lastHiddenFocusableElement, 'focus').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(2);
+
+                const keyEvent = await dispatchTab({ shiftKey: true });
+
+                expect(lastHiddenFocusableElement.focus).toHaveBeenCalled();
+                expect(keyEvent.preventDefault).toHaveBeenCalled();
+                expect(multiSelect.modelValue()).toEqual([]);
+            });
+
+            it('should not select the focused option when tab is pressed inside the filter input', async () => {
+                vi.spyOn(component, 'onSelectionChange').mockImplementation(() => {});
+                multiSelect.focusedOptionIndex.set(2);
+
+                const keyEvent = new KeyboardEvent('keydown', { code: 'Tab' });
+                vi.spyOn(keyEvent, 'preventDefault').mockImplementation(() => {});
+
+                multiSelect.onFilterKeyDown(keyEvent);
+                await fixture.whenStable();
+                fixture.detectChanges();
+
+                expect(multiSelect.modelValue()).toEqual([]);
+                expect(component.onSelectionChange).not.toHaveBeenCalled();
+                expect(multiSelect.overlayVisible).toBe(true);
+                expect(keyEvent.preventDefault).not.toHaveBeenCalled();
+            });
         });
     });
 
@@ -3735,3 +3896,49 @@ describe('MultiSelect Complex Edge Cases', () => {
         });
     });
 });
+
+describe('MultiSelect inside a parent form', () => {
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+    });
+
+    it('should not register its internal ngModels with the parent form', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const isolationFixture = TestBed.createComponent(TestFormIsolationMultiSelectComponent);
+        isolationFixture.detectChanges();
+        await isolationFixture.whenStable();
+
+        // the header checkbox and the option checkboxes only exist while the panel is open
+        isolationFixture.debugElement.query(By.directive(MultiSelect)).componentInstance.show();
+        isolationFixture.detectChanges();
+        await isolationFixture.whenStable();
+
+        const internalNgModels = isolationFixture.debugElement.queryAll(By.directive(NgModel)).map((debugElement) => debugElement.injector.get(NgModel));
+        expect(internalNgModels.length).toBeGreaterThan(0);
+        expect(internalNgModels.every((ngModel) => ngModel.options?.standalone === true)).toBe(true);
+
+        // NG01354 is only reported by Angular 22.1.3 and up
+        expect(warnSpy.mock.calls.flat().join('\n')).not.toContain('NG01354');
+        expect(Object.keys(isolationFixture.componentInstance.form.controls)).toEqual(['value']);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: true,
+    imports: [MultiSelect, ReactiveFormsModule],
+    template: `
+        <form [formGroup]="form">
+            <p-multiselect [options]="options" optionLabel="name" [filter]="true" [showToggleAll]="true" formControlName="value" />
+        </form>
+    `
+})
+class TestFormIsolationMultiSelectComponent {
+    form = new FormGroup({ value: new FormControl<City[]>([]) });
+    options: City[] = [
+        { name: 'Amsterdam', code: 'AMS' },
+        { name: 'Rotterdam', code: 'RTM' }
+    ];
+}

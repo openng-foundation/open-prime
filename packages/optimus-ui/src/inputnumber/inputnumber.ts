@@ -96,34 +96,95 @@ export const INPUTNUMBER_VALUE_ACCESSOR: any = {
             [fluid]="hasFluid"
             [attr.data-p]="dataP"
         />
-        <ng-container *ngIf="buttonLayout != 'vertical' && showClear && value">
-            <svg data-p-icon="times" *ngIf="!clearIconTemplate && !_clearIconTemplate" [pBind]="ptm('clearIcon')" [class]="cx('clearIcon')" (click)="clear()" />
-            <span *ngIf="clearIconTemplate || _clearIconTemplate" [pBind]="ptm('clearIcon')" (click)="clear()" [class]="cx('clearIcon')">
-                <ng-template *ngTemplateOutlet="clearIconTemplate || _clearIconTemplate"></ng-template>
+        @if (buttonLayout != 'vertical' && showClear && value) {
+            @if (!clearIconTemplate && !_clearIconTemplate) {
+                <svg data-p-icon="times" [pBind]="ptm('clearIcon')" [class]="cx('clearIcon')" (click)="clear()" />
+            }
+            @if (clearIconTemplate || _clearIconTemplate) {
+                <span [pBind]="ptm('clearIcon')" (click)="clear()" [class]="cx('clearIcon')">
+                    <ng-template *ngTemplateOutlet="clearIconTemplate || _clearIconTemplate"></ng-template>
+                </span>
+            }
+        }
+        @if (showButtons && buttonLayout === 'stacked') {
+            <span [pBind]="ptm('buttonGroup')" [class]="cx('buttonGroup')" [attr.data-p]="dataP">
+                <button
+                    type="button"
+                    [pBind]="ptm('incrementButton')"
+                    [class]="cn(cx('incrementButton'), incrementButtonClass)"
+                    [attr.disabled]="$disabled() ? '' : undefined"
+                    tabindex="-1"
+                    (mousedown)="onUpButtonMouseDown($event)"
+                    (mouseup)="onUpButtonMouseUp()"
+                    (mouseleave)="onUpButtonMouseLeave()"
+                    (keydown)="onUpButtonKeyDown($event)"
+                    (keyup)="onUpButtonKeyUp()"
+                    [attr.aria-hidden]="true"
+                    [attr.data-p]="dataP"
+                >
+                    @if (incrementButtonIcon) {
+                        <span [pBind]="ptm('incrementButtonIcon')" [ngClass]="incrementButtonIcon"></span>
+                    }
+                    @if (!incrementButtonIcon) {
+                        @if (!incrementButtonIconTemplate && !_incrementButtonIconTemplate) {
+                            <svg data-p-icon="angle-up" [pBind]="ptm('incrementButtonIcon')" />
+                        }
+                        <ng-template *ngTemplateOutlet="incrementButtonIconTemplate || _incrementButtonIconTemplate"></ng-template>
+                    }
+                </button>
+                <button
+                    type="button"
+                    [pBind]="ptm('decrementButton')"
+                    [class]="cn(cx('decrementButton'), decrementButtonClass)"
+                    [attr.disabled]="$disabled() ? '' : undefined"
+                    tabindex="-1"
+                    [attr.aria-hidden]="true"
+                    (mousedown)="onDownButtonMouseDown($event)"
+                    (mouseup)="onDownButtonMouseUp()"
+                    (mouseleave)="onDownButtonMouseLeave()"
+                    (keydown)="onDownButtonKeyDown($event)"
+                    (keyup)="onDownButtonKeyUp()"
+                    [attr.data-p]="dataP"
+                >
+                    @if (decrementButtonIcon) {
+                        <span [pBind]="ptm('decrementButtonIcon')" [ngClass]="decrementButtonIcon"></span>
+                    }
+                    @if (!decrementButtonIcon) {
+                        @if (!decrementButtonIconTemplate && !_decrementButtonIconTemplate) {
+                            <svg data-p-icon="angle-down" [pBind]="ptm('decrementButtonIcon')" />
+                        }
+                        <ng-template *ngTemplateOutlet="decrementButtonIconTemplate || _decrementButtonIconTemplate"></ng-template>
+                    }
+                </button>
             </span>
-        </ng-container>
-        <span [pBind]="ptm('buttonGroup')" [class]="cx('buttonGroup')" *ngIf="showButtons && buttonLayout === 'stacked'" [attr.data-p]="dataP">
+        }
+        @if (showButtons && buttonLayout !== 'stacked') {
             <button
                 type="button"
                 [pBind]="ptm('incrementButton')"
                 [class]="cn(cx('incrementButton'), incrementButtonClass)"
                 [attr.disabled]="$disabled() ? '' : undefined"
                 tabindex="-1"
+                [attr.aria-hidden]="true"
                 (mousedown)="onUpButtonMouseDown($event)"
                 (mouseup)="onUpButtonMouseUp()"
                 (mouseleave)="onUpButtonMouseLeave()"
                 (keydown)="onUpButtonKeyDown($event)"
                 (keyup)="onUpButtonKeyUp()"
-                [attr.aria-hidden]="true"
                 [attr.data-p]="dataP"
             >
-                <span *ngIf="incrementButtonIcon" [pBind]="ptm('incrementButtonIcon')" [ngClass]="incrementButtonIcon"></span>
-                <ng-container *ngIf="!incrementButtonIcon">
-                    <svg data-p-icon="angle-up" [pBind]="ptm('incrementButtonIcon')" *ngIf="!incrementButtonIconTemplate && !_incrementButtonIconTemplate" />
+                @if (incrementButtonIcon) {
+                    <span [pBind]="ptm('incrementButtonIcon')" [ngClass]="incrementButtonIcon"></span>
+                }
+                @if (!incrementButtonIcon) {
+                    @if (!incrementButtonIconTemplate && !_incrementButtonIconTemplate) {
+                        <svg data-p-icon="angle-up" [pBind]="ptm('incrementButtonIcon')" />
+                    }
                     <ng-template *ngTemplateOutlet="incrementButtonIconTemplate || _incrementButtonIconTemplate"></ng-template>
-                </ng-container>
+                }
             </button>
-
+        }
+        @if (showButtons && buttonLayout !== 'stacked') {
             <button
                 type="button"
                 [pBind]="ptm('decrementButton')"
@@ -138,55 +199,17 @@ export const INPUTNUMBER_VALUE_ACCESSOR: any = {
                 (keyup)="onDownButtonKeyUp()"
                 [attr.data-p]="dataP"
             >
-                <span *ngIf="decrementButtonIcon" [pBind]="ptm('decrementButtonIcon')" [ngClass]="decrementButtonIcon"></span>
-                <ng-container *ngIf="!decrementButtonIcon">
-                    <svg data-p-icon="angle-down" [pBind]="ptm('decrementButtonIcon')" *ngIf="!decrementButtonIconTemplate && !_decrementButtonIconTemplate" />
+                @if (decrementButtonIcon) {
+                    <span [pBind]="ptm('decrementButtonIcon')" [ngClass]="decrementButtonIcon"></span>
+                }
+                @if (!decrementButtonIcon) {
+                    @if (!decrementButtonIconTemplate && !_decrementButtonIconTemplate) {
+                        <svg data-p-icon="angle-down" [pBind]="ptm('decrementButtonIcon')" />
+                    }
                     <ng-template *ngTemplateOutlet="decrementButtonIconTemplate || _decrementButtonIconTemplate"></ng-template>
-                </ng-container>
+                }
             </button>
-        </span>
-        <button
-            *ngIf="showButtons && buttonLayout !== 'stacked'"
-            type="button"
-            [pBind]="ptm('incrementButton')"
-            [class]="cn(cx('incrementButton'), incrementButtonClass)"
-            [attr.disabled]="$disabled() ? '' : undefined"
-            tabindex="-1"
-            [attr.aria-hidden]="true"
-            (mousedown)="onUpButtonMouseDown($event)"
-            (mouseup)="onUpButtonMouseUp()"
-            (mouseleave)="onUpButtonMouseLeave()"
-            (keydown)="onUpButtonKeyDown($event)"
-            (keyup)="onUpButtonKeyUp()"
-            [attr.data-p]="dataP"
-        >
-            <span *ngIf="incrementButtonIcon" [pBind]="ptm('incrementButtonIcon')" [ngClass]="incrementButtonIcon"></span>
-            <ng-container *ngIf="!incrementButtonIcon">
-                <svg data-p-icon="angle-up" [pBind]="ptm('incrementButtonIcon')" *ngIf="!incrementButtonIconTemplate && !_incrementButtonIconTemplate" />
-                <ng-template *ngTemplateOutlet="incrementButtonIconTemplate || _incrementButtonIconTemplate"></ng-template>
-            </ng-container>
-        </button>
-        <button
-            *ngIf="showButtons && buttonLayout !== 'stacked'"
-            type="button"
-            [pBind]="ptm('decrementButton')"
-            [class]="cn(cx('decrementButton'), decrementButtonClass)"
-            [attr.disabled]="$disabled() ? '' : undefined"
-            tabindex="-1"
-            [attr.aria-hidden]="true"
-            (mousedown)="onDownButtonMouseDown($event)"
-            (mouseup)="onDownButtonMouseUp()"
-            (mouseleave)="onDownButtonMouseLeave()"
-            (keydown)="onDownButtonKeyDown($event)"
-            (keyup)="onDownButtonKeyUp()"
-            [attr.data-p]="dataP"
-        >
-            <span *ngIf="decrementButtonIcon" [pBind]="ptm('decrementButtonIcon')" [ngClass]="decrementButtonIcon"></span>
-            <ng-container *ngIf="!decrementButtonIcon">
-                <svg data-p-icon="angle-down" [pBind]="ptm('decrementButtonIcon')" *ngIf="!decrementButtonIconTemplate && !_decrementButtonIconTemplate" />
-                <ng-template *ngTemplateOutlet="decrementButtonIconTemplate || _decrementButtonIconTemplate"></ng-template>
-            </ng-container>
-        </button>
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [INPUTNUMBER_VALUE_ACCESSOR, InputNumberStyle, { provide: INPUTNUMBER_INSTANCE, useExisting: InputNumber }, { provide: PARENT_INSTANCE, useExisting: InputNumber }],
@@ -986,13 +1009,15 @@ export class InputNumber extends BaseInput<InputNumberPassThrough> {
         }
 
         let code = event.which || event.keyCode;
+        if (code == 13) {
+            return;
+        }
+        event.preventDefault();
+
         let char = String.fromCharCode(code);
         let isDecimalSign = this.isDecimalSign(char);
         const isMinusSign = this.isMinusSign(char);
 
-        if (code != 13) {
-            event.preventDefault();
-        }
         if (!isDecimalSign && event.code === 'NumpadDecimal') {
             isDecimalSign = true;
             char = this._decimalChar;

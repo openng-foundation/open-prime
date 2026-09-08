@@ -72,13 +72,19 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
             (change)="handleChange($event)"
         />
         <div [class]="cx('box')" [pBind]="ptm('box')" [attr.data-p]="dataP">
-            <ng-container *ngIf="!checkboxIconTemplate && !_checkboxIconTemplate">
-                <ng-container *ngIf="checked">
-                    <span *ngIf="checkboxIcon" [class]="cx('icon')" [ngClass]="checkboxIcon" [pBind]="ptm('icon')" [attr.data-p]="dataP"></span>
-                    <svg data-p-icon="check" *ngIf="!checkboxIcon" [class]="cx('icon')" [pBind]="ptm('icon')" [attr.data-p]="dataP" />
-                </ng-container>
-                <svg data-p-icon="minus" *ngIf="_indeterminate()" [class]="cx('icon')" [pBind]="ptm('icon')" [attr.data-p]="dataP" />
-            </ng-container>
+            @if (!checkboxIconTemplate && !_checkboxIconTemplate) {
+                @if (checked) {
+                    @if (checkboxIcon) {
+                        <span [class]="cx('icon')" [ngClass]="checkboxIcon" [pBind]="ptm('icon')" [attr.data-p]="dataP"></span>
+                    }
+                    @if (!checkboxIcon) {
+                        <svg data-p-icon="check" [class]="cx('icon')" [pBind]="ptm('icon')" [attr.data-p]="dataP" />
+                    }
+                }
+                @if (_indeterminate()) {
+                    <svg data-p-icon="minus" [class]="cx('icon')" [pBind]="ptm('icon')" [attr.data-p]="dataP" />
+                }
+            }
             <ng-template *ngTemplateOutlet="checkboxIconTemplate || _checkboxIconTemplate; context: { checked: checked, class: cx('icon'), dataP: dataP }"></ng-template>
         </div>
     `,

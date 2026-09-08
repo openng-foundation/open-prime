@@ -32,6 +32,7 @@ import { ChevronDownIcon } from '@openng/optimus-ui/icons';
 import { Ripple } from '@openng/optimus-ui/ripple';
 import { TieredMenu } from '@openng/optimus-ui/tieredmenu';
 import { TooltipModule } from '@openng/optimus-ui/tooltip';
+import type { ButtonSeverity } from '@openng/optimus-ui/types/button';
 import { ButtonProps, MenuButtonProps, SplitButtonPassThrough } from '@openng/optimus-ui/types/splitbutton';
 import { SplitButtonStyle } from './style/splitbuttonstyle';
 
@@ -47,7 +48,7 @@ type SplitButtonIconPosition = 'left' | 'right';
     standalone: true,
     imports: [ButtonDirective, TieredMenu, AutoFocus, ChevronDownIcon, Ripple, TooltipModule, SharedModule, NgIf, NgTemplateOutlet],
     template: `
-        <ng-container *ngIf="contentTemplate || _contentTemplate; else defaultButton">
+        @if (contentTemplate || _contentTemplate) {
             <button
                 [class]="cx('pcButton')"
                 type="button"
@@ -72,8 +73,7 @@ type SplitButtonIconPosition = 'left' | 'right';
             >
                 <ng-container *ngTemplateOutlet="contentTemplate || _contentTemplate"></ng-container>
             </button>
-        </ng-container>
-        <ng-template #defaultButton>
+        } @else {
             <button
                 #defaultbtn
                 [class]="cx('pcButton')"
@@ -98,7 +98,7 @@ type SplitButtonIconPosition = 'left' | 'right';
                 [pt]="ptm('pcButton')"
                 [unstyled]="unstyled()"
             ></button>
-        </ng-template>
+        }
         <button
             type="button"
             pButton
@@ -118,11 +118,15 @@ type SplitButtonIconPosition = 'left' | 'right';
             [pt]="ptm('pcDropdown')"
             [unstyled]="unstyled()"
         >
-            <span *ngIf="dropdownIcon" [class]="dropdownIcon"></span>
-            <ng-container *ngIf="!dropdownIcon">
-                <svg data-p-icon="chevron-down" *ngIf="!dropdownIconTemplate && !_dropdownIconTemplate" />
+            @if (dropdownIcon) {
+                <span [class]="dropdownIcon"></span>
+            }
+            @if (!dropdownIcon) {
+                @if (!dropdownIconTemplate && !_dropdownIconTemplate) {
+                    <svg data-p-icon="chevron-down" />
+                }
                 <ng-template *ngTemplateOutlet="dropdownIconTemplate || _dropdownIconTemplate"></ng-template>
-            </ng-container>
+            }
         </button>
         <p-tieredmenu
             [id]="ariaId"
@@ -166,7 +170,7 @@ export class SplitButton extends BaseComponent<SplitButtonPassThrough> {
      * Defines the style of the button.
      * @group Props
      */
-    @Input() severity: 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null | undefined;
+    @Input() severity: ButtonSeverity;
     /**
      * Add a shadow to indicate elevation.
      * @group Props

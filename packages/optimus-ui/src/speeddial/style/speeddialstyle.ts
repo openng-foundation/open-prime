@@ -5,8 +5,8 @@ import { BaseStyle } from '@openng/optimus-ui/base';
 /* Direction */
 const inlineStyles = {
     root: ({ instance }) => ({
-        alignItems: (instance.direction === 'up' || instance.direction === 'down') && 'center',
-        justifyContent: (instance.direction === 'left' || instance.direction === 'right') && 'center',
+        alignItems: instance.direction === 'up' || instance.direction === 'down' ? 'center' : null,
+        justifyContent: instance.direction === 'left' || instance.direction === 'right' ? 'center' : null,
         flexDirection: instance.direction === 'up' ? 'column-reverse' : instance.direction === 'down' ? 'column' : instance.direction === 'left' ? 'row-reverse' : instance.direction === 'right' ? 'row' : null
     }),
     list: ({ instance }) => ({

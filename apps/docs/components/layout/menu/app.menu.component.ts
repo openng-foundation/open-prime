@@ -38,7 +38,7 @@ export interface MenuItem {
                     </a>
                 </li>
                 <li class="drawer-quickaction">
-                    <a [href]="discordUrl" target="_blank" rel="noopener noreferrer" aria-label="Angular community Discord" title="Angular community Discord">
+                    <a [href]="discordUrl" target="_blank" rel="noopener noreferrer" aria-label="Optimus UI Discord" title="Optimus UI Discord">
                         <div class="menu-icon">
                             <i class="pi pi-discord"></i>
                         </div>

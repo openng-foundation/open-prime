@@ -323,6 +323,10 @@ import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
                         <td>Navigation</td>
                     </tr>
                     <tr>
+                        <td>aria.home</td>
+                        <td>Home</td>
+                    </tr>
+                    <tr>
                         <td>aria.scrollTop</td>
                         <td>Scroll Top</td>
                     </tr>
