@@ -579,7 +579,7 @@ export class Tooltip extends BaseComponent<TooltipPassThroughOptions> {
 
         const reveal = () => {
             // A hide, destroy or subsequent show invalidates this pending reveal.
-            if (this.container !== container || !nativeElement.isConnected) {
+            if (!this.active || this.container !== container || !nativeElement.isConnected) {
                 return;
             }
 
