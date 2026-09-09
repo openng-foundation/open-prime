@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, provideZonelessChangeDetection } from '@angular/core';
+import { ChangeDetectionStrategy, Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
 import { SharedModule, SortMeta } from '@openng/optimus-ui/api';
+import { Optimus } from '@openng/optimus-ui/config';
 import { Select } from '@openng/optimus-ui/select';
 import { Table, TableModule, TableService } from './table';
 
@@ -1672,6 +1673,137 @@ describe('Table', () => {
 
             // Verify the editing cell has the correct data attribute
             expect(editingCell.querySelector('[data-p-cell-editing="true"]') || editingCell.getAttribute('data-p-cell-editing')).toBeTruthy();
+        });
+    });
+    describe('Selection Aria Labels', () => {
+        @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
+            standalone: false,
+            template: `
+                <p-table [value]="products" [(selection)]="selectedProducts" [selectionMode]="'multiple'" [dataKey]="'id'">
+                    <ng-template #header>
+                        <tr>
+                            <th><p-tableHeaderCheckbox [ariaLabel]="headerLabel()"></p-tableHeaderCheckbox></th>
+                            <th>Name</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-product>
+                        <tr>
+                            <td><p-tableCheckbox [value]="product" [ariaLabel]="rowLabel()"></p-tableCheckbox></td>
+                            <td>{{ product.name }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            `
+        })
+        class TestAriaLabelTableComponent {
+            products = [
+                { id: '1001', name: 'Gaming Laptop' },
+                { id: '1002', name: 'Wireless Mouse' }
+            ];
+            selectedProducts: any[] = [];
+            headerLabel = signal<string | undefined>('select all items');
+            rowLabel = signal<string | undefined>('select item');
+        }
+
+        @Component({
+            changeDetection: ChangeDetectionStrategy.Eager,
+            standalone: false,
+            template: `
+                <p-table [value]="products" [(selection)]="selectedProduct" [selectionMode]="'single'" [dataKey]="'id'">
+                    <ng-template #body let-product>
+                        <tr>
+                            <td><p-tableRadioButton [value]="product" ariaLabel="select item"></p-tableRadioButton></td>
+                            <td>{{ product.name }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            `
+        })
+        class TestAriaLabelRadioTableComponent {
+            products = [
+                { id: '1001', name: 'Gaming Laptop' },
+                { id: '1002', name: 'Wireless Mouse' }
+            ];
+            selectedProduct: any = null;
+        }
+
+        let testFixture: ComponentFixture<TestAriaLabelTableComponent>;
+
+        const ariaLabels = (fixtureRef: ComponentFixture<unknown>, selector: string) => fixtureRef.debugElement.queryAll(By.css(`${selector} input`)).map((input) => input.nativeElement.getAttribute('aria-label'));
+
+        beforeEach(async () => {
+            TestBed.resetTestingModule();
+
+            await TestBed.configureTestingModule({
+                imports: [CommonModule, FormsModule, TableModule, SharedModule],
+                declarations: [TestAriaLabelTableComponent, TestAriaLabelRadioTableComponent],
+                providers: [provideZonelessChangeDetection()]
+            }).compileComponents();
+
+            testFixture = TestBed.createComponent(TestAriaLabelTableComponent);
+            await testFixture.whenStable();
+        });
+
+        it('should apply the ariaLabel input to the header checkbox', () => {
+            expect(ariaLabels(testFixture, 'p-tableHeaderCheckbox')).toEqual(['select all items']);
+        });
+
+        it('should apply the ariaLabel input to the row checkboxes', () => {
+            expect(ariaLabels(testFixture, 'p-tableCheckbox')).toEqual(['select item', 'select item']);
+        });
+
+        it('should apply the ariaLabel input to the row radio buttons', async () => {
+            const radioFixture = TestBed.createComponent(TestAriaLabelRadioTableComponent);
+            await radioFixture.whenStable();
+
+            expect(ariaLabels(radioFixture, 'p-tableRadioButton')).toEqual(['select item', 'select item']);
+        });
+
+        it('should keep the ariaLabel input after a selection change', async () => {
+            testFixture.debugElement.queryAll(By.css('p-tableCheckbox input'))[0].nativeElement.click();
+            await testFixture.whenStable();
+
+            expect(ariaLabels(testFixture, 'p-tableHeaderCheckbox')).toEqual(['select all items']);
+            expect(ariaLabels(testFixture, 'p-tableCheckbox')).toEqual(['select item', 'select item']);
+        });
+
+        it('should react to ariaLabel input changes', async () => {
+            testFixture.componentInstance.headerLabel.set('updated header label');
+            testFixture.componentInstance.rowLabel.set('updated row label');
+            await testFixture.whenStable();
+
+            expect(ariaLabels(testFixture, 'p-tableHeaderCheckbox')).toEqual(['updated header label']);
+            expect(ariaLabels(testFixture, 'p-tableCheckbox')).toEqual(['updated row label', 'updated row label']);
+        });
+
+        it('should fall back to the translated aria labels without an ariaLabel input', async () => {
+            const aria = TestBed.inject(Optimus).translation.aria!;
+
+            testFixture.componentInstance.headerLabel.set(undefined);
+            testFixture.componentInstance.rowLabel.set(undefined);
+            await testFixture.whenStable();
+
+            expect(ariaLabels(testFixture, 'p-tableHeaderCheckbox')).toEqual([aria.unselectAll]);
+            expect(ariaLabels(testFixture, 'p-tableCheckbox')).toEqual([aria.unselectRow, aria.unselectRow]);
+        });
+
+        it('should update the fallback aria label when the selection changes', async () => {
+            const aria = TestBed.inject(Optimus).translation.aria!;
+
+            testFixture.componentInstance.headerLabel.set(undefined);
+            testFixture.componentInstance.rowLabel.set(undefined);
+            await testFixture.whenStable();
+
+            testFixture.debugElement.queryAll(By.css('p-tableCheckbox input'))[0].nativeElement.click();
+            await testFixture.whenStable();
+
+            expect(ariaLabels(testFixture, 'p-tableCheckbox')).toEqual([aria.selectRow, aria.unselectRow]);
+
+            testFixture.debugElement.queryAll(By.css('p-tableCheckbox input'))[0].nativeElement.click();
+            await testFixture.whenStable();
+
+            expect(ariaLabels(testFixture, 'p-tableCheckbox')).toEqual([aria.unselectRow, aria.unselectRow]);
         });
     });
 });
