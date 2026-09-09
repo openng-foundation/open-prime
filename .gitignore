@@ -22,6 +22,7 @@ dist
 *.sublime-workspace
 
 # misc
+.eslintcache
 /.sass-cache
 /connect.lock
 /coverage
