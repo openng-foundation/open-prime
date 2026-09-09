@@ -377,6 +377,34 @@ describe('Table', () => {
         ];
     }
 
+    @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+        template: `
+            <p-table [value]="[]" [lazy]="true" [totalRecords]="0" (onLazyLoad)="onLazyLoad($event)">
+                <ng-template #header>
+                    <tr>
+                        <th>
+                            <p-columnFilter type="text" field="name" [filterOn]="filterOn" />
+                        </th>
+                        <th>
+                            <p-columnFilter type="numeric" field="age" [filterOn]="filterOn" />
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template #body></ng-template>
+            </p-table>
+        `
+    })
+    class TestLazyFilterComponent {
+        filterOn = 'enter';
+        lazyLoadCount = 0;
+
+        onLazyLoad(_event: any) {
+            this.lazyLoadCount++;
+        }
+    }
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [
@@ -391,7 +419,8 @@ describe('Table', () => {
                 TestScrollableNonVirtualTableComponent,
                 TestVirtualScrollFlexHeightTableComponent,
                 TestLazyLoadTableComponent,
-                TestTemplatesTableComponent
+                TestTemplatesTableComponent,
+                TestLazyFilterComponent
             ],
             imports: [CommonModule, FormsModule, TableModule, SharedModule, Select],
             providers: [TableService, provideZonelessChangeDetection()]
@@ -654,6 +683,62 @@ describe('Table', () => {
 
             tableInstance.onLazyLoad.emit({ first: 0, rows: 10 });
             expect(testComponent.loadProducts).toHaveBeenCalled();
+        });
+    });
+
+    describe('Lazy Filter Double-Emit', () => {
+        let testComponent: TestLazyFilterComponent;
+        let testFixture: ComponentFixture<TestLazyFilterComponent>;
+
+        beforeEach(async () => {
+            testFixture = TestBed.createComponent(TestLazyFilterComponent);
+            testComponent = testFixture.componentInstance;
+            await testFixture.whenStable();
+            testFixture.detectChanges();
+        });
+
+        it('should emit onLazyLoad once when filterOn is input and Enter is pressed after typing', () => {
+            testComponent.filterOn = 'input';
+            testFixture.detectChanges();
+
+            const filterFormEl = testFixture.debugElement.query(By.css('p-columnFilterFormElement'));
+            const filterFormInstance = filterFormEl.componentInstance;
+
+            testComponent.lazyLoadCount = 0;
+
+            filterFormInstance.onModelChange('test');
+            filterFormInstance.onTextInputEnterKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+            expect(testComponent.lazyLoadCount).toBe(1);
+        });
+
+        it('should emit onLazyLoad once when filterOn is enter and Enter is pressed', () => {
+            testComponent.filterOn = 'enter';
+            testFixture.detectChanges();
+
+            const filterFormEl = testFixture.debugElement.query(By.css('p-columnFilterFormElement'));
+            const filterFormInstance = filterFormEl.componentInstance;
+
+            testComponent.lazyLoadCount = 0;
+
+            filterFormInstance.onTextInputEnterKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+            expect(testComponent.lazyLoadCount).toBe(1);
+        });
+
+        it('should emit onLazyLoad once for numeric filter when filterOn is input and Enter is pressed', () => {
+            testComponent.filterOn = 'input';
+            testFixture.detectChanges();
+
+            const filterFormEls = testFixture.debugElement.queryAll(By.css('p-columnFilterFormElement'));
+            const numericFilterInstance = filterFormEls[1].componentInstance;
+
+            testComponent.lazyLoadCount = 0;
+
+            numericFilterInstance.onModelChange(42);
+            numericFilterInstance.onNumericInputKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+            expect(testComponent.lazyLoadCount).toBe(1);
         });
     });
 

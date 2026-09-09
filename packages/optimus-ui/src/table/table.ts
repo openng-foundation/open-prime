@@ -6630,13 +6630,17 @@ export class ColumnFilterFormElement extends BaseComponent<ColumnFilterPassThrou
     }
 
     onTextInputEnterKeyDown(event: KeyboardEvent) {
-        this.dataTable._filter();
+        if (this.filterOn !== 'input') {
+            this.dataTable._filter();
+        }
         event.preventDefault();
     }
 
     onNumericInputKeyDown(event: KeyboardEvent) {
         if (event.key === 'Enter') {
-            this.dataTable._filter();
+            if (this.filterOn !== 'input') {
+                this.dataTable._filter();
+            }
             event.preventDefault();
         }
     }
