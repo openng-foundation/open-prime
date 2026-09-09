@@ -110,6 +110,10 @@ export interface Confirmation {
      */
     position?: string;
     /**
+     * Enables dragging to change the position using header.
+     */
+    draggable?: boolean;
+    /**
      * Specifies whether the dialog displayed as modal or not.
      * @defaultValue true
      */
