@@ -76,6 +76,28 @@ class TestMeterGroupTemplatesComponent {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false,
+    selector: 'test-metergroup-ptemplate-label',
+    template: `
+        <p-metergroup [value]="value" [labelPosition]="labelPosition">
+            <ng-template pTemplate="label" let-value let-totalPercent="totalPercent">
+                <div class="legacy-label">
+                    <span>Total: {{ totalPercent }}%</span>
+                </div>
+            </ng-template>
+        </p-metergroup>
+    `
+})
+class TestMeterGroupPTemplateLabelComponent {
+    value: MeterItem[] = [
+        { label: 'Category A', value: 30, color: '#3b82f6' },
+        { label: 'Category B', value: 45, color: '#22c55e' }
+    ];
+    labelPosition: 'start' | 'end' = 'end';
+}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false,
     selector: 'test-metergroup-with-icons',
     template: ` <p-metergroup [value]="value" [min]="min" [max]="max"> </p-metergroup> `
 })
@@ -116,7 +138,15 @@ describe('MeterGroup', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [MeterGroupModule],
-            declarations: [TestBasicMeterGroupComponent, TestMeterGroupOrientationsComponent, TestMeterGroupTemplatesComponent, TestMeterGroupWithIconsComponent, TestMeterGroupEmptyComponent, TestMeterGroupDynamicComponent],
+            declarations: [
+                TestBasicMeterGroupComponent,
+                TestMeterGroupOrientationsComponent,
+                TestMeterGroupTemplatesComponent,
+                TestMeterGroupPTemplateLabelComponent,
+                TestMeterGroupWithIconsComponent,
+                TestMeterGroupEmptyComponent,
+                TestMeterGroupDynamicComponent
+            ],
             providers: [provideZonelessChangeDetection()]
         });
     });
@@ -428,6 +458,44 @@ describe('MeterGroup', () => {
         });
     });
 
+    describe('Templates via pTemplate', () => {
+        let fixture: ComponentFixture<TestMeterGroupPTemplateLabelComponent>;
+        let component: TestMeterGroupPTemplateLabelComponent;
+        let element: HTMLElement;
+
+        beforeEach(() => {
+            fixture = TestBed.createComponent(TestMeterGroupPTemplateLabelComponent);
+            component = fixture.componentInstance;
+            fixture.detectChanges();
+
+            element = fixture.debugElement.query(By.directive(MeterGroup)).nativeElement;
+        });
+
+        it('should render pTemplate label with labelPosition="end"', () => {
+            const legacyLabel = element.querySelector('.legacy-label');
+            expect(legacyLabel).toBeTruthy();
+            expect(legacyLabel?.textContent).toContain('75%');
+        });
+
+        it('should render pTemplate label with labelPosition="start"', async () => {
+            component.labelPosition = 'start';
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            const legacyLabel = element.querySelector('.legacy-label');
+            expect(legacyLabel).toBeTruthy();
+            expect(legacyLabel?.textContent).toContain('75%');
+        });
+
+        it('should not render the default label when a pTemplate label is provided', async () => {
+            component.labelPosition = 'start';
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            expect(fixture.debugElement.query(By.directive(MeterGroupLabel))).toBeNull();
+        });
+    });
+
     describe('MeterGroupLabel Component', () => {
         let fixture: ComponentFixture<TestBasicMeterGroupComponent>;
         let component: TestBasicMeterGroupComponent;
@@ -705,6 +773,14 @@ describe('MeterGroup', () => {
         it('should handle undefined value', () => {
             meterGroup.value = undefined as any;
             expect(meterGroup.totalPercent()).toBe(0);
+        });
+
+        it('should render without error when value is undefined', async () => {
+            component.value = undefined as any;
+            fixture.changeDetectorRef.markForCheck();
+            await fixture.whenStable();
+
+            expect(element.querySelectorAll('[data-p]').length).toBeGreaterThan(0);
         });
 
         it('should handle null value gracefully', () => {
