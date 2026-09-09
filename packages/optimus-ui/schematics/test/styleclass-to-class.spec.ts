@@ -222,6 +222,33 @@ describe('styleclass-to-class', () => {
         expect(result.readContent('/src/app/app.html')).toBe(`<p-tag class="existing my-tag"></p-tag>\n`);
     });
 
+    it('rewrites a static styleClass to class on p-toggleswitch', async () => {
+        const runner = createMigrationRunner();
+        const tree = createAppTree({
+            '/src/app/app.html': `<p-toggleswitch styleClass="my-toggle"></p-toggleswitch>\n`
+        });
+        const result = await runner.runSchematic('styleclass-to-class', {}, tree);
+        expect(result.readContent('/src/app/app.html')).toBe(`<p-toggleswitch class="my-toggle"></p-toggleswitch>\n`);
+    });
+
+    it('rewrites a bound [styleClass] to [class] on p-toggleswitch', async () => {
+        const runner = createMigrationRunner();
+        const tree = createAppTree({
+            '/src/app/app.html': `<p-toggleswitch [styleClass]="myClass"></p-toggleswitch>\n`
+        });
+        const result = await runner.runSchematic('styleclass-to-class', {}, tree);
+        expect(result.readContent('/src/app/app.html')).toBe(`<p-toggleswitch [class]="myClass"></p-toggleswitch>\n`);
+    });
+
+    it('rewrites styleClass on ToggleSwitch selector aliases', async () => {
+        const runner = createMigrationRunner();
+        const tree = createAppTree({
+            '/src/app/app.html': `<p-toggleSwitch styleClass="camel"></p-toggleSwitch>\n<p-toggle-switch styleClass="kebab"></p-toggle-switch>\n`
+        });
+        const result = await runner.runSchematic('styleclass-to-class', {}, tree);
+        expect(result.readContent('/src/app/app.html')).toBe(`<p-toggleSwitch class="camel"></p-toggleSwitch>\n<p-toggle-switch class="kebab"></p-toggle-switch>\n`);
+    });
+
     it('reports nothing on a workspace with no usage of styleClass on the migrated selectors', async () => {
         const runner = createMigrationRunner();
         const infos: string[] = [];

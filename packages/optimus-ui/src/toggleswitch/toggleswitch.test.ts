@@ -44,7 +44,6 @@ describe('ToggleSwitch', () => {
         it('should accept custom values', () => {
             fixture.componentRef.setInput('trueValue', 'yes');
             fixture.componentRef.setInput('falseValue', 'no');
-            fixture.componentRef.setInput('styleClass', 'custom-class');
             fixture.componentRef.setInput('inputId', 'test-input');
             fixture.componentRef.setInput('readonly', true);
             fixture.componentRef.setInput('tabindex', 5);
@@ -53,7 +52,6 @@ describe('ToggleSwitch', () => {
 
             expect(component.trueValue()).toBe('yes');
             expect(component.falseValue()).toBe('no');
-            expect(component.styleClass()).toBe('custom-class');
             expect(component.inputId()).toBe('test-input');
             expect(component.readonly()).toBe(true);
             expect(component.tabindex()).toBe(5);
@@ -564,12 +562,6 @@ describe('ToggleSwitch', () => {
     });
 
     describe('Input Properties and Styling', () => {
-        it('should handle styleClass input', () => {
-            fixture.componentRef.setInput('styleClass', 'custom-toggle');
-            fixture.detectChanges();
-            expect(component.styleClass()).toBe('custom-toggle');
-        });
-
         it('should handle inputId', () => {
             fixture.componentRef.setInput('inputId', 'my-toggle-input');
             fixture.detectChanges();
@@ -1378,7 +1370,6 @@ describe('PassThrough (PT) Tests', () => {
         it('should apply host and root passthrough attributes during change detection', async () => {
             @Component({
                 changeDetection: ChangeDetectionStrategy.Eager,
-                standalone: true,
                 imports: [ToggleSwitch],
                 template: `<p-toggleswitch [pt]="pt"></p-toggleswitch>`
             })

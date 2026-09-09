@@ -38,7 +38,6 @@ export const TOGGLESWITCH_VALUE_ACCESSOR: any = {
  */
 @Component({
     selector: 'p-toggleswitch, p-toggleSwitch, p-toggle-switch',
-    standalone: true,
     imports: [CommonModule, AutoFocus, SharedModule, BindModule],
     template: `
         <input
@@ -72,7 +71,7 @@ export const TOGGLESWITCH_VALUE_ACCESSOR: any = {
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
     host: {
-        '[class]': "cn(cx('root'), styleClass())",
+        '[class]': "cx('root')",
         '[style]': "sx('root')",
         '[attr.data-p-checked]': 'checked()',
         '[attr.data-p-disabled]': '$disabled()',
@@ -89,12 +88,6 @@ export class ToggleSwitch extends BaseEditableHolder<ToggleSwitchPassThrough> {
         this.bindDirectiveInstance.setAttrs(this.ptms(['host', 'root']));
     }
 
-    /**
-     * Style class of the component.
-     * @deprecated since v20.0.0, use `class` instead.
-     * @group Props
-     */
-    readonly styleClass = input<string | undefined>();
     /**
      * Index of the element in tabbing order.
      * @group Props
