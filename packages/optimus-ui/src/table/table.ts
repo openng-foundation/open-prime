@@ -2730,7 +2730,13 @@ export class Table<RowData = any> extends BaseComponent<TablePassThrough> implem
     private _totalTableWidth(): number[] {
         let widths = [];
         const tableHead = DomHandler.findSingle(this.el.nativeElement, '[data-pc-section="thead"]');
-        let headers = DomHandler.find(tableHead, 'tr > th');
+        const resizeHeaderRow = this.resizeColumnElement?.parentElement;
+        let headers = resizeHeaderRow ? DomHandler.find(resizeHeaderRow, 'th') : DomHandler.find(tableHead, 'tr:last-child > th');
+
+        if (!headers.length) {
+            headers = DomHandler.find(tableHead, 'tr > th');
+        }
+
         headers.forEach((header) => (widths as any[]).push(DomHandler.getOuterWidth(header)));
 
         return widths;
@@ -3069,17 +3075,7 @@ export class Table<RowData = any> extends BaseComponent<TablePassThrough> implem
     }
 
     saveColumnWidths(state: any) {
-        let widths: any[] = [];
-        let headers: any[] = [];
-
-        const container = this.el?.nativeElement;
-
-        if (container) {
-            headers = DomHandler.find(container, '[data-pc-section="thead"] > tr > th');
-        }
-
-        headers.forEach((header) => (widths as any[]).push(DomHandler.getOuterWidth(header)));
-        state.columnWidths = widths.join(',');
+        state.columnWidths = this._totalTableWidth().join(',');
 
         if (this.columnResizeMode === 'expand' && this.tableViewChild) {
             state.tableWidth = DomHandler.getOuterWidth(this.tableViewChild.nativeElement);
