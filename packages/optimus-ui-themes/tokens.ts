@@ -88,6 +88,7 @@ export interface Tokens {
     tag: TokenMetaData;
     terminal: TokenMetaData;
     textarea: TokenMetaData;
+    texteditor: TokenMetaData;
     tieredmenu: TokenMetaData;
     timeline: TokenMetaData;
     toast: TokenMetaData;
@@ -11750,6 +11751,167 @@ export default {
                 token: 'textarea.lg.padding.y',
                 variable: '--p-textarea-lg-padding-y',
                 description: 'Lg padding y of root'
+            }
+        ]
+    },
+    texteditor: {
+        description: 'TextEditor Design Tokens',
+        tokens: [
+            {
+                name: 'texteditor.root.background',
+                token: 'texteditor.background',
+                variable: '--p-texteditor-background',
+                description: 'Background of root'
+            },
+            {
+                name: 'texteditor.root.color',
+                token: 'texteditor.color',
+                variable: '--p-texteditor-color',
+                description: 'Color of root'
+            },
+            {
+                name: 'texteditor.root.borderColor',
+                token: 'texteditor.border.color',
+                variable: '--p-texteditor-border-color',
+                description: 'Border color of root, also used for the toolbar separator, table cells and horizontal rules'
+            },
+            {
+                name: 'texteditor.root.borderRadius',
+                token: 'texteditor.border.radius',
+                variable: '--p-texteditor-border-radius',
+                description: 'Border radius of root, overlays, code blocks, images and chips'
+            },
+            {
+                name: 'texteditor.root.transitionDuration',
+                token: 'texteditor.transition.duration',
+                variable: '--p-texteditor-transition-duration',
+                description: 'Transition duration of root'
+            },
+            {
+                name: 'texteditor.root.disabledOpacity',
+                token: 'texteditor.disabled.opacity',
+                variable: '--p-texteditor-disabled-opacity',
+                description: 'Opacity of the disabled editor and of disabled toolbar items'
+            },
+            {
+                name: 'texteditor.toolbar.background',
+                token: 'texteditor.toolbar.background',
+                variable: '--p-texteditor-toolbar-background',
+                description: 'Background of the toolbar'
+            },
+            {
+                name: 'texteditor.content.padding',
+                token: 'texteditor.content.padding',
+                variable: '--p-texteditor-content-padding',
+                description: 'Padding of the editable region'
+            },
+            {
+                name: 'texteditor.heading.color',
+                token: 'texteditor.heading.color',
+                variable: '--p-texteditor-heading-color',
+                description: 'Color of headings inside the content'
+            },
+            {
+                name: 'texteditor.muted.color',
+                token: 'texteditor.muted.color',
+                variable: '--p-texteditor-muted-color',
+                description: 'Color of placeholders, toolbar icons and low-emphasis elements'
+            },
+            {
+                name: 'texteditor.emphasis.background',
+                token: 'texteditor.emphasis.background',
+                variable: '--p-texteditor-emphasis-background',
+                description: 'Background of code blocks, blockquotes, active toolbar items and table headers'
+            },
+            {
+                name: 'texteditor.emphasis.color',
+                token: 'texteditor.emphasis.color',
+                variable: '--p-texteditor-emphasis-color',
+                description: 'Color of emphasized elements, such as a hovered toolbar item'
+            },
+            {
+                name: 'texteditor.highlight.background',
+                token: 'texteditor.highlight.background',
+                variable: '--p-texteditor-highlight-background',
+                description: 'Background of mention chips and highlighted elements'
+            },
+            {
+                name: 'texteditor.highlight.color',
+                token: 'texteditor.highlight.color',
+                variable: '--p-texteditor-highlight-color',
+                description: 'Color of text inside highlighted elements'
+            },
+            {
+                name: 'texteditor.accent.color',
+                token: 'texteditor.accent.color',
+                variable: '--p-texteditor-accent-color',
+                description: 'Accent color for links, active cell outlines, blockquote borders, drop indicators,\ncheckboxes and mention markers'
+            },
+            {
+                name: 'texteditor.accent.contrastColor',
+                token: 'texteditor.accent.contrast.color',
+                variable: '--p-texteditor-accent-contrast-color',
+                description: 'Contrast color paired with the accent, such as the checkbox checkmark'
+            },
+            {
+                name: 'texteditor.danger.color',
+                token: 'texteditor.danger.color',
+                variable: '--p-texteditor-danger-color',
+                description: 'Color of destructive actions such as delete operations'
+            },
+            {
+                name: 'texteditor.selection.background',
+                token: 'texteditor.selection.background',
+                variable: '--p-texteditor-selection-background',
+                description: 'Background of the text selection and of the preserved selection highlight'
+            },
+            {
+                name: 'texteditor.selection.color',
+                token: 'texteditor.selection.color',
+                variable: '--p-texteditor-selection-color',
+                description: 'Color of selected text'
+            },
+            {
+                name: 'texteditor.overlay.background',
+                token: 'texteditor.overlay.background',
+                variable: '--p-texteditor-overlay-background',
+                description: 'Background of popover menus, context toolbars and overlay panels'
+            },
+            {
+                name: 'texteditor.overlay.shadow',
+                token: 'texteditor.overlay.shadow',
+                variable: '--p-texteditor-overlay-shadow',
+                description: 'Box shadow of popover menus, context toolbars and overlay panels'
+            },
+            {
+                name: 'texteditor.code.fontFamily',
+                token: 'texteditor.code.font.family',
+                variable: '--p-texteditor-code-font-family',
+                description: 'Font family of inline code and code blocks'
+            },
+            {
+                name: 'texteditor.focus.ringWidth',
+                token: 'texteditor.focus.ring.width',
+                variable: '--p-texteditor-focus-ring-width',
+                description: 'Width of the focus ring'
+            },
+            {
+                name: 'texteditor.focus.ringStyle',
+                token: 'texteditor.focus.ring.style',
+                variable: '--p-texteditor-focus-ring-style',
+                description: 'Style of the focus ring'
+            },
+            {
+                name: 'texteditor.focus.ringColor',
+                token: 'texteditor.focus.ring.color',
+                variable: '--p-texteditor-focus-ring-color',
+                description: 'Color of the focus ring'
+            },
+            {
+                name: 'texteditor.focus.ringOffset',
+                token: 'texteditor.focus.ring.offset',
+                variable: '--p-texteditor-focus-ring-offset',
+                description: 'Offset of the focus ring'
             }
         ]
     },

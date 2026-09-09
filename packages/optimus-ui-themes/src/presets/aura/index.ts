@@ -80,6 +80,7 @@ import tabview from '@openng/optimus-ui-themes/aura/tabview';
 import tag from '@openng/optimus-ui-themes/aura/tag';
 import terminal from '@openng/optimus-ui-themes/aura/terminal';
 import textarea from '@openng/optimus-ui-themes/aura/textarea';
+import texteditor from '@openng/optimus-ui-themes/aura/texteditor';
 import tieredmenu from '@openng/optimus-ui-themes/aura/tieredmenu';
 import timeline from '@openng/optimus-ui-themes/aura/timeline';
 import toast from '@openng/optimus-ui-themes/aura/toast';
@@ -172,6 +173,7 @@ export default {
         tag,
         terminal,
         textarea,
+        texteditor,
         tieredmenu,
         timeline,
         toast,

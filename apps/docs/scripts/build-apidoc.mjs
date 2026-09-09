@@ -690,12 +690,20 @@ const getTypesValue = (typeobj) => {
             return type.toString();
         }
         if (type.type === 'reflection' && type.declaration) {
+            // A function type alias is a reflection too, and it has signatures instead of children;
+            // reading `children` blindly used to abort the whole generation on the first one.
+            if (!type.declaration.children) {
+                return type.toString();
+            }
+
             let values = type.declaration.children.map((child) => ({
                 [child.name]: child.type.toString()
             }));
 
             return JSON.stringify(Object.assign({}, ...values), null, 4);
         }
+
+        return type.toString();
     }
 };
 

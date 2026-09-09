@@ -93,6 +93,11 @@
                             "routerLink": "/editor"
                         },
                         {
+                            "name": "TextEditor",
+                            "routerLink": "/texteditor",
+                            "badge": "New"
+                        },
+                        {
                             "name": "FloatLabel",
                             "routerLink": "/floatlabel"
                         },

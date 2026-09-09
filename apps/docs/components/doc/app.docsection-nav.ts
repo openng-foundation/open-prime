@@ -144,6 +144,10 @@ export class AppDocSectionNav implements OnInit {
             this.scrollEndTimer = setTimeout(() => {
                 this.isScrollBlocked = false;
 
+                // The timer outlives the view: on a page whose nav has already been torn down the
+                // reference is gone, and reading it threw on every scroll.
+                if (!this.nav?.nativeElement) return;
+
                 const activeItem = DomHandler.findSingle(this.nav.nativeElement, '.active-navbar-item');
 
                 activeItem && activeItem.scrollIntoView({ block: 'nearest', inline: 'start' });

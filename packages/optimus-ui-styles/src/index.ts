@@ -244,6 +244,9 @@ export * as TerminalStyle from '@openng/optimus-ui-styles/terminal';
 // Textarea
 export * as TextareaStyle from '@openng/optimus-ui-styles/textarea';
 
+// TextEditor
+export * as TextEditorStyle from '@openng/optimus-ui-styles/texteditor';
+
 // TieredMenu
 export * as TieredMenuStyle from '@openng/optimus-ui-styles/tieredmenu';
 

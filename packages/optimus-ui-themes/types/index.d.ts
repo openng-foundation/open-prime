@@ -82,6 +82,7 @@ import type { TabViewDesignTokens } from './tabview';
 import type { TagDesignTokens } from './tag';
 import type { TerminalDesignTokens } from './terminal';
 import type { TextareaDesignTokens } from './textarea';
+import type { TextEditorDesignTokens } from './texteditor';
 import type { TieredMenuDesignTokens } from './tieredmenu';
 import type { TimelineDesignTokens } from './timeline';
 import type { ToastDesignTokens } from './toast';
@@ -210,6 +211,7 @@ export interface ComponentsDesignTokens {
     tag?: TagDesignTokens;
     terminal?: TerminalDesignTokens;
     textarea?: TextareaDesignTokens;
+    texteditor?: TextEditorDesignTokens;
     tieredmenu?: TieredMenuDesignTokens;
     timeline?: TimelineDesignTokens;
     toast?: ToastDesignTokens;
