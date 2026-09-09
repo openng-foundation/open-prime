@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, provideZonelessChangeDetection } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, input, inputBinding, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DomHandler } from '@openng/optimus-ui/dom';
@@ -77,6 +77,20 @@ class DialogWithinDialogComponent {
     closeDialog() {
         this.dialogRef.close('inner dialog closed');
     }
+}
+
+@Directive({})
+class BoundContentDirective {}
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'test-bound-content',
+    template: `<span class="bound-content">{{ title() }}|{{ subtitle() }}</span>`
+})
+class BoundContentComponent {
+    title = input('');
+
+    subtitle = input('');
 }
 
 @Component({
@@ -793,7 +807,61 @@ describe('DynamicDialog', () => {
             component.loadChildComponent(TestDialogContentComponent);
 
             expect(mockViewContainer.clear).toHaveBeenCalled();
-            expect(mockViewContainer.createComponent).toHaveBeenCalledWith(TestDialogContentComponent);
+            expect(mockViewContainer.createComponent).toHaveBeenCalledWith(TestDialogContentComponent, { bindings: [], directives: [] });
+        });
+
+        it('should forward the configured bindings and directives to the child component', () => {
+            const bindings = [inputBinding('title', () => 'From binding')];
+            const directives = [BoundContentDirective];
+            const mockViewContainer = {
+                clear: vi.fn(),
+                createComponent: vi.fn(() => ({ setInput: vi.fn(), instance: {} }))
+            };
+
+            component.childComponentType = BoundContentComponent;
+            component.insertionPoint = { viewContainerRef: mockViewContainer as any } as any;
+            component.bindings = bindings;
+            component.directives = directives;
+
+            component.loadChildComponent(BoundContentComponent);
+
+            expect(mockViewContainer.createComponent).toHaveBeenCalledWith(BoundContentComponent, { bindings, directives });
+        });
+
+        it('should pass inputValues as creation bindings instead of calling setInput', () => {
+            const bindings = [inputBinding('title', () => 'From binding')];
+            const mockViewContainer = {
+                clear: vi.fn(),
+                createComponent: vi.fn(() => ({ setInput: vi.fn(), instance: {} }))
+            };
+
+            component.childComponentType = BoundContentComponent;
+            component.insertionPoint = { viewContainerRef: mockViewContainer as any } as any;
+            component.bindings = bindings;
+            component.inputValues = { subtitle: 'From inputValues' };
+
+            component.loadChildComponent(BoundContentComponent);
+
+            const options = (mockViewContainer.createComponent.mock.calls[0] as any[])[1];
+            expect(options.bindings).toHaveLength(2);
+            expect(options.bindings[0]).toBe(bindings[0]);
+            expect(component.componentRef!.setInput).not.toHaveBeenCalled();
+        });
+
+        it('should render bindings and inputValues together on the real child component', async () => {
+            const dialogFixture = TestBed.createComponent(DynamicDialog);
+            const dialog = dialogFixture.componentInstance;
+
+            dialog.childComponentType = BoundContentComponent;
+            dialog.visible = true;
+            dialog.bindings = [inputBinding('title', () => 'From binding')];
+            dialog.inputValues = { subtitle: 'From inputValues' };
+
+            dialogFixture.changeDetectorRef.markForCheck();
+            await dialogFixture.whenStable();
+
+            const content = dialogFixture.debugElement.query(By.css('.bound-content'));
+            expect(content.nativeElement.textContent).toBe('From binding|From inputValues');
         });
 
         it('should display header content', async () => {

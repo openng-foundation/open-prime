@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ComponentRef, inject, InjectionToken, NgModule, Type, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Binding, ChangeDetectionStrategy, Component, ComponentRef, DirectiveWithBindings, inject, InjectionToken, inputBinding, NgModule, Type, ViewChild, ViewEncapsulation } from '@angular/core';
 import { uuid } from '@openng/optimus-ui-utils';
 import { SharedModule, TranslationKeys } from '@openng/optimus-ui/api';
 import { BaseComponent, PARENT_INSTANCE } from '@openng/optimus-ui/basecomponent';
@@ -131,6 +131,10 @@ export class DynamicDialog extends BaseComponent<DialogPassThrough> {
     childComponentType: Nullable<Type<any>>;
 
     inputValues: Record<string, any>;
+
+    bindings: Binding[] = [];
+
+    directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] = [];
 
     get minX(): number {
         return this.ddconfig.minX ? this.ddconfig.minX : 0;
@@ -292,13 +296,15 @@ export class DynamicDialog extends BaseComponent<DialogPassThrough> {
         let viewContainerRef = this.insertionPoint?.viewContainerRef;
         viewContainerRef?.clear();
 
-        this.componentRef = viewContainerRef?.createComponent(componentType);
+        // `setInput` throws once the component owns input bindings, so `inputValues` is merged in as
+        // input bindings instead. They come last so an explicit `bindings` entry is overridden the
+        // same way `setInput` used to override it.
+        const inputValueBindings = Object.entries(this.inputValues ?? {}).map(([key, value]) => inputBinding(key, () => value));
 
-        if (this.inputValues && this.componentRef) {
-            Object.entries(this.inputValues).forEach(([key, value]) => {
-                this.componentRef!.setInput(key, value);
-            });
-        }
+        this.componentRef = viewContainerRef?.createComponent(componentType, {
+            bindings: [...this.bindings, ...inputValueBindings],
+            directives: this.directives
+        });
 
         this.dialogRef.onChildComponentLoaded.next(this.componentRef!.instance);
     }
