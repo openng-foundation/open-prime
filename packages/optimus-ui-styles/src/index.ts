@@ -237,6 +237,7 @@ export * as TabViewStyle from '@openng/optimus-ui-styles/tabview';
 
 // Tag
 export * as TagStyle from '@openng/optimus-ui-styles/tag';
+export * as TaskBoardStyle from '@openng/optimus-ui-styles/taskboard';
 
 // Terminal
 export * as TerminalStyle from '@openng/optimus-ui-styles/terminal';

@@ -227,6 +227,11 @@
                             "routerLink": "/table"
                         },
                         {
+                            "name": "TaskBoard",
+                            "routerLink": "/taskboard",
+                            "badge": "New"
+                        },
+                        {
                             "name": "Timeline",
                             "routerLink": "/timeline"
                         },

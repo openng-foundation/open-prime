@@ -86,6 +86,7 @@ export interface Tokens {
     tabs: TokenMetaData;
     tabview: TokenMetaData;
     tag: TokenMetaData;
+    taskboard: TokenMetaData;
     terminal: TokenMetaData;
     textarea: TokenMetaData;
     tieredmenu: TokenMetaData;
@@ -11518,6 +11519,329 @@ export default {
                 token: 'tag.contrast.color',
                 variable: '--p-tag-contrast-color',
                 description: 'Color of contrast'
+            }
+        ]
+    },
+    taskboard: {
+        description: 'TaskBoard Design Tokens',
+        tokens: [
+            {
+                name: 'taskboard.root.background',
+                token: 'taskboard.background',
+                variable: '--p-taskboard-background',
+                description: 'Background of root'
+            },
+            {
+                name: 'taskboard.root.color',
+                token: 'taskboard.color',
+                variable: '--p-taskboard-color',
+                description: 'Color of root'
+            },
+            {
+                name: 'taskboard.root.borderColor',
+                token: 'taskboard.border.color',
+                variable: '--p-taskboard-border-color',
+                description: 'Border color of root'
+            },
+            {
+                name: 'taskboard.root.borderRadius',
+                token: 'taskboard.border.radius',
+                variable: '--p-taskboard-border-radius',
+                description: 'Border radius of root'
+            },
+            {
+                name: 'taskboard.root.borderRadiusSm',
+                token: 'taskboard.border.radius.sm',
+                variable: '--p-taskboard-border-radius-sm',
+                description: 'Small border radius, used by the collapse controls'
+            },
+            {
+                name: 'taskboard.hover.background',
+                token: 'taskboard.hover.background',
+                variable: '--p-taskboard-hover-background',
+                description: 'Background of a hovered control'
+            },
+            {
+                name: 'taskboard.empty.color',
+                token: 'taskboard.empty.color',
+                variable: '--p-taskboard-empty-color',
+                description: 'Color of the muted text: empty states, counts, secondary card copy'
+            },
+            {
+                name: 'taskboard.columns.padding',
+                token: 'taskboard.columns.padding',
+                variable: '--p-taskboard-columns-padding',
+                description: 'Padding of the columns viewport'
+            },
+            {
+                name: 'taskboard.column.gap',
+                token: 'taskboard.column.gap',
+                variable: '--p-taskboard-column-gap',
+                description: 'Gap between columns'
+            },
+            {
+                name: 'taskboard.column.minWidth',
+                token: 'taskboard.column.min.width',
+                variable: '--p-taskboard-column-min-width',
+                description: 'Minimum width of a column'
+            },
+            {
+                name: 'taskboard.column.maxWidth',
+                token: 'taskboard.column.max.width',
+                variable: '--p-taskboard-column-max-width',
+                description: 'Maximum width of a column'
+            },
+            {
+                name: 'taskboard.column.background',
+                token: 'taskboard.column.background',
+                variable: '--p-taskboard-column-background',
+                description: 'Background of a column body'
+            },
+            {
+                name: 'taskboard.column.borderRadius',
+                token: 'taskboard.column.border.radius',
+                variable: '--p-taskboard-column-border-radius',
+                description: 'Border radius of a column'
+            },
+            {
+                name: 'taskboard.column.headerMinHeight',
+                token: 'taskboard.column.header.min.height',
+                variable: '--p-taskboard-column-header-min-height',
+                description: 'Minimum height of a column header'
+            },
+            {
+                name: 'taskboard.column.bodyPadding',
+                token: 'taskboard.column.body.padding',
+                variable: '--p-taskboard-column-body-padding',
+                description: 'Padding of a column body'
+            },
+            {
+                name: 'taskboard.column.footerPadding',
+                token: 'taskboard.column.footer.padding',
+                variable: '--p-taskboard-column-footer-padding',
+                description: 'Padding of a column footer'
+            },
+            {
+                name: 'taskboard.column.pinnedShadow',
+                token: 'taskboard.column.pinned.shadow',
+                variable: '--p-taskboard-column-pinned-shadow',
+                description: 'Shadow cast by a pinned column over the scrolled content'
+            },
+            {
+                name: 'taskboard.column.pinnedShadowRtl',
+                token: 'taskboard.column.pinned.shadow.rtl',
+                variable: '--p-taskboard-column-pinned-shadow-rtl',
+                description: 'Shadow cast by a pinned column in right-to-left layouts'
+            },
+            {
+                name: 'taskboard.columnStatus.todoColor',
+                token: 'taskboard.column.status.todo.color',
+                variable: '--p-taskboard-column-status-todo-color',
+                description: 'Colour of the strip above a  `todo`  column'
+            },
+            {
+                name: 'taskboard.columnStatus.inProgressColor',
+                token: 'taskboard.column.status.in.progress.color',
+                variable: '--p-taskboard-column-status-in-progress-color',
+                description: 'Colour of the strip above an  `in-progress`  column'
+            },
+            {
+                name: 'taskboard.columnStatus.doneColor',
+                token: 'taskboard.column.status.done.color',
+                variable: '--p-taskboard-column-status-done-color',
+                description: 'Colour of the strip above a  `done`  column'
+            },
+            {
+                name: 'taskboard.columnStatus.blockedColor',
+                token: 'taskboard.column.status.blocked.color',
+                variable: '--p-taskboard-column-status-blocked-color',
+                description: 'Colour of the strip above a  `blocked`  column'
+            },
+            {
+                name: 'taskboard.card.gap',
+                token: 'taskboard.card.gap',
+                variable: '--p-taskboard-card-gap',
+                description: 'Gap between the cards of a column'
+            },
+            {
+                name: 'taskboard.card.borderRadius',
+                token: 'taskboard.card.border.radius',
+                variable: '--p-taskboard-card-border-radius',
+                description: 'Border radius of a card'
+            },
+            {
+                name: 'taskboard.card.selectedRingColor',
+                token: 'taskboard.card.selected.ring.color',
+                variable: '--p-taskboard-card-selected-ring-color',
+                description: 'Colour of the ring drawn around a selected card'
+            },
+            {
+                name: 'taskboard.dropIndicator.color',
+                token: 'taskboard.drop.indicator.color',
+                variable: '--p-taskboard-drop-indicator-color',
+                description: 'Colour of the insertion marker'
+            },
+            {
+                name: 'taskboard.dragPreview.shadow',
+                token: 'taskboard.drag.preview.shadow',
+                variable: '--p-taskboard-drag-preview-shadow',
+                description: 'Shadow of the travelling preview'
+            },
+            {
+                name: 'taskboard.dragPreview.rotation',
+                token: 'taskboard.drag.preview.rotation',
+                variable: '--p-taskboard-drag-preview-rotation',
+                description: 'Tilt of the travelling preview'
+            },
+            {
+                name: 'taskboard.focus.ringColor',
+                token: 'taskboard.focus.ring.color',
+                variable: '--p-taskboard-focus-ring-color',
+                description: 'Colour of the focus ring'
+            },
+            {
+                name: 'taskboard.focus.ringWidth',
+                token: 'taskboard.focus.ring.width',
+                variable: '--p-taskboard-focus-ring-width',
+                description: 'Width of the focus ring'
+            },
+            {
+                name: 'taskboard.swimlane.headerWidth',
+                token: 'taskboard.swimlane.header.width',
+                variable: '--p-taskboard-swimlane-header-width',
+                description: 'Width of the row header column'
+            },
+            {
+                name: 'taskboard.swimlane.headerBackground',
+                token: 'taskboard.swimlane.header.background',
+                variable: '--p-taskboard-swimlane-header-background',
+                description: 'Background of a row header'
+            },
+            {
+                name: 'taskboard.swimlane.minHeight',
+                token: 'taskboard.swimlane.min.height',
+                variable: '--p-taskboard-swimlane-min-height',
+                description: 'Minimum height of a row'
+            },
+            {
+                name: 'taskboard.swimlane.cellMinHeight',
+                token: 'taskboard.swimlane.cell.min.height',
+                variable: '--p-taskboard-swimlane-cell-min-height',
+                description: 'Minimum height of a cell'
+            },
+            {
+                name: 'taskboard.swimlane.borderColor',
+                token: 'taskboard.swimlane.border.color',
+                variable: '--p-taskboard-swimlane-border-color',
+                description: 'Colour of the grid and card borders'
+            },
+            {
+                name: 'taskboard.scrollbar.width',
+                token: 'taskboard.scrollbar.width',
+                variable: '--p-taskboard-scrollbar-width',
+                description: 'Width of the board and column scrollbars'
+            },
+            {
+                name: 'taskboard.scrollbar.thumb',
+                token: 'taskboard.scrollbar.thumb',
+                variable: '--p-taskboard-scrollbar-thumb',
+                description: 'Colour of the scrollbar thumb'
+            },
+            {
+                name: 'taskboard.scrollbar.track',
+                token: 'taskboard.scrollbar.track',
+                variable: '--p-taskboard-scrollbar-track',
+                description: 'Colour of the scrollbar track'
+            },
+            {
+                name: 'taskboard.transition.duration',
+                token: 'taskboard.transition.duration',
+                variable: '--p-taskboard-transition-duration',
+                description: 'Duration of the layout transitions'
+            },
+            {
+                name: 'taskboard.transition.timing',
+                token: 'taskboard.transition.timing',
+                variable: '--p-taskboard-transition-timing',
+                description: 'Timing function of the layout transitions'
+            },
+            {
+                name: 'taskboard.wip.exceededCountColor',
+                token: 'taskboard.wip.exceeded.count.color',
+                variable: '--p-taskboard-wip-exceeded-count-color',
+                description: 'Colour of the text on the drag count badge and the exceeded WIP badge'
+            },
+            {
+                name: 'taskboard.meta.neutralBorderColor',
+                token: 'taskboard.meta.neutral.border.color',
+                variable: '--p-taskboard-meta-neutral-border-color',
+                description: 'Border colour of a neutral column badge'
+            },
+            {
+                name: 'taskboard.meta.neutralBackground',
+                token: 'taskboard.meta.neutral.background',
+                variable: '--p-taskboard-meta-neutral-background',
+                description: 'Background of a neutral column badge'
+            },
+            {
+                name: 'taskboard.meta.neutralColor',
+                token: 'taskboard.meta.neutral.color',
+                variable: '--p-taskboard-meta-neutral-color',
+                description: 'Colour of a neutral column badge'
+            },
+            {
+                name: 'taskboard.meta.infoBorderColor',
+                token: 'taskboard.meta.info.border.color',
+                variable: '--p-taskboard-meta-info-border-color',
+                description: 'Border colour of an informative column badge'
+            },
+            {
+                name: 'taskboard.meta.infoBackground',
+                token: 'taskboard.meta.info.background',
+                variable: '--p-taskboard-meta-info-background',
+                description: 'Background of an informative column badge'
+            },
+            {
+                name: 'taskboard.meta.infoColor',
+                token: 'taskboard.meta.info.color',
+                variable: '--p-taskboard-meta-info-color',
+                description: 'Colour of an informative column badge'
+            },
+            {
+                name: 'taskboard.meta.warningBorderColor',
+                token: 'taskboard.meta.warning.border.color',
+                variable: '--p-taskboard-meta-warning-border-color',
+                description: 'Border colour of a column badge one card short of its limit'
+            },
+            {
+                name: 'taskboard.meta.warningBackground',
+                token: 'taskboard.meta.warning.background',
+                variable: '--p-taskboard-meta-warning-background',
+                description: 'Background of a column badge one card short of its limit'
+            },
+            {
+                name: 'taskboard.meta.warningColor',
+                token: 'taskboard.meta.warning.color',
+                variable: '--p-taskboard-meta-warning-color',
+                description: 'Colour of a column badge one card short of its limit'
+            },
+            {
+                name: 'taskboard.meta.dangerBorderColor',
+                token: 'taskboard.meta.danger.border.color',
+                variable: '--p-taskboard-meta-danger-border-color',
+                description: 'Border colour of a column badge at or past its limit'
+            },
+            {
+                name: 'taskboard.meta.dangerBackground',
+                token: 'taskboard.meta.danger.background',
+                variable: '--p-taskboard-meta-danger-background',
+                description: 'Background of a column badge at or past its limit'
+            },
+            {
+                name: 'taskboard.meta.dangerColor',
+                token: 'taskboard.meta.danger.color',
+                variable: '--p-taskboard-meta-danger-color',
+                description: 'Colour of a column badge at or past its limit'
             }
         ]
     },
