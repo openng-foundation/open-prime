@@ -12,7 +12,7 @@ import { DynamicDialogRef } from './dynamicdialog-ref';
  */
 @Injectable()
 export class DialogService {
-    dialogComponentRefMap: Map<DynamicDialogRef<any>, ComponentRef<DynamicDialog>> = new Map();
+    dialogComponentRefMap: Map<DynamicDialogRef<any, any, any>, ComponentRef<DynamicDialog>> = new Map();
 
     constructor(
         private appRef: ApplicationRef,
@@ -26,12 +26,15 @@ export class DialogService {
      * @returns {DynamicDialogRef} DynamicDialog instance.
      * @group Method
      */
-    public open<T, DataType = any, InputValuesType extends Record<string, any> = {}>(componentType: Type<T>, config: DynamicDialogConfig<DataType, InputValuesType>): DynamicDialogRef<T> | null {
+    public open<T, DataType = any, InputValuesType extends Record<string, any> = {}, CloseResult = any, MaximizeResult = any>(
+        componentType: Type<T>,
+        config: DynamicDialogConfig<DataType, InputValuesType>
+    ): DynamicDialogRef<T, CloseResult, MaximizeResult> | null {
         if (!this.duplicationPermission(componentType, config)) {
             return null;
         }
 
-        const dialogRef = this.appendDialogComponentToBody<T>(config, componentType);
+        const dialogRef = this.appendDialogComponentToBody<T, CloseResult, MaximizeResult>(config, componentType);
 
         const componentRefInstance = this.dialogComponentRefMap.get(dialogRef);
         if (componentRefInstance) {
@@ -46,15 +49,15 @@ export class DialogService {
      * @param {DynamicDialogRef} ref - DynamicDialog instance.
      * @group Method
      */
-    public getInstance(ref: DynamicDialogRef<any>) {
+    public getInstance(ref: DynamicDialogRef<any, any, any>) {
         return this.dialogComponentRefMap.get(ref)?.instance;
     }
 
-    private appendDialogComponentToBody<T>(config: DynamicDialogConfig, componentType: Type<T>): DynamicDialogRef<T> {
+    private appendDialogComponentToBody<T, CloseResult = any, MaximizeResult = any>(config: DynamicDialogConfig, componentType: Type<T>): DynamicDialogRef<T, CloseResult, MaximizeResult> {
         const map = new WeakMap();
         map.set(DynamicDialogConfig, config);
 
-        const dialogRef = new DynamicDialogRef<T>();
+        const dialogRef = new DynamicDialogRef<T, CloseResult, MaximizeResult>();
         map.set(DynamicDialogRef, dialogRef);
 
         const sub = dialogRef.onClose.subscribe(() => {
@@ -86,7 +89,7 @@ export class DialogService {
         return dialogRef;
     }
 
-    private removeDialogComponentFromBody(dialogRef: DynamicDialogRef<any>) {
+    private removeDialogComponentFromBody(dialogRef: DynamicDialogRef<any, any, any>) {
         if (!dialogRef || !this.dialogComponentRefMap.has(dialogRef)) {
             return;
         }
