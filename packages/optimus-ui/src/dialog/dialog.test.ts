@@ -273,6 +273,19 @@ class TestAccessibilityDialogComponent {
     focusTrap = true;
 }
 
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false,
+    template: `
+        <div class="append-target" #appendTarget>
+            <p-dialog [(visible)]="visible" [appendTo]="appendTarget" [modal]="true">Dialog content</p-dialog>
+        </div>
+    `
+})
+class TestAppendToDialogComponent {
+    visible = true;
+}
+
 describe('Dialog', () => {
     let component: TestBasicDialogComponent;
     let fixture: ComponentFixture<TestBasicDialogComponent>;
@@ -280,7 +293,16 @@ describe('Dialog', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [TestBasicDialogComponent, TestPTemplateDialogComponent, TestHashTemplateDialogComponent, TestHeadlessDialogComponent, TestPositionDialogComponent, TestMaximizableDialogComponent, TestAccessibilityDialogComponent],
+            declarations: [
+                TestBasicDialogComponent,
+                TestPTemplateDialogComponent,
+                TestHashTemplateDialogComponent,
+                TestHeadlessDialogComponent,
+                TestPositionDialogComponent,
+                TestMaximizableDialogComponent,
+                TestAccessibilityDialogComponent,
+                TestAppendToDialogComponent
+            ],
             imports: [Dialog, ButtonModule, FocusTrap],
             providers: [provideZonelessChangeDetection()]
         }).compileComponents();
@@ -333,6 +355,18 @@ describe('Dialog', () => {
             expect(dialogInstance.draggable).toBe(false);
             expect(dialogInstance.maximizable).toBe(true);
             expect(dialogInstance.position).toBe('top');
+        });
+    });
+
+    describe('Append Target', () => {
+        it('should append the dialog mask to an element target', async () => {
+            const appendToFixture = TestBed.createComponent(TestAppendToDialogComponent);
+            await appendToFixture.whenStable();
+
+            const target = appendToFixture.nativeElement.querySelector('.append-target') as HTMLElement;
+            const mask = target.querySelector('.p-dialog-mask');
+
+            expect(mask).toBeTruthy();
         });
     });
 

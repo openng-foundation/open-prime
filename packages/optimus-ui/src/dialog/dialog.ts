@@ -1076,8 +1076,12 @@ export class Dialog extends BaseComponent<DialogPassThrough> implements OnInit, 
     }
 
     appendContainer() {
-        if (this.$appendTo() !== 'self') {
-            appendChild(this.document.body, this.wrapper as HTMLElement);
+        if (this.$appendTo() && this.$appendTo() !== 'self') {
+            if (this.$appendTo() === 'body') {
+                appendChild(this.document.body, this.wrapper as HTMLElement);
+            } else {
+                appendChild(this.$appendTo(), this.wrapper as HTMLElement);
+            }
         }
     }
 
