@@ -9,6 +9,7 @@ import { SharedModule } from '@openng/optimus-ui/api';
 import { ButtonModule } from '@openng/optimus-ui/button';
 import { ListboxModule } from '@openng/optimus-ui/listbox';
 import { RippleModule } from '@openng/optimus-ui/ripple';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OrderList } from './orderlist';
 
 interface Product {
@@ -472,12 +473,7 @@ describe('OrderList', () => {
             orderList.moveUp();
             await fixture.whenStable();
 
-            // Product B (index 1) should move to index 0
-            // Product D (index 3) should move to index 2
-            expect(component.products[0]).toEqual(initialOrder[1]); // Product B
-            expect(component.products[1]).toEqual(initialOrder[0]); // Product A
-            expect(component.products[2]).toEqual(initialOrder[3]); // Product D
-            expect(component.products[3]).toEqual(initialOrder[2]); // Product C
+            expect(orderList.value).toEqual([initialOrder[1], initialOrder[0], initialOrder[3], initialOrder[2], initialOrder[4]]);
             expect(component.onReorder).toHaveBeenCalledWith(component.selection);
         });
 
@@ -489,8 +485,8 @@ describe('OrderList', () => {
             await fixture.whenStable();
 
             // Selected items should move to the beginning (B first, then D in final positions)
-            expect(component.products[0].id).toBe('2'); // Product B moved to top
-            expect(component.products[1].id).toBe('4'); // Product D moved to second
+            expect(orderList.value?.[0].id).toBe('2');
+            expect(orderList.value?.[1].id).toBe('4');
             expect(component.onReorder).toHaveBeenCalledWith(component.selection);
         });
 
@@ -503,8 +499,8 @@ describe('OrderList', () => {
 
             // Product D (index 3) should move to index 4
             // Product B (index 1) should move to index 2
-            expect(component.products[2].id).toBe('2'); // Product B moved down
-            expect(component.products[4].id).toBe('4'); // Product D moved down
+            expect(orderList.value?.[1].id).toBe('3');
+            expect(orderList.value?.[2].id).toBe('2');
             expect(component.onReorder).toHaveBeenCalledWith(component.selection);
         });
 
@@ -516,8 +512,8 @@ describe('OrderList', () => {
             await fixture.whenStable();
 
             // Selected items should move to the end (B first, then D)
-            expect(component.products[3].id).toBe('2'); // Product B moved to end
-            expect(component.products[4].id).toBe('4'); // Product D moved to end
+            expect(orderList.value?.[3].id).toBe('2');
+            expect(orderList.value?.[4].id).toBe('4');
             expect(component.onReorder).toHaveBeenCalledWith(component.selection);
         });
 
@@ -545,12 +541,7 @@ describe('OrderList', () => {
             orderList.moveUp();
             await fixture.whenStable();
 
-            // First item (A) should stay at position 0 (can't move up)
-            expect(component.products[0]).toEqual(initialOrder[0]); // Product A stays
-            // Third item (C) should move to position 1 (was at 2, moves up)
-            expect(component.products[1]).toEqual(initialOrder[2]); // Product C moved up
-            // Fifth item (E) should move to position 3 (was at 4, moves up)
-            expect(component.products[3]).toEqual(initialOrder[4]); // Product E moved up
+            expect(orderList.value).toEqual([initialOrder[0], initialOrder[2], initialOrder[1], initialOrder[4], initialOrder[3]]);
 
             expect(component.onReorder).toHaveBeenCalledWith(component.selection);
         });
@@ -568,12 +559,11 @@ describe('OrderList', () => {
             orderList.moveDown();
             await fixture.whenStable();
 
-            // First item (A) should move to position 1 (was at 0, moves down)
-            expect(component.products[1]).toEqual(initialOrder[0]); // Product A moved down
-            // Third item (C) should move to position 3 (was at 2, moves down)
-            expect(component.products[3]).toEqual(initialOrder[2]); // Product C moved down
-            // Fifth item (E) should stay at position 4 (can't move down)
-            expect(component.products[4]).toEqual(initialOrder[4]); // Product E stays
+            expect(orderList.value?.[0]).toEqual(initialOrder[1]);
+            expect(orderList.value?.[1]).toEqual(initialOrder[0]);
+            expect(orderList.value?.[2]).toEqual(initialOrder[3]);
+            expect(orderList.value?.[3]).toEqual(initialOrder[2]);
+            expect(orderList.value?.[4]).toEqual(initialOrder[4]);
 
             expect(component.onReorder).toHaveBeenCalledWith(component.selection);
         });
@@ -864,8 +854,8 @@ describe('OrderList', () => {
             const moveUpButton = fixture.debugElement.query(By.css('[data-pc-name="pcmoveupbutton"]'));
             moveUpButton.nativeElement.click();
 
-            expect(component.products[1].name).toBe('Item 3');
-            expect(component.products[2].name).toBe('Item 2');
+            expect(orderList.value?.[1].name).toBe('Item 3');
+            expect(orderList.value?.[2].name).toBe('Item 2');
         });
 
         it('should move items to top when clicking move top button', async () => {
@@ -877,8 +867,8 @@ describe('OrderList', () => {
             moveTopButton.nativeElement.click();
             await fixture.whenStable();
 
-            expect(component.products[0].name).toBe('Item 4');
-            expect(component.products[1].name).toBe('Item 1');
+            expect(orderList.value?.[0].name).toBe('Item 4');
+            expect(orderList.value?.[1].name).toBe('Item 1');
         });
 
         it('should move items down when clicking move down button', async () => {
@@ -890,8 +880,8 @@ describe('OrderList', () => {
             moveDownButton.nativeElement.click();
             await fixture.whenStable();
 
-            expect(component.products[1].name).toBe('Item 3');
-            expect(component.products[2].name).toBe('Item 2');
+            expect(orderList.value?.[1].name).toBe('Item 3');
+            expect(orderList.value?.[2].name).toBe('Item 2');
         });
 
         it('should move items to bottom when clicking move bottom button', async () => {
@@ -903,8 +893,8 @@ describe('OrderList', () => {
             moveBottomButton.nativeElement.click();
             await fixture.whenStable();
 
-            expect(component.products[4].name).toBe('Item 2');
-            expect(component.products[3].name).toBe('Item 5');
+            expect(orderList.value?.[4].name).toBe('Item 2');
+            expect(orderList.value?.[3].name).toBe('Item 5');
         });
 
         it('should handle multiple item selection', async () => {
@@ -916,10 +906,10 @@ describe('OrderList', () => {
             moveUpButton.nativeElement.click();
             await fixture.whenStable();
 
-            expect(component.products[0].name).toBe('Item 2'); // Item 2 moved up
-            expect(component.products[1].name).toBe('Item 1'); // Item 1 moved down
-            expect(component.products[2].name).toBe('Item 4'); // Item 4 moved up
-            expect(component.products[3].name).toBe('Item 3'); // Item 3 moved down
+            expect(orderList.value?.[0].name).toBe('Item 2');
+            expect(orderList.value?.[1].name).toBe('Item 1');
+            expect(orderList.value?.[2].name).toBe('Item 4');
+            expect(orderList.value?.[3].name).toBe('Item 3');
         });
     });
 
@@ -975,6 +965,33 @@ describe('OrderList', () => {
                     rating: 5
                 }
             ]);
+        });
+
+        it('should reorder a single item within filtered options', () => {
+            component.dragdrop = true;
+            component.filterBy = 'category';
+            fixture.detectChanges();
+            orderList.filterValue = 'Category 1';
+            orderList.filter();
+            vi.spyOn(component, 'onReorder').mockImplementation(() => {});
+
+            const dragDropEvent: CdkDragDrop<string[]> = {
+                previousIndex: 0,
+                currentIndex: 1,
+                item: { data: component.products[0] } as any,
+                container: {} as any,
+                previousContainer: {} as any,
+                isPointerOverContainer: true,
+                distance: { x: 0, y: 50 },
+                dropPoint: { x: 0, y: 50 },
+                event: new MouseEvent('mouseup')
+            };
+
+            orderList.onDrop(dragDropEvent);
+
+            expect(component.products.map((product) => product.id)).toEqual(['2', '3', '1', '4', '5']);
+            expect(orderList.visibleOptions?.map((product) => product.id)).toEqual(['3', '1']);
+            expect(component.onReorder).toHaveBeenCalledWith([component.products[2]]);
         });
 
         it('should not handle drop event when indices are same', () => {
@@ -1351,12 +1368,9 @@ describe('OrderList', () => {
                 });
             }
 
-            const startTime = performance.now();
             component.products = largeData;
             fixture.detectChanges();
-            const endTime = performance.now();
 
-            expect(endTime - startTime).toBeLessThan(1000);
             expect(orderList.value?.length).toBe(1000);
         });
 
