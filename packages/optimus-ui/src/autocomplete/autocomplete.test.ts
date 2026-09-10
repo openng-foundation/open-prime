@@ -630,6 +630,47 @@ describe('AutoComplete', () => {
             const formControl = testComponent.reactiveForm.get('selectedItems');
             expect(formControl?.updateOn).toBeDefined();
         });
+
+        it('should display option labels for written values with optionValue in multiple mode', async () => {
+            testComponent.multiple = true;
+            testComponent.optionLabel = 'name';
+            testComponent.optionValue = 'code';
+            testComponent.suggestions = mockCountries;
+            testComponent.selectedValue = ['AL', 'AU'] as any;
+            testFixture.changeDetectorRef.markForCheck();
+            await testFixture.whenStable();
+
+            const autocompleteInstance = testFixture.debugElement.query(By.directive(AutoComplete)).componentInstance;
+            expect(autocompleteInstance.modelValue()).toEqual([mockCountries[1], mockCountries[4]]);
+
+            const chips = testFixture.debugElement.queryAll(By.css('p-chip'));
+            expect(chips.map((chip) => chip.nativeElement.textContent.trim())).toEqual(['Albania', 'Australia']);
+        });
+
+        it('should display the option label for a written value with optionValue in single mode', async () => {
+            testComponent.optionLabel = 'name';
+            testComponent.optionValue = 'code';
+            testComponent.suggestions = mockCountries;
+            testComponent.selectedValue = 'AL';
+            testFixture.changeDetectorRef.markForCheck();
+            await testFixture.whenStable();
+
+            const autocompleteInstance = testFixture.debugElement.query(By.directive(AutoComplete)).componentInstance;
+            expect(autocompleteInstance.inputValue()).toBe('Albania');
+        });
+
+        it('should fall back to the raw value when no suggestion matches it', async () => {
+            testComponent.multiple = true;
+            testComponent.optionLabel = 'name';
+            testComponent.optionValue = 'code';
+            testComponent.suggestions = [];
+            testComponent.selectedValue = ['AL'] as any;
+            testFixture.changeDetectorRef.markForCheck();
+            await testFixture.whenStable();
+
+            const chips = testFixture.debugElement.queryAll(By.css('p-chip'));
+            expect(chips.map((chip) => chip.nativeElement.textContent.trim())).toEqual(['AL']);
+        });
     });
 
     describe('Vital Input Properties', () => {

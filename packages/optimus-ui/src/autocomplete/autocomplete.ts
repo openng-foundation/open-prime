@@ -6,8 +6,8 @@ import {
     computed,
     ContentChild,
     ContentChildren,
-    EmbeddedViewRef,
     ElementRef,
+    EmbeddedViewRef,
     EventEmitter,
     forwardRef,
     HostListener,
@@ -1177,6 +1177,12 @@ export class AutoComplete<T = any> extends BaseInput<AutoCompletePassThrough> {
         return this.optionValue ? undefined : this.dataKey;
     }
 
+    findOptionByValue(value: any) {
+        const options = this.visibleOptions();
+
+        return options.find((option: any) => equals(value, option, this.equalityKey())) ?? options.find((option: any) => equals(value, this.getOptionValue(option)));
+    }
+
     onContainerClick(event) {
         if (this.$disabled() || this.loading || this.isInputClicked(event) || this.isDropdownClicked(event)) {
             return;
@@ -1816,7 +1822,15 @@ export class AutoComplete<T = any> extends BaseInput<AutoCompletePassThrough> {
     }
 
     getOptionLabel(option: any) {
-        return this.optionLabel ? resolveFieldData(option, this.optionLabel) : option && option.label != undefined ? option.label : option;
+        if (this.optionLabel) {
+            const label = resolveFieldData(option, this.optionLabel);
+
+            if (label != undefined) {
+                return label;
+            }
+        }
+
+        return option && option.label != undefined ? option.label : option;
     }
 
     getSelectedItemTemplateLabel(option: any) {
@@ -1846,7 +1860,7 @@ export class AutoComplete<T = any> extends BaseInput<AutoCompletePassThrough> {
     }
 
     getOptionValue(option) {
-        return this.optionValue ? resolveFieldData(option, this.optionValue) : option;
+        return this.optionValue ? resolveFieldData(option, this.optionValue) : !this.optionLabel && option && option.value != undefined ? option.value : option;
     }
 
     getOptionIndex(index, scrollerOptions) {
