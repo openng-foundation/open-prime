@@ -38,7 +38,7 @@ import { Chip } from '@openng/optimus-ui/chip';
 import { DomHandler, unblockBodyScroll } from '@openng/optimus-ui/dom';
 import { Fluid } from '@openng/optimus-ui/fluid';
 import { IconField } from '@openng/optimus-ui/iconfield';
-import { CheckIcon, ChevronDownIcon, SearchIcon, TimesIcon } from '@openng/optimus-ui/icons';
+import { CheckIcon, ChevronDownIcon, SearchIcon, SpinnerIcon, TimesIcon } from '@openng/optimus-ui/icons';
 import { InputIcon } from '@openng/optimus-ui/inputicon';
 import { InputText } from '@openng/optimus-ui/inputtext';
 import { Overlay } from '@openng/optimus-ui/overlay';
@@ -187,7 +187,7 @@ export class MultiSelectItem extends BaseComponent {
 @Component({
     selector: 'p-multiSelect, p-multiselect, p-multi-select',
     standalone: true,
-    imports: [CommonModule, MultiSelectItem, Overlay, SharedModule, Tooltip, Scroller, AutoFocus, CheckIcon, SearchIcon, TimesIcon, ChevronDownIcon, IconField, InputIcon, InputText, Chip, Checkbox, FormsModule, BindModule],
+    imports: [CommonModule, MultiSelectItem, Overlay, SharedModule, Tooltip, Scroller, AutoFocus, CheckIcon, SearchIcon, SpinnerIcon, TimesIcon, ChevronDownIcon, IconField, InputIcon, InputText, Chip, Checkbox, FormsModule, BindModule],
     hostDirectives: [Bind],
     template: `
         <div class="p-hidden-accessible" [attr.data-p-hidden-accessible]="true" [pBind]="ptm('hiddenInputContainer')">
@@ -278,8 +278,8 @@ export class MultiSelectItem extends BaseComponent {
                     <ng-container *ngTemplateOutlet="loadingIconTemplate || _loadingIconTemplate"></ng-container>
                 </ng-container>
                 <ng-container *ngIf="!loadingIconTemplate && !_loadingIconTemplate">
-                    <span *ngIf="loadingIcon" [pBind]="ptm('loadingIcon')" [class]="cn(cx('loadingIcon'), 'pi-spin ' + loadingIcon)" [attr.aria-hidden]="true"></span>
-                    <span *ngIf="!loadingIcon" [pBind]="ptm('loadingIcon')" [class]="cn(cx('loadingIcon'), 'pi pi-spinner pi-spin')" [attr.aria-hidden]="true"></span>
+                    <span *ngIf="loadingIcon" [pBind]="ptm('loadingIcon')" [class]="cxLoadingIcon(loadingIcon)" [attr.aria-hidden]="true"></span>
+                    <svg data-p-icon="spinner" *ngIf="!loadingIcon" [pBind]="ptm('loadingIcon')" [class]="cx('loadingIcon')" [spin]="true" [attr.aria-hidden]="true" />
                 </ng-container>
             </ng-container>
             <ng-template #elseBlock>

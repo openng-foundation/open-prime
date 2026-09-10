@@ -1584,3 +1584,51 @@ describe('ButtonDirective', () => {
         });
     });
 });
+
+/**
+ * Regression coverage for `spinnerIcon` in buttonstyle.
+ *
+ * `cx('icon')` resolves to a class string, so the previous
+ * `Object.entries(instance.cx('icon'))` walked the characters of that string and
+ * emitted one class per index — a loading button shipped `0 1 10 11 ... 31`
+ * into its class attribute alongside the real classes.
+ */
+describe('Button loading icon class list', () => {
+    let fixture: ComponentFixture<TestButtonSpinnerClassComponent>;
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [Button],
+            declarations: [TestButtonSpinnerClassComponent],
+            providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(TestButtonSpinnerClassComponent);
+        fixture.detectChanges();
+    });
+
+    it('should not emit index classes on the built-in spinner', () => {
+        const spinner = fixture.debugElement.query(By.css('.p-button-loading-icon'));
+
+        expect(spinner).toBeTruthy();
+
+        const tokens = Array.from(spinner.nativeElement.classList as DOMTokenList);
+
+        expect(tokens.filter((token) => /^\d+$/.test(token))).toEqual([]);
+        expect(tokens).toContain('p-button-loading-icon');
+        expect(tokens).toContain('p-icon-spin');
+    });
+
+    it('should keep the icon position modifier on the spinner', () => {
+        const spinner = fixture.debugElement.query(By.css('.p-button-loading-icon'));
+
+        expect(spinner.nativeElement.classList.contains('p-button-icon-left')).toBe(true);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false,
+    template: `<p-button label="Save" [loading]="true" />`
+})
+class TestButtonSpinnerClassComponent {}

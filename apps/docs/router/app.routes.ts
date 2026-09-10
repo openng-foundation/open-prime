@@ -22,6 +22,8 @@ export const routes: Routes = [
             { path: 'philosophy', loadChildren: () => import('@/pages/philosophy/routes') },
             { path: 'faq', loadChildren: () => import('@/pages/faq/routes') },
             { path: 'playground', loadChildren: () => import('@/pages/playground/routes') },
+            // Manual verification harness for the loading icon fix. Intentionally absent from the menu and from routes.txt.
+            { path: 'loadingiconcheck', loadChildren: () => import('@/pages/loadingiconcheck/routes') },
             { path: 'roadmap', loadChildren: () => import('@/pages/roadmap/routes') },
             { path: 'templates', loadChildren: () => import('@/pages/templates/routes') },
             {

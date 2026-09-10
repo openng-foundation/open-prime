@@ -758,7 +758,7 @@ export class UITreeNode extends BaseComponent<TreePassThrough> {
         @if (loading && loadingMode === 'mask') {
             <div [class]="cx('mask')" [pBind]="ptm('mask')" animate.enter="p-overlay-mask-enter-active" animate.leave="p-overlay-mask-leave-active">
                 @if (loadingIcon) {
-                    <i [class]="cn(cx('loadingIcon'), 'pi-spin' + loadingIcon)" [pBind]="ptm('loadingIcon')"></i>
+                    <i [class]="cxLoadingIcon(loadingIcon)" [pBind]="ptm('loadingIcon')"></i>
                 }
                 @if (!loadingIcon) {
                     @if (!loadingIconTemplate && !_loadingIconTemplate) {

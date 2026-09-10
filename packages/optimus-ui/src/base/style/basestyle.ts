@@ -25,6 +25,44 @@ const css = /*css*/ `
     overflow: hidden;
     padding-right: dt('scrollbar.width');
 }
+
+/*
+ * A busy indicator is status feedback, not decoration, so a reduced motion
+ * preference has to dampen it instead of removing it. Rotation is swapped for a
+ * cross fade, which still reads as "working" without the continuous movement the
+ * preference asks us to avoid.
+ *
+ * The compound selectors are deliberate. @openng/icons ships its own
+ * prefers-reduced-motion rule for .pi-spin that collapses the animation to a
+ * single 1ms iteration, which would otherwise freeze every font icon loading
+ * indicator for the whole duration of the load. Matching the loading icon class
+ * together with .pi-spin outranks that rule on specificity, so the outcome no
+ * longer depends on stylesheet order.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .p-icon.p-icon-spin,
+    .p-button-loading-icon .p-icon-spin,
+    .p-button-loading-icon.pi-spin,
+    .p-select-loading-icon.pi-spin,
+    .p-multiselect-loading-icon.pi-spin,
+    .p-cascadeselect-loading-icon.pi-spin,
+    .p-dataview-loading-icon.pi-spin,
+    .p-tree-loading-icon.pi-spin,
+    .p-treetable-loading-icon.pi-spin,
+    .p-datatable-loading-icon.pi-spin {
+        animation: p-busy-fade 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes p-busy-fade {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
 `;
 
 @Injectable({ providedIn: 'root' })

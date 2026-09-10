@@ -134,7 +134,7 @@ export class TreeTableService {
         @if (loading && showLoader) {
             <div [pBind]="ptm('mask')" [class]="cx('mask')" animate.enter="p-overlay-mask-enter-active" animate.leave="p-overlay-mask-leave-active">
                 @if (loadingIcon) {
-                    <i [class]="cn(cx('loadingIcon'), 'pi-spin' + loadingIcon)"></i>
+                    <i [class]="cxLoadingIcon(loadingIcon)"></i>
                 }
                 @if (!loadingIcon) {
                     @if (!loadingIconTemplate && !_loadingIconTemplate) {

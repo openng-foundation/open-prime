@@ -562,7 +562,11 @@ export class ButtonDirective extends BaseComponent {
     }
 
     getIconClass() {
-        return this.loading ? 'p-button-loading-icon ' + (this.loadingIcon ? this.loadingIcon : 'p-icon') : this.icon || 'p-hidden';
+        if (!this.loading) {
+            return this.icon || 'p-hidden';
+        }
+
+        return this.loadingIcon ? this.cxLoadingIcon(this.loadingIcon) : this.cn(this.cx('loadingIcon'), 'p-icon');
     }
 
     onDestroy() {
@@ -600,7 +604,7 @@ export class ButtonDirective extends BaseComponent {
             @if (loading || buttonProps?.loading) {
                 @if (!loadingIconTemplate && !_loadingIconTemplate) {
                     @if (loadingIcon || buttonProps?.loadingIcon) {
-                        <span [class]="cn(cx('loadingIcon'), 'pi-spin', loadingIcon || buttonProps?.loadingIcon)" [pBind]="ptm('loadingIcon')" [attr.aria-hidden]="true"></span>
+                        <span [class]="cxLoadingIcon(loadingIcon || buttonProps?.loadingIcon)" [pBind]="ptm('loadingIcon')" [attr.aria-hidden]="true"></span>
                     }
                     @if (!(loadingIcon || buttonProps?.loadingIcon)) {
                         <svg data-p-icon="spinner" [class]="cn(cx('loadingIcon'), cx('spinnerIcon'))" [pBind]="ptm('loadingIcon')" [spin]="true" [attr.aria-hidden]="true" />

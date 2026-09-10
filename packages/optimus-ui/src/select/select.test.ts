@@ -4457,3 +4457,76 @@ describe('Select PT (PassThrough)', () => {
         });
     });
 });
+
+/**
+ * Regression coverage for the loading spinner defects in the select family.
+ *
+ * 1. The built-in spinner was a font icon (pi pi-spinner pi-spin) while the rest
+ *    of the library used the SVG spinner. @openng/icons cancels .pi-spin under
+ *    prefers-reduced-motion, so the built-in spinner froze for the whole load
+ *    while a p-button spinner in the same view kept animating.
+ * 2. A custom loadingIcon was concatenated onto the spin class without a
+ *    separator, which destroyed both the spin class and the custom classes.
+ * 3. cascadeselect interpolated an unset loadingIcon into the class list, which
+ *    shipped a literal "undefined" class into the DOM.
+ */
+describe('Select loading icon', () => {
+    let fixture: ComponentFixture<TestSelectLoadingIconComponent>;
+    let component: TestSelectLoadingIconComponent;
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [Select],
+            declarations: [TestSelectLoadingIconComponent],
+            providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(TestSelectLoadingIconComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('should render the svg spinner when no loadingIcon is supplied', () => {
+        const spinner = fixture.debugElement.query(By.css('svg[data-p-icon="spinner"].p-select-loading-icon'));
+
+        expect(spinner).toBeTruthy();
+        expect(spinner.nativeElement.classList.contains('p-icon-spin')).toBe(true);
+        // The font icon path animates through .pi-spin, which is cancelled under
+        // prefers-reduced-motion, so it must not be the default any more.
+        expect(fixture.debugElement.query(By.css('.p-select-loading-icon.pi-spin'))).toBeNull();
+    });
+
+    it('should keep the spin class and the custom classes separate for a custom loadingIcon', () => {
+        component.loadingIcon.set('pi pi-cog');
+        fixture.detectChanges();
+
+        const icon = fixture.debugElement.query(By.css('.p-select-loading-icon'));
+
+        expect(icon).toBeTruthy();
+        expect(icon.nativeElement.classList.contains('pi-spin')).toBe(true);
+        expect(icon.nativeElement.classList.contains('pi')).toBe(true);
+        expect(icon.nativeElement.classList.contains('pi-cog')).toBe(true);
+    });
+
+    it('should not emit a literal undefined class in either loading branch', () => {
+        const classAttributes = () => Array.from(fixture.nativeElement.querySelectorAll('[class]')).map((el) => (el as HTMLElement).getAttribute('class') ?? '');
+
+        expect(classAttributes().every((value) => !value.includes('undefined'))).toBe(true);
+
+        component.loadingIcon.set('pi pi-cog');
+        fixture.detectChanges();
+
+        expect(classAttributes().every((value) => !value.includes('undefined'))).toBe(true);
+    });
+});
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false,
+    template: `<p-select [options]="options" optionLabel="name" [loading]="true" [loadingIcon]="loadingIcon()"></p-select>`
+})
+class TestSelectLoadingIconComponent {
+    options = [{ name: 'New York', code: 'NY' }];
+
+    loadingIcon = signal<string | undefined>(undefined);
+}

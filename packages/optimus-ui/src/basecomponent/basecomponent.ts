@@ -512,6 +512,17 @@ export class BaseComponent<PT = any> implements Lifecycle {
         return !this.$unstyled() ? cn(this._getOptionValue(this.$style.classes, key, { ...this.$params, ...params })) : undefined;
     }
 
+    /**
+     * Class list for a font based loading icon.
+     *
+     * The spin class is applied here rather than by each caller so a custom
+     * `loadingIcon` animates the same way the built-in spinner does, and an
+     * unset icon cannot leak into the class list.
+     */
+    public cxLoadingIcon(icon?: string | null, key: string = 'loadingIcon') {
+        return cn(this.cx(key), 'pi-spin', icon);
+    }
+
     public sx(key = '', when = true, params = {}) {
         if (when) {
             const self = this._getOptionValue(this.$style.inlineStyles, key, { ...this.$params, ...params }) as Record<string, any>;

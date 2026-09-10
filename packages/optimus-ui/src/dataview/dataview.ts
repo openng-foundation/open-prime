@@ -38,7 +38,7 @@ const DATAVIEW_INSTANCE = new InjectionToken<DataView>('DATAVIEW_INSTANCE');
             <div [pBind]="ptm('loading')" [class]="cx('loading')">
                 <div [pBind]="ptm('loadingOverlay')" [class]="cx('loadingOverlay')">
                     @if (loadingIcon) {
-                        <i [class]="cn(cx('loadingIcon'), 'pi-spin' + loadingIcon)"></i>
+                        <i [class]="cxLoadingIcon(loadingIcon)"></i>
                     } @else {
                         <ng-container>
                             <svg [pBind]="ptm('loadingIcon')" data-p-icon="spinner" [spin]="true" [class]="cx('loadingIcon')" />

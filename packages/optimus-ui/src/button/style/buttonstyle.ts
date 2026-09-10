@@ -2,6 +2,18 @@ import { Injectable } from '@angular/core';
 import { style } from '@openng/optimus-ui-styles/button';
 import { BaseStyle } from '@openng/optimus-ui/base';
 
+/*
+ * Shared by `icon` and `spinnerIcon` so the built-in spinner lands in the same
+ * slot as a regular icon without either definition drifting from the other.
+ */
+const iconPositionClasses = ({ instance }) => ({
+    [`p-button-icon-${instance.iconPos || instance.buttonProps?.iconPos}`]: instance.label || instance.buttonProps?.label,
+    'p-button-icon-left': ((instance.iconPos === 'left' || instance.buttonProps?.iconPos === 'left') && instance.label) || instance.buttonProps?.label,
+    'p-button-icon-right': ((instance.iconPos === 'right' || instance.buttonProps?.iconPos === 'right') && instance.label) || instance.buttonProps?.label,
+    'p-button-icon-top': ((instance.iconPos === 'top' || instance.buttonProps?.iconPos === 'top') && instance.label) || instance.buttonProps?.label,
+    'p-button-icon-bottom': ((instance.iconPos === 'bottom' || instance.buttonProps?.iconPos === 'bottom') && instance.label) || instance.buttonProps?.label
+});
+
 const classes = {
     root: ({ instance }) => [
         'p-button p-component',
@@ -22,23 +34,10 @@ const classes = {
         }
     ],
     loadingIcon: 'p-button-loading-icon',
-    icon: ({ instance }) => [
-        'p-button-icon',
-        {
-            [`p-button-icon-${instance.iconPos || instance.buttonProps?.iconPos}`]: instance.label || instance.buttonProps?.label,
-            'p-button-icon-left': ((instance.iconPos === 'left' || instance.buttonProps?.iconPos === 'left') && instance.label) || instance.buttonProps?.label,
-            'p-button-icon-right': ((instance.iconPos === 'right' || instance.buttonProps?.iconPos === 'right') && instance.label) || instance.buttonProps?.label,
-            'p-button-icon-top': ((instance.iconPos === 'top' || instance.buttonProps?.iconPos === 'top') && instance.label) || instance.buttonProps?.label,
-            'p-button-icon-bottom': ((instance.iconPos === 'bottom' || instance.buttonProps?.iconPos === 'bottom') && instance.label) || instance.buttonProps?.label
-        },
-        instance.icon,
-        instance.buttonProps?.icon
-    ],
-    spinnerIcon: ({ instance }) => {
-        return Object.entries(instance.cx('icon'))
-            .filter(([, value]) => !!value)
-            .reduce((acc, [key]) => acc + ` ${key}`, 'p-button-loading-icon');
-    },
+    icon: ({ instance }) => ['p-button-icon', iconPositionClasses({ instance }), instance.icon, instance.buttonProps?.icon],
+    // `cx('icon')` resolves to a class string, so iterating it with
+    // Object.entries walked the characters and emitted one class per index.
+    spinnerIcon: ({ instance }) => ['p-button-loading-icon', iconPositionClasses({ instance })],
     label: 'p-button-label'
 };
 
