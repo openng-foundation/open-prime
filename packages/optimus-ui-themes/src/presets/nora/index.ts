@@ -80,6 +80,7 @@ import tag from '@openng/optimus-ui-themes/nora/tag';
 import terminal from '@openng/optimus-ui-themes/nora/terminal';
 import textarea from '@openng/optimus-ui-themes/nora/textarea';
 import tieredmenu from '@openng/optimus-ui-themes/nora/tieredmenu';
+import scheduler from '@openng/optimus-ui-themes/nora/scheduler';
 import timeline from '@openng/optimus-ui-themes/nora/timeline';
 import toast from '@openng/optimus-ui-themes/nora/toast';
 import togglebutton from '@openng/optimus-ui-themes/nora/togglebutton';
@@ -172,6 +173,7 @@ export default {
         tieredmenu,
         tag,
         terminal,
+        scheduler,
         timeline,
         togglebutton,
         toggleswitch,

@@ -263,6 +263,10 @@ export const routes: Routes = [
                 loadChildren: () => import('@/pages/tieredmenu/routes')
             },
             {
+                path: 'scheduler',
+                loadChildren: () => import('@/pages/scheduler/routes')
+            },
+            {
                 path: 'timeline',
                 loadChildren: () => import('@/pages/timeline/routes')
             },

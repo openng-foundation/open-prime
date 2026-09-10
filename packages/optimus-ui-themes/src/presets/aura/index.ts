@@ -81,6 +81,7 @@ import tag from '@openng/optimus-ui-themes/aura/tag';
 import terminal from '@openng/optimus-ui-themes/aura/terminal';
 import textarea from '@openng/optimus-ui-themes/aura/textarea';
 import tieredmenu from '@openng/optimus-ui-themes/aura/tieredmenu';
+import scheduler from '@openng/optimus-ui-themes/aura/scheduler';
 import timeline from '@openng/optimus-ui-themes/aura/timeline';
 import toast from '@openng/optimus-ui-themes/aura/toast';
 import togglebutton from '@openng/optimus-ui-themes/aura/togglebutton';
@@ -173,6 +174,7 @@ export default {
         terminal,
         textarea,
         tieredmenu,
+        scheduler,
         timeline,
         toast,
         togglebutton,

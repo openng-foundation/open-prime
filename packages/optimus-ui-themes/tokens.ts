@@ -72,6 +72,7 @@ export interface Tokens {
     radiobutton: TokenMetaData;
     rating: TokenMetaData;
     ripple: TokenMetaData;
+    scheduler: TokenMetaData;
     scrollpanel: TokenMetaData;
     select: TokenMetaData;
     selectbutton: TokenMetaData;
@@ -9798,6 +9799,461 @@ export default {
                 token: 'ripple.background',
                 variable: '--p-ripple-background',
                 description: 'Background of root'
+            }
+        ]
+    },
+    scheduler: {
+        description: 'Scheduler Design Tokens',
+        tokens: [
+            {
+                name: 'scheduler.root.background',
+                token: 'scheduler.background',
+                variable: '--p-scheduler-background',
+                description: 'Background of root'
+            },
+            {
+                name: 'scheduler.root.color',
+                token: 'scheduler.color',
+                variable: '--p-scheduler-color',
+                description: 'Color of root'
+            },
+            {
+                name: 'scheduler.root.borderColor',
+                token: 'scheduler.border.color',
+                variable: '--p-scheduler-border-color',
+                description: 'Border color of root'
+            },
+            {
+                name: 'scheduler.root.borderRadius',
+                token: 'scheduler.border.radius',
+                variable: '--p-scheduler-border-radius',
+                description: 'Border radius of root'
+            },
+            {
+                name: 'scheduler.accent.color',
+                token: 'scheduler.accent.color',
+                variable: '--p-scheduler-accent-color',
+                description: 'Color of the accented controls, such as the today button and the agenda weekday'
+            },
+            {
+                name: 'scheduler.header.padding',
+                token: 'scheduler.header.padding',
+                variable: '--p-scheduler-header-padding',
+                description: 'Padding of header'
+            },
+            {
+                name: 'scheduler.header.gap',
+                token: 'scheduler.header.gap',
+                variable: '--p-scheduler-header-gap',
+                description: 'Gap of header'
+            },
+            {
+                name: 'scheduler.header.background',
+                token: 'scheduler.header.background',
+                variable: '--p-scheduler-header-background',
+                description: 'Background of header'
+            },
+            {
+                name: 'scheduler.title.fontSize',
+                token: 'scheduler.title.font.size',
+                variable: '--p-scheduler-title-font-size',
+                description: 'Font size of title'
+            },
+            {
+                name: 'scheduler.title.fontWeight',
+                token: 'scheduler.title.font.weight',
+                variable: '--p-scheduler-title-font-weight',
+                description: 'Font weight of title'
+            },
+            {
+                name: 'scheduler.title.color',
+                token: 'scheduler.title.color',
+                variable: '--p-scheduler-title-color',
+                description: 'Color of title'
+            },
+            {
+                name: 'scheduler.gutter.width',
+                token: 'scheduler.gutter.width',
+                variable: '--p-scheduler-gutter-width',
+                description: 'Width of the time gutter'
+            },
+            {
+                name: 'scheduler.gutter.fontSize',
+                token: 'scheduler.gutter.font.size',
+                variable: '--p-scheduler-gutter-font-size',
+                description: 'Font size of the gutter labels'
+            },
+            {
+                name: 'scheduler.gutter.color',
+                token: 'scheduler.gutter.color',
+                variable: '--p-scheduler-gutter-color',
+                description: 'Color of the gutter labels'
+            },
+            {
+                name: 'scheduler.day.minWidth',
+                token: 'scheduler.day.min.width',
+                variable: '--p-scheduler-day-min-width',
+                description: 'Min width of a day column'
+            },
+            {
+                name: 'scheduler.day.hoverBackground',
+                token: 'scheduler.day.hover.background',
+                variable: '--p-scheduler-day-hover-background',
+                description: 'Hover background of a day cell'
+            },
+            {
+                name: 'scheduler.day.headerPadding',
+                token: 'scheduler.day.header.padding',
+                variable: '--p-scheduler-day-header-padding',
+                description: 'Padding of a day header'
+            },
+            {
+                name: 'scheduler.slot.height',
+                token: 'scheduler.slot.height',
+                variable: '--p-scheduler-slot-height',
+                description: 'Height of one time-grid row'
+            },
+            {
+                name: 'scheduler.allDay.rowHeight',
+                token: 'scheduler.all.day.row.height',
+                variable: '--p-scheduler-all-day-row-height',
+                description: 'Height of one all-day row'
+            },
+            {
+                name: 'scheduler.weekday.background',
+                token: 'scheduler.weekday.background',
+                variable: '--p-scheduler-weekday-background',
+                description: 'Background of the weekday header'
+            },
+            {
+                name: 'scheduler.weekend.background',
+                token: 'scheduler.weekend.background',
+                variable: '--p-scheduler-weekend-background',
+                description: 'Background of a weekend cell'
+            },
+            {
+                name: 'scheduler.today.background',
+                token: 'scheduler.today.background',
+                variable: '--p-scheduler-today-background',
+                description: "Background of today's cell"
+            },
+            {
+                name: 'scheduler.today.color',
+                token: 'scheduler.today.color',
+                variable: '--p-scheduler-today-color',
+                description: "Color of today's cell"
+            },
+            {
+                name: 'scheduler.today.badgeBackground',
+                token: 'scheduler.today.badge.background',
+                variable: '--p-scheduler-today-badge-background',
+                description: "Background of the badge around today's day number"
+            },
+            {
+                name: 'scheduler.today.badgeColor',
+                token: 'scheduler.today.badge.color',
+                variable: '--p-scheduler-today-badge-color',
+                description: "Color of the badge around today's day number"
+            },
+            {
+                name: 'scheduler.otherMonth.background',
+                token: 'scheduler.other.month.background',
+                variable: '--p-scheduler-other-month-background',
+                description: 'Background of a month cell that belongs to an adjacent month'
+            },
+            {
+                name: 'scheduler.otherMonth.color',
+                token: 'scheduler.other.month.color',
+                variable: '--p-scheduler-other-month-color',
+                description: 'Color of a day belonging to an adjacent month'
+            },
+            {
+                name: 'scheduler.selected.background',
+                token: 'scheduler.selected.background',
+                variable: '--p-scheduler-selected-background',
+                description: 'Background of a selected cell'
+            },
+            {
+                name: 'scheduler.selected.color',
+                token: 'scheduler.selected.color',
+                variable: '--p-scheduler-selected-color',
+                description: 'Color of a selected cell'
+            },
+            {
+                name: 'scheduler.focus.ringColor',
+                token: 'scheduler.focus.ring.color',
+                variable: '--p-scheduler-focus-ring-color',
+                description: 'Color of the focus ring'
+            },
+            {
+                name: 'scheduler.event.background',
+                token: 'scheduler.event.background',
+                variable: '--p-scheduler-event-background',
+                description: 'Background of an event'
+            },
+            {
+                name: 'scheduler.event.hoverBackground',
+                token: 'scheduler.event.hover.background',
+                variable: '--p-scheduler-event-hover-background',
+                description: 'Hover background of an event'
+            },
+            {
+                name: 'scheduler.event.color',
+                token: 'scheduler.event.color',
+                variable: '--p-scheduler-event-color',
+                description: 'Color of an event'
+            },
+            {
+                name: 'scheduler.event.borderAccent',
+                token: 'scheduler.event.border.accent',
+                variable: '--p-scheduler-event-border-accent',
+                description: 'Accent border of an event'
+            },
+            {
+                name: 'scheduler.event.borderRadius',
+                token: 'scheduler.event.border.radius',
+                variable: '--p-scheduler-event-border-radius',
+                description: 'Border radius of an event'
+            },
+            {
+                name: 'scheduler.event.fontSize',
+                token: 'scheduler.event.font.size',
+                variable: '--p-scheduler-event-font-size',
+                description: 'Font size of an event'
+            },
+            {
+                name: 'scheduler.event.timeFontSize',
+                token: 'scheduler.event.time.font.size',
+                variable: '--p-scheduler-event-time-font-size',
+                description: 'Font size of the event time'
+            },
+            {
+                name: 'scheduler.event.paddingX',
+                token: 'scheduler.event.padding.x',
+                variable: '--p-scheduler-event-padding-x',
+                description: 'Horizontal padding of an event'
+            },
+            {
+                name: 'scheduler.event.paddingY',
+                token: 'scheduler.event.padding.y',
+                variable: '--p-scheduler-event-padding-y',
+                description: 'Vertical padding of an event'
+            },
+            {
+                name: 'scheduler.event.fillOpacity',
+                token: 'scheduler.event.fill.opacity',
+                variable: '--p-scheduler-event-fill-opacity',
+                description: 'How much of the accent colour tints the event fill, as a percentage'
+            },
+            {
+                name: 'scheduler.business.background',
+                token: 'scheduler.business.background',
+                variable: '--p-scheduler-business-background',
+                description: 'Background of a business-hours cell'
+            },
+            {
+                name: 'scheduler.slotAvailable.background',
+                token: 'scheduler.slot.available.background',
+                variable: '--p-scheduler-slot-available-background',
+                description: 'Background of an available appointment slot'
+            },
+            {
+                name: 'scheduler.blocked.background',
+                token: 'scheduler.blocked.background',
+                variable: '--p-scheduler-blocked-background',
+                description: 'Background of a cell inside a blocked interval'
+            },
+            {
+                name: 'scheduler.nonBusiness.background',
+                token: 'scheduler.non.business.background',
+                variable: '--p-scheduler-non-business-background',
+                description: 'Background of a cell outside business hours'
+            },
+            {
+                name: 'scheduler.month.dayMinWidth',
+                token: 'scheduler.month.day.min.width',
+                variable: '--p-scheduler-month-day-min-width',
+                description: 'Min width of a month day cell'
+            },
+            {
+                name: 'scheduler.month.cellMinHeight',
+                token: 'scheduler.month.cell.min.height',
+                variable: '--p-scheduler-month-cell-min-height',
+                description: 'Min height of a month cell'
+            },
+            {
+                name: 'scheduler.month.cellPadding',
+                token: 'scheduler.month.cell.padding',
+                variable: '--p-scheduler-month-cell-padding',
+                description: 'Padding of a month cell'
+            },
+            {
+                name: 'scheduler.month.numberFontSize',
+                token: 'scheduler.month.number.font.size',
+                variable: '--p-scheduler-month-number-font-size',
+                description: 'Font size of the month day number'
+            },
+            {
+                name: 'scheduler.month.numberHeight',
+                token: 'scheduler.month.number.height',
+                variable: '--p-scheduler-month-number-height',
+                description: 'Height of the band reserved for the day number, above the events'
+            },
+            {
+                name: 'scheduler.miniMonth.gap',
+                token: 'scheduler.mini.month.gap',
+                variable: '--p-scheduler-mini-month-gap',
+                description: 'Gap between the mini-months of the year view'
+            },
+            {
+                name: 'scheduler.miniMonth.padding',
+                token: 'scheduler.mini.month.padding',
+                variable: '--p-scheduler-mini-month-padding',
+                description: 'Padding of the mini-month header'
+            },
+            {
+                name: 'scheduler.miniMonth.gridPadding',
+                token: 'scheduler.mini.month.grid.padding',
+                variable: '--p-scheduler-mini-month-grid-padding',
+                description: 'Padding above the mini-month day grid'
+            },
+            {
+                name: 'scheduler.miniMonth.minWidth',
+                token: 'scheduler.mini.month.min.width',
+                variable: '--p-scheduler-mini-month-min-width',
+                description: 'Minimum width of a mini-month card, which is what decides how many columns the year view fits'
+            },
+            {
+                name: 'scheduler.miniMonth.daySize',
+                token: 'scheduler.mini.month.day.size',
+                variable: '--p-scheduler-mini-month-day-size',
+                description: 'Minimum size of a mini-month day cell, and height of its weekday row'
+            },
+            {
+                name: 'scheduler.miniMonth.fontSize',
+                token: 'scheduler.mini.month.font.size',
+                variable: '--p-scheduler-mini-month-font-size',
+                description: 'Font size of a mini-month day'
+            },
+            {
+                name: 'scheduler.miniMonth.borderRadius',
+                token: 'scheduler.mini.month.border.radius',
+                variable: '--p-scheduler-mini-month-border-radius',
+                description: 'Border radius of a mini-month card'
+            },
+            {
+                name: 'scheduler.miniMonthWeekend.color',
+                token: 'scheduler.mini.month.weekend.color',
+                variable: '--p-scheduler-mini-month-weekend-color',
+                description: "Color of a weekend day number in the year view's mini-months"
+            },
+            {
+                name: 'scheduler.timeline.slotWidth',
+                token: 'scheduler.timeline.slot.width',
+                variable: '--p-scheduler-timeline-slot-width',
+                description: 'Width of one timeline column'
+            },
+            {
+                name: 'scheduler.timeline.rowHeight',
+                token: 'scheduler.timeline.row.height',
+                variable: '--p-scheduler-timeline-row-height',
+                description: 'Height of one timeline row'
+            },
+            {
+                name: 'scheduler.timeline.headerHeight',
+                token: 'scheduler.timeline.header.height',
+                variable: '--p-scheduler-timeline-header-height',
+                description: 'Height of one row of the timeline header'
+            },
+            {
+                name: 'scheduler.timeline.eventHeight',
+                token: 'scheduler.timeline.event.height',
+                variable: '--p-scheduler-timeline-event-height',
+                description: 'Height of an event bar on the timeline'
+            },
+            {
+                name: 'scheduler.timeline.eventBorderRadius',
+                token: 'scheduler.timeline.event.border.radius',
+                variable: '--p-scheduler-timeline-event-border-radius',
+                description: 'Border radius of an event bar on the timeline'
+            },
+            {
+                name: 'scheduler.resourceArea.width',
+                token: 'scheduler.resource.area.width',
+                variable: '--p-scheduler-resource-area-width',
+                description: 'Width of the resource rail'
+            },
+            {
+                name: 'scheduler.resourceArea.background',
+                token: 'scheduler.resource.area.background',
+                variable: '--p-scheduler-resource-area-background',
+                description: 'Background of the resource rail'
+            },
+            {
+                name: 'scheduler.resourceArea.headerPadding',
+                token: 'scheduler.resource.area.header.padding',
+                variable: '--p-scheduler-resource-area-header-padding',
+                description: 'Padding of the resource rail header'
+            },
+            {
+                name: 'scheduler.resourceArea.rowPadding',
+                token: 'scheduler.resource.area.row.padding',
+                variable: '--p-scheduler-resource-area-row-padding',
+                description: 'Padding of a resource row'
+            },
+            {
+                name: 'scheduler.resourceArea.rowHeight',
+                token: 'scheduler.resource.area.row.height',
+                variable: '--p-scheduler-resource-area-row-height',
+                description: 'Height of a resource row'
+            },
+            {
+                name: 'scheduler.agenda.headerPadding',
+                token: 'scheduler.agenda.header.padding',
+                variable: '--p-scheduler-agenda-header-padding',
+                description: 'Padding of an agenda date header'
+            },
+            {
+                name: 'scheduler.agenda.rowPadding',
+                token: 'scheduler.agenda.row.padding',
+                variable: '--p-scheduler-agenda-row-padding',
+                description: 'Padding of an agenda row'
+            },
+            {
+                name: 'scheduler.agenda.gutterWidth',
+                token: 'scheduler.agenda.gutter.width',
+                variable: '--p-scheduler-agenda-gutter-width',
+                description: 'Width of the empty gutter to the left of an agenda row, which aligns it with the time gutter of the day and week views'
+            },
+            {
+                name: 'scheduler.legend.padding',
+                token: 'scheduler.legend.padding',
+                variable: '--p-scheduler-legend-padding',
+                description: 'Padding of the legend'
+            },
+            {
+                name: 'scheduler.categoryLegend.itemBackground',
+                token: 'scheduler.category.legend.item.background',
+                variable: '--p-scheduler-category-legend-item-background',
+                description: 'Background of a legend item'
+            },
+            {
+                name: 'scheduler.categoryLegend.countColor',
+                token: 'scheduler.category.legend.count.color',
+                variable: '--p-scheduler-category-legend-count-color',
+                description: 'Color of a legend count'
+            },
+            {
+                name: 'scheduler.moreLink.color',
+                token: 'scheduler.more.link.color',
+                variable: '--p-scheduler-more-link-color',
+                description: 'Color of the overflow link'
+            },
+            {
+                name: 'scheduler.nowIndicator.color',
+                token: 'scheduler.now.indicator.color',
+                variable: '--p-scheduler-now-indicator-color',
+                description: 'Color of the current-time line'
             }
         ]
     },
