@@ -374,6 +374,11 @@
                         {
                             "name": "Chart.js",
                             "routerLink": "/chart"
+                        },
+                        {
+                            "name": "Charts (SVG & Canvas)",
+                            "routerLink": "/charts",
+                            "badge": "New"
                         }
                     ]
                 },

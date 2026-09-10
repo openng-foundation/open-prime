@@ -1,0 +1,50 @@
+export interface SupportLoadCell {
+    day: string;
+    window: string;
+    tickets: number;
+}
+
+export const supportLoadMatrix: SupportLoadCell[] = [
+    { day: 'Mon', window: '08:00', tickets: 18 },
+    { day: 'Tue', window: '08:00', tickets: 24 },
+    { day: 'Wed', window: '08:00', tickets: 31 },
+    { day: 'Thu', window: '08:00', tickets: 28 },
+    { day: 'Fri', window: '08:00', tickets: 22 },
+    { day: 'Sat', window: '08:00', tickets: 9 },
+    { day: 'Sun', window: '08:00', tickets: 7 },
+    { day: 'Mon', window: '10:00', tickets: 36 },
+    { day: 'Tue', window: '10:00', tickets: 52 },
+    { day: 'Wed', window: '10:00', tickets: 64 },
+    { day: 'Thu', window: '10:00', tickets: 59 },
+    { day: 'Fri', window: '10:00', tickets: 44 },
+    { day: 'Sat', window: '10:00', tickets: 15 },
+    { day: 'Sun', window: '10:00', tickets: 12 },
+    { day: 'Mon', window: '12:00', tickets: 41 },
+    { day: 'Tue', window: '12:00', tickets: 68 },
+    { day: 'Wed', window: '12:00', tickets: 86 },
+    { day: 'Thu', window: '12:00', tickets: 74 },
+    { day: 'Fri', window: '12:00', tickets: 55 },
+    { day: 'Sat', window: '12:00', tickets: 20 },
+    { day: 'Sun', window: '12:00', tickets: 16 },
+    { day: 'Mon', window: '14:00', tickets: 33 },
+    { day: 'Tue', window: '14:00', tickets: 61 },
+    { day: 'Wed', window: '14:00', tickets: 92 },
+    { day: 'Thu', window: '14:00', tickets: 80 },
+    { day: 'Fri', window: '14:00', tickets: 49 },
+    { day: 'Sat', window: '14:00', tickets: 23 },
+    { day: 'Sun', window: '14:00', tickets: 18 },
+    { day: 'Mon', window: '16:00', tickets: 27 },
+    { day: 'Tue', window: '16:00', tickets: 45 },
+    { day: 'Wed', window: '16:00', tickets: 70 },
+    { day: 'Thu', window: '16:00', tickets: 63 },
+    { day: 'Fri', window: '16:00', tickets: 38 },
+    { day: 'Sat', window: '16:00', tickets: 17 },
+    { day: 'Sun', window: '16:00', tickets: 11 },
+    { day: 'Mon', window: '18:00', tickets: 16 },
+    { day: 'Tue', window: '18:00', tickets: 29 },
+    { day: 'Wed', window: '18:00', tickets: 42 },
+    { day: 'Thu', window: '18:00', tickets: 35 },
+    { day: 'Fri', window: '18:00', tickets: 24 },
+    { day: 'Sat', window: '18:00', tickets: 13 },
+    { day: 'Sun', window: '18:00', tickets: 9 }
+];

@@ -12,6 +12,7 @@ import button from '@openng/optimus-ui-themes/lara/button';
 import card from '@openng/optimus-ui-themes/lara/card';
 import carousel from '@openng/optimus-ui-themes/lara/carousel';
 import cascadeselect from '@openng/optimus-ui-themes/lara/cascadeselect';
+import charts from '@openng/optimus-ui-themes/lara/charts';
 import checkbox from '@openng/optimus-ui-themes/lara/checkbox';
 import chip from '@openng/optimus-ui-themes/lara/chip';
 import colorpicker from '@openng/optimus-ui-themes/lara/colorpicker';
@@ -105,6 +106,7 @@ export default {
         card,
         carousel,
         cascadeselect,
+        charts,
         checkbox,
         chip,
         colorpicker,

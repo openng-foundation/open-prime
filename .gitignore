@@ -76,4 +76,6 @@ apps/docs/doc/apidoc
 apps/docs/router/routes.txt
 apps/docs/public/sitemap.xml
 apps/docs/public/llms
-apps/docs/public/demos.json
+# The demo code catalogue and the per-component files it is split into are build output.
+apps/docs/.demos/
+apps/docs/public/demos/

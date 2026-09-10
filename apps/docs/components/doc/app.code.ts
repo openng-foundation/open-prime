@@ -120,6 +120,12 @@ export class AppCode {
         effect(() => {
             const codeInput = this.code();
             const selector = this.resolvedSelector();
+
+            // Asking for the component is what starts its download: the code now arrives one
+            // component at a time, so a panel has to say which one it needs. `isLoaded` alone
+            // could never become true otherwise -- nothing would have been requested.
+            if (selector) this.demoCodeService.requestFor(selector);
+
             const isLoaded = this.demoCodeService.isLoaded();
 
             if (codeInput) {

@@ -51,6 +51,7 @@ export const routes: Routes = [
             },
             { path: 'carousel', loadChildren: () => import('@/pages/carousel/routes') },
             { path: 'chart', loadChildren: () => import('@/pages/chart/routes') },
+            { path: 'charts', loadChildren: () => import('@/pages/charts/routes') },
             { path: 'checkbox', loadChildren: () => import('@/pages/checkbox/routes') },
             { path: 'chip', loadChildren: () => import('@/pages/chip/routes') },
             {

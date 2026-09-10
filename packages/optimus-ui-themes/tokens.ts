@@ -20,6 +20,7 @@ export interface Tokens {
     card: TokenMetaData;
     carousel: TokenMetaData;
     cascadeselect: TokenMetaData;
+    charts: TokenMetaData;
     checkbox: TokenMetaData;
     chip: TokenMetaData;
     colorpicker: TokenMetaData;
@@ -2651,6 +2652,395 @@ export default {
                 token: 'cascadeselect.clear.icon.color',
                 variable: '--p-cascadeselect-clear-icon-color',
                 description: 'Color of clear icon'
+            }
+        ]
+    },
+    charts: {
+        description: 'Charts Design Tokens',
+        tokens: [
+            {
+                name: 'charts.root.color',
+                token: 'charts.color',
+                variable: '--p-charts-color',
+                description: 'Color of root'
+            },
+            {
+                name: 'charts.root.background',
+                token: 'charts.background',
+                variable: '--p-charts-background',
+                description: 'Background of root'
+            },
+            {
+                name: 'charts.font.family',
+                token: 'charts.font.family',
+                variable: '--p-charts-font-family',
+                description: 'Family of font'
+            },
+            {
+                name: 'charts.font.size',
+                token: 'charts.font.size',
+                variable: '--p-charts-font-size',
+                description: 'Size of font'
+            },
+            {
+                name: 'charts.transition.duration',
+                token: 'charts.transition.duration',
+                variable: '--p-charts-transition-duration',
+                description: 'Duration of transition'
+            },
+            {
+                name: 'charts.focus.ringWidth',
+                token: 'charts.focus.ring.width',
+                variable: '--p-charts-focus-ring-width',
+                description: 'Ring width of focus'
+            },
+            {
+                name: 'charts.focus.ringStyle',
+                token: 'charts.focus.ring.style',
+                variable: '--p-charts-focus-ring-style',
+                description: 'Ring style of focus'
+            },
+            {
+                name: 'charts.focus.ringColor',
+                token: 'charts.focus.ring.color',
+                variable: '--p-charts-focus-ring-color',
+                description: 'Ring color of focus'
+            },
+            {
+                name: 'charts.focus.ringOffset',
+                token: 'charts.focus.ring.offset',
+                variable: '--p-charts-focus-ring-offset',
+                description: 'Ring offset of focus'
+            },
+            {
+                name: 'charts.axis.color',
+                token: 'charts.axis.color',
+                variable: '--p-charts-axis-color',
+                description: 'Color of axis'
+            },
+            {
+                name: 'charts.axis.titleColor',
+                token: 'charts.axis.title.color',
+                variable: '--p-charts-axis-title-color',
+                description: 'Title color of axis'
+            },
+            {
+                name: 'charts.tick.labelColor',
+                token: 'charts.tick.label.color',
+                variable: '--p-charts-tick-label-color',
+                description: 'Label color of tick'
+            },
+            {
+                name: 'charts.grid.color',
+                token: 'charts.grid.color',
+                variable: '--p-charts-grid-color',
+                description: 'Color of grid'
+            },
+            {
+                name: 'charts.grid.minorColor',
+                token: 'charts.grid.minor.color',
+                variable: '--p-charts-grid-minor-color',
+                description: 'Minor color of grid'
+            },
+            {
+                name: 'charts.band.fill',
+                token: 'charts.band.fill',
+                variable: '--p-charts-band-fill',
+                description: 'Fill of band'
+            },
+            {
+                name: 'charts.title.color',
+                token: 'charts.title.color',
+                variable: '--p-charts-title-color',
+                description: 'Color of title'
+            },
+            {
+                name: 'charts.caption.color',
+                token: 'charts.caption.color',
+                variable: '--p-charts-caption-color',
+                description: 'Color of caption'
+            },
+            {
+                name: 'charts.dataLabel.color',
+                token: 'charts.data.label.color',
+                variable: '--p-charts-data-label-color',
+                description: 'Color of data label'
+            },
+            {
+                name: 'charts.annotation.color',
+                token: 'charts.annotation.color',
+                variable: '--p-charts-annotation-color',
+                description: 'Color of annotation'
+            },
+            {
+                name: 'charts.hover.brightness',
+                token: 'charts.hover.brightness',
+                variable: '--p-charts-hover-brightness',
+                description: 'Brightness of hover'
+            },
+            {
+                name: 'charts.dim.opacity',
+                token: 'charts.dim.opacity',
+                variable: '--p-charts-dim-opacity',
+                description: 'Opacity of dim'
+            },
+            {
+                name: 'charts.legend.color',
+                token: 'charts.legend.color',
+                variable: '--p-charts-legend-color',
+                description: 'Color of legend'
+            },
+            {
+                name: 'charts.legend.itemGap',
+                token: 'charts.legend.item.gap',
+                variable: '--p-charts-legend-item-gap',
+                description: 'Item gap of legend'
+            },
+            {
+                name: 'charts.legend.itemBorderRadius',
+                token: 'charts.legend.item.border.radius',
+                variable: '--p-charts-legend-item-border-radius',
+                description: 'Item border radius of legend'
+            },
+            {
+                name: 'charts.tooltip.background',
+                token: 'charts.tooltip.background',
+                variable: '--p-charts-tooltip-background',
+                description: 'Background of tooltip'
+            },
+            {
+                name: 'charts.tooltip.color',
+                token: 'charts.tooltip.color',
+                variable: '--p-charts-tooltip-color',
+                description: 'Color of tooltip'
+            },
+            {
+                name: 'charts.tooltip.borderColor',
+                token: 'charts.tooltip.border.color',
+                variable: '--p-charts-tooltip-border-color',
+                description: 'Border color of tooltip'
+            },
+            {
+                name: 'charts.tooltip.borderRadius',
+                token: 'charts.tooltip.border.radius',
+                variable: '--p-charts-tooltip-border-radius',
+                description: 'Border radius of tooltip'
+            },
+            {
+                name: 'charts.tooltip.shadow',
+                token: 'charts.tooltip.shadow',
+                variable: '--p-charts-tooltip-shadow',
+                description: 'Shadow of tooltip'
+            },
+            {
+                name: 'charts.tooltip.padding',
+                token: 'charts.tooltip.padding',
+                variable: '--p-charts-tooltip-padding',
+                description: 'Padding of tooltip'
+            },
+            {
+                name: 'charts.tooltip.fontSize',
+                token: 'charts.tooltip.font.size',
+                variable: '--p-charts-tooltip-font-size',
+                description: 'Font size of tooltip'
+            },
+            {
+                name: 'charts.tooltip.maxWidth',
+                token: 'charts.tooltip.max.width',
+                variable: '--p-charts-tooltip-max-width',
+                description: 'Max width of tooltip'
+            },
+            {
+                name: 'charts.tooltip.headerGap',
+                token: 'charts.tooltip.header.gap',
+                variable: '--p-charts-tooltip-header-gap',
+                description: 'Header gap of tooltip'
+            },
+            {
+                name: 'charts.tooltip.rowGap',
+                token: 'charts.tooltip.row.gap',
+                variable: '--p-charts-tooltip-row-gap',
+                description: 'Row gap of tooltip'
+            },
+            {
+                name: 'charts.tooltip.swatchSize',
+                token: 'charts.tooltip.swatch.size',
+                variable: '--p-charts-tooltip-swatch-size',
+                description: 'Swatch size of tooltip'
+            },
+            {
+                name: 'charts.crosshair.color',
+                token: 'charts.crosshair.color',
+                variable: '--p-charts-crosshair-color',
+                description: 'Color of crosshair'
+            },
+            {
+                name: 'charts.direction.positive',
+                token: 'charts.direction.positive',
+                variable: '--p-charts-direction-positive',
+                description: 'Positive of direction'
+            },
+            {
+                name: 'charts.direction.negative',
+                token: 'charts.direction.negative',
+                variable: '--p-charts-direction-negative',
+                description: 'Negative of direction'
+            },
+            {
+                name: 'charts.direction.neutral',
+                token: 'charts.direction.neutral',
+                variable: '--p-charts-direction-neutral',
+                description: 'Neutral of direction'
+            },
+            {
+                name: 'charts.navigator.background',
+                token: 'charts.navigator.background',
+                variable: '--p-charts-navigator-background',
+                description: 'Background of navigator'
+            },
+            {
+                name: 'charts.navigator.seriesColor',
+                token: 'charts.navigator.series.color',
+                variable: '--p-charts-navigator-series-color',
+                description: 'Series color of navigator'
+            },
+            {
+                name: 'charts.navigator.maskColor',
+                token: 'charts.navigator.mask.color',
+                variable: '--p-charts-navigator-mask-color',
+                description: 'Mask color of navigator'
+            },
+            {
+                name: 'charts.navigator.selectionColor',
+                token: 'charts.navigator.selection.color',
+                variable: '--p-charts-navigator-selection-color',
+                description: 'Selection color of navigator'
+            },
+            {
+                name: 'charts.navigator.selectionFill',
+                token: 'charts.navigator.selection.fill',
+                variable: '--p-charts-navigator-selection-fill',
+                description: 'Selection fill of navigator'
+            },
+            {
+                name: 'charts.zoomButton.background',
+                token: 'charts.zoom.button.background',
+                variable: '--p-charts-zoom-button-background',
+                description: 'Background of zoom button'
+            },
+            {
+                name: 'charts.zoomButton.color',
+                token: 'charts.zoom.button.color',
+                variable: '--p-charts-zoom-button-color',
+                description: 'Color of zoom button'
+            },
+            {
+                name: 'charts.zoomButton.borderColor',
+                token: 'charts.zoom.button.border.color',
+                variable: '--p-charts-zoom-button-border-color',
+                description: 'Border color of zoom button'
+            },
+            {
+                name: 'charts.zoomButton.disabledColor',
+                token: 'charts.zoom.button.disabled.color',
+                variable: '--p-charts-zoom-button-disabled-color',
+                description: 'Disabled color of zoom button'
+            },
+            {
+                name: 'charts.zoomButton.disabledBorderColor',
+                token: 'charts.zoom.button.disabled.border.color',
+                variable: '--p-charts-zoom-button-disabled-border-color',
+                description: 'Disabled border color of zoom button'
+            },
+            {
+                name: 'charts.zoomButton.borderRadius',
+                token: 'charts.zoom.button.border.radius',
+                variable: '--p-charts-zoom-button-border-radius',
+                description: 'Border radius of zoom button'
+            },
+            {
+                name: 'charts.palette.color0',
+                token: 'charts.palette.color0',
+                variable: '--p-charts-palette-color0',
+                description: 'Color 0 of palette'
+            },
+            {
+                name: 'charts.palette.color1',
+                token: 'charts.palette.color1',
+                variable: '--p-charts-palette-color1',
+                description: 'Color 1 of palette'
+            },
+            {
+                name: 'charts.palette.color2',
+                token: 'charts.palette.color2',
+                variable: '--p-charts-palette-color2',
+                description: 'Color 2 of palette'
+            },
+            {
+                name: 'charts.palette.color3',
+                token: 'charts.palette.color3',
+                variable: '--p-charts-palette-color3',
+                description: 'Color 3 of palette'
+            },
+            {
+                name: 'charts.palette.color4',
+                token: 'charts.palette.color4',
+                variable: '--p-charts-palette-color4',
+                description: 'Color 4 of palette'
+            },
+            {
+                name: 'charts.palette.color5',
+                token: 'charts.palette.color5',
+                variable: '--p-charts-palette-color5',
+                description: 'Color 5 of palette'
+            },
+            {
+                name: 'charts.palette.color6',
+                token: 'charts.palette.color6',
+                variable: '--p-charts-palette-color6',
+                description: 'Color 6 of palette'
+            },
+            {
+                name: 'charts.palette.color7',
+                token: 'charts.palette.color7',
+                variable: '--p-charts-palette-color7',
+                description: 'Color 7 of palette'
+            },
+            {
+                name: 'charts.palette.color8',
+                token: 'charts.palette.color8',
+                variable: '--p-charts-palette-color8',
+                description: 'Color 8 of palette'
+            },
+            {
+                name: 'charts.palette.color9',
+                token: 'charts.palette.color9',
+                variable: '--p-charts-palette-color9',
+                description: 'Color 9 of palette'
+            },
+            {
+                name: 'charts.palette.color10',
+                token: 'charts.palette.color10',
+                variable: '--p-charts-palette-color10',
+                description: 'Color 10 of palette'
+            },
+            {
+                name: 'charts.palette.color11',
+                token: 'charts.palette.color11',
+                variable: '--p-charts-palette-color11',
+                description: 'Color 11 of palette'
+            },
+            {
+                name: 'charts.palette.color12',
+                token: 'charts.palette.color12',
+                variable: '--p-charts-palette-color12',
+                description: 'Color 12 of palette'
+            },
+            {
+                name: 'charts.palette.color13',
+                token: 'charts.palette.color13',
+                variable: '--p-charts-palette-color13',
+                description: 'Color 13 of palette'
             }
         ]
     },

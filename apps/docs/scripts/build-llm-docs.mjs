@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const DOCS_DIR = path.resolve(__dirname, '../doc');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
 const API_DOC_PATH = path.resolve(__dirname, '../doc/apidoc/index.json');
-const DEMOS_JSON_PATH = path.resolve(__dirname, '../public/demos.json');
+const DEMOS_JSON_PATH = path.resolve(__dirname, '../.demos/demos.json');
 const OUTPUT_DIR = path.resolve(__dirname, '../public/llms');
 
 // Global demos data loaded from demos.json

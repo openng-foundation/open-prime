@@ -8,55 +8,87 @@ import { firstValueFrom } from 'rxjs';
 export class DemoCodeService {
     private http = inject(HttpClient);
     private platformId = inject(PLATFORM_ID);
-    private demosJson = signal<DemosJson | null>(null);
-    private loadPromise: Promise<void> | null = null;
 
     /**
-     * Load demos.json file. This is called once at app startup.
-     * Returns a promise that resolves when loading is complete.
+     * The demos loaded so far, keyed by their own selector.
+     *
+     * Filled a component at a time. The catalogue used to arrive as one file at startup, which put
+     * every component's source on the wire before the reader had opened anything -- and charts
+     * alone is hundreds of demos. A page now costs only its own component.
+     */
+    private demos = signal<Record<string, Demo>>({});
+
+    /** Which components have been asked for, so a second panel does not refetch. */
+    private requested = new Map<string, Promise<void>>();
+
+    private loadedCount = signal(0);
+
+    /**
+     * Kept for the app initializer, which no longer has anything to wait for: the code panels ask
+     * for what they need as they render.
      */
     async loadDemos(): Promise<void> {
-        // Skip loading during SSR - will load on client hydration
-        if (!isPlatformBrowser(this.platformId)) {
-            return;
-        }
-
-        if (this.demosJson()) {
-            return; // Already loaded
-        }
-
-        if (this.loadPromise) {
-            return this.loadPromise; // Already loading
-        }
-
-        this.loadPromise = this.fetchDemos();
-        return this.loadPromise;
-    }
-
-    private async fetchDemos(): Promise<void> {
-        try {
-            const data = await firstValueFrom(this.http.get<DemosJson>('/demos.json'));
-            this.demosJson.set(data);
-            console.log(`[DemoCodeService] Loaded ${data.totalDemos} demos`);
-        } catch (error) {
-            console.warn('[DemoCodeService] Failed to load demos.json:', error);
-            // Set empty object to prevent repeated attempts
-            this.demosJson.set({
-                version: '0.0.0',
-                generatedAt: '',
-                totalDemos: 0,
-                demos: {}
-            });
-        }
+        return;
     }
 
     /**
-     * Get demo code by selector (e.g., 'select-basic-demo')
+     * Loads one component's demos, once.
+     *
+     * A failure is remembered rather than retried: the panel has nothing to show either way, and a
+     * missing file would otherwise be refetched by every panel on the page.
+     */
+    loadComponent(component: string): Promise<void> {
+        if (!isPlatformBrowser(this.platformId)) return Promise.resolve();
+
+        const existing = this.requested.get(component);
+
+        if (existing) return existing;
+
+        const request = firstValueFrom(this.http.get<DemosJson>(`/demos/${component}.json`))
+            .then((data) => {
+                this.demos.update((current) => ({ ...current, ...data.demos }));
+                this.loadedCount.update((n) => n + 1);
+            })
+            .catch(() => {
+                console.warn(`[DemoCodeService] No demo code for "${component}"`);
+                this.loadedCount.update((n) => n + 1);
+            });
+
+        this.requested.set(component, request);
+
+        return request;
+    }
+
+    /**
+     * Starts the download a selector will need.
+     *
+     * Separate from {@link getCode} because a caller has to be able to ask *before* it can read: a
+     * panel that only looked the code up would wait on a file nobody had requested.
+     */
+    requestFor(selector: string): void {
+        const component = selector.split('-')[0];
+
+        if (component) void this.loadComponent(component);
+    }
+
+    /**
+     * Get demo code by selector (e.g., 'select-basic-demo').
+     *
+     * Asks for the component's file when it is not here yet and returns `null` for now; the caller
+     * reads this inside an effect that also reads {@link isLoaded}, so it re-runs when the file
+     * lands.
      */
     getCode(selector: string): Demo | null {
-        const demos = this.demosJson();
-        if (!demos) return null;
-        return demos.demos[selector] ?? null;
+        const demos = this.demos();
+        const found = demos[selector];
+
+        if (found) return found;
+
+        const component = selector.split('-')[0];
+
+        if (component && !this.requested.has(component)) void this.loadComponent(component);
+
+        return null;
     }
 
     /**
@@ -70,17 +102,20 @@ export class DemoCodeService {
     }
 
     /**
-     * Check if demos are loaded (signal-based for reactivity)
+     * Whether anything has finished loading.
+     *
+     * Read alongside {@link getCode} so a panel re-renders when its component's file arrives. It
+     * counts completed loads rather than reporting a boolean, because a page may need more than one
+     * component and each arrival has to wake the panels waiting on it.
      */
-    isLoaded = computed(() => this.demosJson() !== null);
+    isLoaded = computed(() => this.loadedCount() > 0);
 
     /**
-     * Get all demos for a component
+     * Get all demos for a component.
      */
     getDemosByComponent(component: string): Demo[] {
-        const demos = this.demosJson();
-        if (!demos) return [];
+        void this.loadComponent(component);
 
-        return Object.values(demos.demos).filter((demo) => demo.component === component);
+        return Object.values(this.demos()).filter((demo) => demo.component === component);
     }
 }

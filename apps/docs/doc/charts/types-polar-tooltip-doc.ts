@@ -1,0 +1,44 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AppCode } from '@/components/doc/app.code';
+import { AppDocSectionText } from '@/components/doc/app.docsectiontext';
+import { ChartsModule } from '@openng/optimus-ui/charts';
+
+@Component({
+    selector: 'types-polar-tooltip-doc',
+    standalone: true,
+    imports: [AppDocSectionText, AppCode, ChartsModule],
+    template: `
+        <app-docsectiontext>
+            <p>Add <i>ChartTooltip</i> to show data details on hover. The tooltip displays the category label, value, and series name for the hovered bar.</p>
+            <p>For full configuration see <a href="/charts/configuration/tooltip">Tooltip</a>.</p>
+        </app-docsectiontext>
+        @defer (on viewport) {
+            <div class="card">
+                <div style="display: flex; justify-content: center">
+                    <p-chart-svg [width]="460" [height]="460">
+                        <p-chart-polar [data]="data" categoryXField="direction" valueYField="speed" />
+                        <p-chart-x-axis />
+                        <p-chart-y-axis />
+                        <p-chart-tooltip />
+                    </p-chart-svg>
+                </div>
+            </div>
+            <app-code></app-code>
+        } @placeholder {
+            <div class="card" style="min-height: 26rem"></div>
+        }
+    `,
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class PolarTooltipDoc {
+    readonly data = [
+        { direction: 'N', speed: 12 },
+        { direction: 'NE', speed: 8 },
+        { direction: 'E', speed: 15 },
+        { direction: 'SE', speed: 20 },
+        { direction: 'S', speed: 18 },
+        { direction: 'SW', speed: 25 },
+        { direction: 'W', speed: 22 },
+        { direction: 'NW', speed: 10 }
+    ];
+}

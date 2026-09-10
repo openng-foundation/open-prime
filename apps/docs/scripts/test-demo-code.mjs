@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
 // Test configuration
-const DEMOS_JSON_PATH = path.join(ROOT_DIR, 'public', 'demos.json');
+const DEMOS_JSON_PATH = path.join(ROOT_DIR, '.demos', 'demos.json');
 const TEST_SELECTORS = ['select-basic-demo', 'table-filter-advanced-demo', 'autocomplete-basic-demo', 'button-basic-demo'];
 
 // Colors for console output

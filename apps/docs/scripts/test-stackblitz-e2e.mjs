@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
 // Test configuration
-const DEMOS_JSON_PATH = path.join(ROOT_DIR, 'public', 'demos.json');
+const DEMOS_JSON_PATH = path.join(ROOT_DIR, '.demos', 'demos.json');
 const TEMP_DIR = path.join(ROOT_DIR, '.test-stackblitz');
 const TEST_SELECTOR = process.argv[2] || 'select-basic-demo';
 const TEST_ALL = process.argv.includes('--all');

@@ -8,7 +8,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const DOCS_DIR = path.resolve(__dirname, '../doc');
-const OUTPUT_PATH = path.resolve(__dirname, '../public/demos.json');
+// Outside `public/`: the full catalogue is a build input, not something to ship.
+const OUTPUT_PATH = path.resolve(__dirname, '../.demos/demos.json');
+const ROOT_DIR = path.resolve(__dirname, '..');
 
 // Directories to skip (not component demos)
 const SKIP_DIRS = ['apidoc', 'theming', 'icons', 'installation', 'configuration', 'customicons', 'playground', 'uikit', 'templates', 'primeflex', 'csslayer', 'migration', 'llms'];
@@ -132,6 +134,9 @@ const SELECTOR_TO_MODULE = {
     'p-carousel': 'CarouselModule',
     'p-cascadeselect': 'CascadeSelectModule',
     'p-chart': 'ChartModule',
+    'p-chart-svg': 'ChartsModule',
+    'p-chart-canvas': 'ChartsModule',
+    'p-chart-group': 'ChartsModule',
     'p-checkbox': 'CheckboxModule',
     'p-chip': 'ChipModule',
     'p-colorpicker': 'ColorPickerModule',
@@ -243,17 +248,114 @@ function extractInterfaceDefinitions(content) {
         }
     }
 
-    // Also find type aliases
-    const typeRegex = /^(type\s+(\w+)\s*=\s*[^;]+;)/gm;
-    while ((match = typeRegex.exec(beforeComponent)) !== null) {
-        const name = match[2];
+    /*
+     * Also find type aliases.
+     *
+     * Scanned rather than matched by a pattern, because a type alias ends at the semicolon that
+     * sits outside every brace -- and an object type's own members end in semicolons too. A regex
+     * that stopped at the first one truncated `type X = { a: string; b: number };` after `a`, and
+     * the snippet then failed to parse.
+     */
+    const typeStart = /^type\s+(\w+)\s*=/gm;
+    while ((match = typeStart.exec(beforeComponent)) !== null) {
+        const name = match[1];
+        let depth = 0;
+        let quote = null;
+        let end = -1;
+
+        for (let i = match.index + match[0].length; i < beforeComponent.length; i++) {
+            const ch = beforeComponent[i];
+
+            if (quote) {
+                if (ch === '\\') i++;
+                else if (ch === quote) quote = null;
+                continue;
+            }
+
+            if (ch === "'" || ch === '"' || ch === '`') quote = ch;
+            else if (ch === '{' || ch === '[' || ch === '(') depth++;
+            else if (ch === '}' || ch === ']' || ch === ')') depth--;
+            else if (ch === ';' && depth === 0) {
+                end = i + 1;
+                break;
+            }
+        }
+
+        if (end < 0) continue;
+
         if (!seen.has(name)) {
             seen.add(name);
-            interfaces.push(match[1].trim());
+            interfaces.push(beforeComponent.slice(match.index, end).trim());
         }
+
+        typeStart.lastIndex = end;
     }
 
     return interfaces;
+}
+
+/**
+ * Joins a class body's lines so each declaration is one entry.
+ *
+ * A declaration ends where its brackets, braces and parentheses balance again -- not at the first
+ * newline. Reading only the first line of `data = [` yields `data: any[]` with no data in it, which
+ * is exactly the part of a chart demo a reader came for.
+ */
+function joinMultilineDeclarations(lines) {
+    const joined = [];
+    let buffer = null;
+    let depth = 0;
+
+    const delta = (text) => {
+        let count = 0;
+        let quote = null;
+
+        for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+
+            if (quote) {
+                if (ch === '\\') i++;
+                else if (ch === quote) quote = null;
+                continue;
+            }
+
+            if (ch === "'" || ch === '"' || ch === '`') quote = ch;
+            else if (ch === '[' || ch === '{' || ch === '(') count++;
+            else if (ch === ']' || ch === '}' || ch === ')') count--;
+        }
+
+        return count;
+    };
+
+    for (const line of lines) {
+        if (buffer === null) {
+            const change = delta(line);
+
+            if (change > 0 && /^    (?:(?:readonly|public|protected|private|static|override|declare)\s+)*[\w]+[!?]?\s*(?::[^=]*)?=/.test(line)) {
+                buffer = line.trimEnd();
+                depth = change;
+                continue;
+            }
+
+            joined.push(line);
+            continue;
+        }
+
+        // Inside a declaration: the original line breaks are kept, because a data array read as
+        // one long line is technically the same code and practically unreadable.
+        buffer += '\n' + line.trimEnd();
+        depth += delta(line);
+
+        if (depth <= 0) {
+            joined.push(buffer);
+            buffer = null;
+            depth = 0;
+        }
+    }
+
+    if (buffer !== null) joined.push(buffer);
+
+    return joined;
 }
 
 // Extract class properties (excluding code, extFiles, routeFiles, and doc-specific ones)
@@ -283,16 +385,22 @@ function extractClassProperties(content) {
     const seen = new Set();
 
     // Match property declarations at class level (4 spaces indentation)
-    const lines = propertiesSection.split('\n');
+    //
+    // A property's value can run over several lines -- a data array, an object literal, an arrow
+    // function -- and reading one line of it produces something that does not parse. Each
+    // declaration is joined back up to its balanced end first, so the value that reaches the
+    // patterns below is whole.
+    const lines = joinMultilineDeclarations(propertiesSection.split('\n'));
 
     for (const line of lines) {
         // Match lines that start with exactly 4 spaces and a word character (property declaration)
         // Pattern 1: With type annotation - name: Type = value;
-        let propMatch = line.match(/^    ([\w]+)([!?]?):\s*([A-Za-z][\w<>\[\]|, ]*(?:\s*\|\s*[\w\[\]]+)*)(?:\s*=\s*(.+))?;?\s*$/);
+        const declaration = line.replace(/^(\s{4})(?:readonly|public|protected|private|static|override|declare)\s+/g, '$1');
+        let propMatch = declaration.match(/^    ([\w]+)([!?]?):\s*([A-Za-z][\w<>\[\]|, ]*(?:\s*\|\s*[\w\[\]]+)*)(?:\s*=\s*([\s\S]+))?;?\s*$/);
 
         // Pattern 2: Without type annotation - name = value;
         if (!propMatch) {
-            const noTypeMatch = line.match(/^    ([\w]+)\s*=\s*(.+);?\s*$/);
+            const noTypeMatch = declaration.match(/^    ([\w]+)\s*=\s*([\s\S]+);?\s*$/);
             if (noTypeMatch) {
                 const defaultVal = noTypeMatch[2].trim().replace(/;$/, '');
                 let inferredType = 'any';
@@ -354,21 +462,20 @@ function extractClassProperties(content) {
         if (defaultValue) {
             // Remove trailing semicolon from default value
             defaultValue = defaultValue.replace(/;$/, '');
-            // Handle multiline arrays (incomplete)
-            if (defaultValue.startsWith('[') && !defaultValue.endsWith(']')) {
-                defaultValue = undefined;
-            }
-            // Handle multiline objects (incomplete - only has opening brace)
-            if (defaultValue && (defaultValue === '{' || (defaultValue.startsWith('{') && !defaultValue.endsWith('}')))) {
-                defaultValue = undefined;
-            }
-            // Handle multiline function calls (incomplete - has unmatched parentheses)
-            if (defaultValue) {
-                const openParens = (defaultValue.match(/\(/g) || []).length;
-                const closeParens = (defaultValue.match(/\)/g) || []).length;
-                if (openParens !== closeParens) {
-                    defaultValue = undefined;
-                }
+            // A value that still does not balance was not captured whole, and emitting half of one
+            // produces a snippet that does not parse -- which is worse than a declared property
+            // with no initialiser.
+            for (const [open, close] of [
+                ['[', ']'],
+                ['{', '}'],
+                ['(', ')']
+            ]) {
+                if (!defaultValue) break;
+
+                const opened = defaultValue.split(open).length - 1;
+                const closed = defaultValue.split(close).length - 1;
+
+                if (opened !== closed) defaultValue = undefined;
             }
         }
 
@@ -1179,6 +1286,9 @@ function generateTypescript(componentName, template, services = [], fileContent 
                 // Signal/inject properties: name = signal<Type>(value); or name = inject(Service);
                 classBody += `    ${prop.name} = ${prop.defaultValue};\n`;
             } else if (prop.defaultValue) {
+                // A multi-line value keeps its original indentation: the declaration sits at the
+                // same four spaces in the snippet as in the source, so re-indenting it would only
+                // flatten the nesting it already has.
                 classBody += `    ${prop.name}${prop.optional}: ${prop.type} = ${prop.defaultValue};\n`;
             } else {
                 classBody += `    ${prop.name}${prop.optional}: ${prop.type};\n`;
@@ -1360,13 +1470,43 @@ async function main() {
         fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    // Write JSON file
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2));
+    /*
+     * Written twice, for two different readers.
+     *
+     * The whole catalogue goes outside `public/` because only the build scripts read it -- shipping
+     * it would put every component's source on the wire for anyone opening any page, which was two
+     * and a half megabytes before a single chart had been drawn.
+     *
+     * What the browser gets is one file per component, minified, fetched when a page asks for that
+     * component's code. No information is lost: the same entries, split by the prefix their keys
+     * already carry.
+     */
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output));
+
+    const byComponent = new Map();
+
+    for (const [key, demo] of Object.entries(output.demos)) {
+        const component = demo.component ?? key.split('-')[0];
+
+        if (!byComponent.has(component)) byComponent.set(component, {});
+
+        byComponent.get(component)[key] = demo;
+    }
+
+    const splitDir = path.join(ROOT_DIR, 'public', 'demos');
+
+    fs.rmSync(splitDir, { recursive: true, force: true });
+    fs.mkdirSync(splitDir, { recursive: true });
+
+    for (const [component, demos] of byComponent) {
+        fs.writeFileSync(path.join(splitDir, `${component}.json`), JSON.stringify({ version: output.version, generatedAt: output.generatedAt, totalDemos: Object.keys(demos).length, demos }));
+    }
 
     console.log(`\nBuild complete!`);
     console.log(`  Processed: ${processedCount} demos`);
     console.log(`  Errors: ${errorCount}`);
-    console.log(`  Output: ${OUTPUT_PATH}`);
+    console.log(`  Catalogue: ${OUTPUT_PATH}`);
+    console.log(`  Per component: ${byComponent.size} files in ${splitDir}`);
 }
 
 main().catch(console.error);

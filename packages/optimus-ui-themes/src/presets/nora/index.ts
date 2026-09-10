@@ -12,6 +12,7 @@ import button from '@openng/optimus-ui-themes/nora/button';
 import card from '@openng/optimus-ui-themes/nora/card';
 import carousel from '@openng/optimus-ui-themes/nora/carousel';
 import cascadeselect from '@openng/optimus-ui-themes/nora/cascadeselect';
+import charts from '@openng/optimus-ui-themes/nora/charts';
 import checkbox from '@openng/optimus-ui-themes/nora/checkbox';
 import chip from '@openng/optimus-ui-themes/nora/chip';
 import colorpicker from '@openng/optimus-ui-themes/nora/colorpicker';
@@ -105,6 +106,7 @@ export default {
         card,
         carousel,
         cascadeselect,
+        charts,
         checkbox,
         chip,
         colorpicker,
